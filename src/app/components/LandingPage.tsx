@@ -79,7 +79,7 @@ function Header() {
 
   const navItems = [
     { label: 'Features', href: '#features' },
-    { label: 'Why TIA AI', href: '#why-pantteri' },
+    { label: 'Reliable', href: '#why-pantteri' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
@@ -415,7 +415,7 @@ function WhyPantteriSlide() {
             <img src="/logo.png" alt="TIA AI" className="w-24 h-24 object-contain" />
           </motion.div>
           <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
-            Why
+            Reliable
           </h2>
           <p className="text-lg text-zinc-500 font-light max-w-lg mx-auto">
             Not all AI chatbots are created equal.
