@@ -62,9 +62,17 @@ function AnimatedNumber({ target, suffix = '', duration = 2 }: { target: number;
 function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      if (y > 80) setHidden(y > lastY.current);
+      else setHidden(false);
+      lastY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -77,7 +85,10 @@ function Header() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+    <motion.header
+      animate={{ y: hidden ? '-120%' : '0%' }}
+      transition={{ duration: 0.35, ease: 'easeInOut' }}
+      className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
         scrolled
           ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
@@ -86,12 +97,12 @@ function Header() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Left: Logo + Nav */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="flex items-center gap-2.5"
+              className="flex items-center"
             >
               <img src="/logo.png" alt="TIA AI" className="size-14 object-contain" />
               
@@ -163,7 +174,7 @@ function Header() {
           )}
         </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   );
 }
 
