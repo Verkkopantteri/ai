@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useState, useRef, useEffect } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { MagneticButton } from './MagneticButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import {
@@ -7,50 +7,105 @@ import {
   Zap, Brain, Shield, TrendingUp, Clock, Users, MessageSquare
 } from 'lucide-react';
 
+/* ─── ANIMATED PARTICLES (hero continues into page) ──────────────── */
+function FloatingParticle({ delay, duration, x, size }: { delay: number; duration: number; x: number; size: number }) {
+  return (
+    <motion.div
+      className="absolute rounded-full bg-white/5 pointer-events-none"
+      style={{ left: `${x}%`, bottom: 0, width: size, height: size }}
+      animate={{ y: [0, -900], opacity: [0, 0.6, 0] }}
+      transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
+    />
+  );
+}
+
+function ParticleField({ count = 18 }: { count?: number }) {
+  const particles = Array.from({ length: count }, (_, i) => ({
+    id: i,
+    delay: (i * 0.7) % 8,
+    duration: 6 + (i * 1.3) % 6,
+    x: (i * 7.3) % 100,
+    size: 2 + (i * 3.1) % 6,
+  }));
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map(p => <FloatingParticle key={p.id} {...p} />)}
+    </div>
+  );
+}
+
 /* ─── HEADER ─────────────────────────────────────────────────── */
 function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navItems = [
+    { label: 'Features', href: '#features' },
+    { label: 'Why Pantteri AI', href: '#why-pantteri' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'Contact', href: '#contact' },
+  ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-white/5' : 'bg-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
-          <span className="font-semibold text-white tracking-tight">Pantteri AI</span>
+        {/* Left: Logo + Nav */}
+        <div className="flex items-center gap-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-2.5"
+          >
+            <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
+            <span className="font-semibold text-white tracking-tight text-sm">Pantteri AI</span>
+          </motion.div>
+
+          <nav className="hidden md:flex items-center gap-0.5">
+            {navItems.map((item, i) => (
+              <motion.a
+                key={item.label}
+                href={item.href}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
+                className="px-3.5 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 relative group"
+              >
+                {item.label}
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-white/40 group-hover:w-4 transition-all duration-300" />
+              </motion.a>
+            ))}
+          </nav>
         </div>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {[
-            { label: 'Features', href: '#features' },
-            { label: 'Why Pantteri AI', href: '#why-pantteri' },
-            { label: 'Pricing', href: '#pricing' },
-            { label: 'Contact', href: '#contact' },
-          ].map(item => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="px-4 py-2 text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors">
+        {/* Right: Sign in + CTA */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="hidden md:flex items-center gap-3"
+        >
+          <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-2">
             Sign in
           </a>
           <a
             href="#pricing"
-            className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-medium hover:bg-zinc-100 transition-colors"
+            className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10 active:scale-95"
           >
             Get a demo
           </a>
-        </div>
+        </motion.div>
 
         {/* Mobile toggle */}
         <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white">
@@ -58,23 +113,30 @@ function Header() {
         </button>
       </div>
 
-      {open && (
-        <div className="md:hidden border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col gap-2">
-          {['Features', 'Why Pantteri AI', 'Pricing', 'Contact'].map(item => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(/ /g, '-')}`}
-              onClick={() => setOpen(false)}
-              className="py-2 text-zinc-300 hover:text-white transition-colors"
-            >
-              {item}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col gap-2 overflow-hidden"
+          >
+            {navItems.map(item => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="py-2 text-zinc-300 hover:text-white transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+            <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-semibold">
+              Get a demo
             </a>
-          ))}
-          <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-medium">
-            Get a demo
-          </a>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
@@ -84,7 +146,8 @@ function HeroSlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
 
   return (
     <motion.section
@@ -98,10 +161,14 @@ function HeroSlide() {
           alt="AI Robot"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-zinc-950" />
       </div>
 
+      {/* Particles continue into page */}
+      <ParticleField count={24} />
+
       <motion.div
+        style={{ y }}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
@@ -111,7 +178,7 @@ function HeroSlide() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 bg-white/10 backdrop-blur-sm rounded-full text-white/80 text-sm mb-8"
+          className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 bg-white/8 backdrop-blur-sm rounded-full text-white/80 text-sm mb-8"
         >
           <span className="size-1.5 bg-emerald-400 rounded-full animate-pulse" />
           Powered by Claude AI
@@ -137,7 +204,6 @@ function HeroSlide() {
         </div>
       </motion.div>
 
-      {/* Scroll indicator */}
       <motion.div
         animate={{ y: [0, 8, 0] }}
         transition={{ repeat: Infinity, duration: 2 }}
@@ -150,7 +216,7 @@ function HeroSlide() {
   );
 }
 
-/* ─── WHY YOUR BUSINESS NEEDS THIS ───────────────────────────── */
+/* ─── PROBLEM ─────────────────────────────────────────────────── */
 function ProblemSlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
@@ -161,9 +227,10 @@ function ProblemSlide() {
     <motion.section
       ref={ref}
       style={{ opacity, y }}
-      className="h-screen flex items-center justify-center bg-zinc-950 text-white px-6"
+      className="h-screen flex items-center justify-center bg-zinc-950 text-white px-6 relative overflow-hidden"
     >
-      <div className="max-w-5xl mx-auto text-center">
+      <ParticleField count={12} />
+      <div className="max-w-5xl mx-auto text-center relative z-10">
         <h2 className="text-6xl md:text-7xl font-light mb-6">
           Your customers are
           <br />
@@ -203,36 +270,12 @@ function FeaturesSlide() {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   const features = [
-    {
-      icon: MessageSquare,
-      title: 'Installed on your website',
-      desc: 'A small snippet of code is all it takes. Works on any website — WordPress, Shopify, custom-built.',
-    },
-    {
-      icon: Brain,
-      title: 'Trained on your content',
-      desc: 'The chatbot knows your products, services, FAQs and pricing — and answers like a real team member.',
-    },
-    {
-      icon: Clock,
-      title: 'Available 24/7',
-      desc: 'Answers customers at 3am on a Sunday. No extra cost, no overtime, no missed opportunities.',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Converts visitors to leads',
-      desc: 'Guides users toward booking, buying, or contacting you — proactively and intelligently.',
-    },
-    {
-      icon: Users,
-      title: 'Handles multiple chats at once',
-      desc: 'One chatbot handles thousands of simultaneous conversations. Your team handles none of them.',
-    },
-    {
-      icon: Zap,
-      title: 'Instant setup',
-      desc: 'We handle everything. From training to installation — your chatbot is live within 48 hours.',
-    },
+    { icon: MessageSquare, title: 'Installed on your website', desc: 'A small code snippet. Works on WordPress, Shopify, or any custom site.' },
+    { icon: Brain, title: 'Trained on your content', desc: 'Knows your products, FAQs, and pricing. Answers like a real team member.' },
+    { icon: Clock, title: 'Available 24/7', desc: 'Answers at 3am on Sunday. No overtime, no missed opportunities.' },
+    { icon: TrendingUp, title: 'Converts visitors to leads', desc: 'Guides users toward booking, buying, or contacting you — intelligently.' },
+    { icon: Users, title: 'Unlimited simultaneous chats', desc: 'One chatbot, thousands of conversations. Your team handles none of them.' },
+    { icon: Zap, title: 'Live in 48 hours', desc: 'We handle everything — training, setup, launch. You just share your content.' },
   ];
 
   return (
@@ -267,7 +310,7 @@ function FeaturesSlide() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="group p-8 rounded-2xl border border-zinc-100 hover:border-zinc-300 hover:shadow-lg transition-all"
+              className="group p-8 rounded-2xl border border-zinc-100 hover:border-zinc-200 hover:shadow-xl transition-all duration-300"
             >
               <div className="size-12 bg-zinc-950 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <f.icon className="size-6 text-white" strokeWidth={1.5} />
@@ -291,18 +334,18 @@ function WhyPantteriSlide() {
   const reasons = [
     {
       icon: Brain,
-      title: 'Built on Claude — the world\'s smartest AI',
-      desc: 'Claude by Anthropic consistently ranks #1 in reasoning, writing quality, and accuracy. Your chatbot isn\'t just fast — it\'s actually intelligent.',
+      title: 'Built on Claude — world\'s smartest AI',
+      desc: 'Ranks #1 in reasoning and accuracy. Your chatbot isn\'t just fast — it\'s genuinely intelligent.',
     },
     {
       icon: Shield,
-      title: 'Safe, honest, brand-safe responses',
-      desc: 'Claude is designed to be honest and refuse harmful requests. Your brand reputation is protected — the bot will never say anything embarrassing.',
+      title: 'Safe, brand-safe responses',
+      desc: 'Claude is designed to be honest and refuse harmful requests. Your brand is protected.',
     },
     {
       icon: TrendingUp,
-      title: 'We manage everything for you',
-      desc: 'Training, updates, monitoring, improvements — Pantteri AI handles the entire AI stack. You get results without the technical headache.',
+      title: 'We manage everything',
+      desc: 'Training, updates, monitoring — Pantteri AI handles the full AI stack. Zero technical headache.',
     },
   ];
 
@@ -311,41 +354,49 @@ function WhyPantteriSlide() {
       id="why-pantteri"
       ref={ref}
       style={{ opacity }}
-      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6"
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6 relative overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
+      <ParticleField count={16} />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-3 mb-6">
-            <img src="/logo.png" alt="Pantteri AI" className="size-12 object-contain" />
-          </div>
+          {/* Big logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center mb-8"
+          >
+            <img src="/logo.png" alt="Pantteri AI" className="w-24 h-24 object-contain" />
+          </motion.div>
           <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
             Why <span className="font-bold">Pantteri AI?</span>
           </h2>
-          <p className="text-xl text-zinc-400 font-light max-w-xl mx-auto">
-            Not all AI chatbots are created equal. Here's why Pantteri AI stands apart.
+          <p className="text-lg text-zinc-500 font-light max-w-lg mx-auto">
+            Not all AI chatbots are created equal.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {reasons.map((r, i) => (
             <motion.div
               key={r.title}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="text-center"
+              transition={{ delay: i * 0.15, duration: 0.6 }}
+              className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-8 backdrop-blur-sm hover:border-zinc-600 transition-colors"
             >
-              <div className="size-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <r.icon className="size-10 text-zinc-950" strokeWidth={1.5} />
+              <div className="size-14 bg-zinc-800 rounded-xl flex items-center justify-center mb-6">
+                <r.icon className="size-7 text-white" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">{r.title}</h3>
-              <p className="text-zinc-400 font-light leading-relaxed">{r.desc}</p>
+              <h3 className="text-lg font-semibold text-white mb-3">{r.title}</h3>
+              <p className="text-zinc-400 font-light leading-relaxed text-sm">{r.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -355,26 +406,25 @@ function WhyPantteriSlide() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-16 bg-zinc-900 border border-zinc-700 rounded-3xl p-8 md:p-12 text-center"
+          transition={{ delay: 0.3 }}
+          className="bg-zinc-900/40 border border-zinc-700/60 rounded-3xl p-8 md:p-10 text-center backdrop-blur-sm"
         >
-          <p className="text-zinc-400 text-sm uppercase tracking-widest mb-4">Powered by</p>
-          <h3 className="text-4xl font-light text-white mb-3">
+          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-4">Powered by</p>
+          <h3 className="text-3xl font-light text-white mb-3">
             Anthropic's <span className="font-bold">Claude</span>
           </h3>
-          <p className="text-zinc-400 font-light max-w-2xl mx-auto">
-            The same AI trusted by Fortune 500 companies, researchers, and millions of professionals worldwide.
-            200K token context window. Ranked #1 in reasoning. Available in 100+ languages.
+          <p className="text-zinc-400 font-light max-w-xl mx-auto text-sm">
+            Trusted by Fortune 500 companies and millions of professionals worldwide. 200K token context. Ranked #1 in reasoning. 100+ languages.
           </p>
-          <div className="flex justify-center gap-8 mt-8">
+          <div className="flex justify-center gap-10 mt-8">
             {[
-              { value: '#1', label: 'Reasoning benchmarks' },
+              { value: '#1', label: 'Reasoning' },
               { value: '200K', label: 'Token context' },
               { value: '100+', label: 'Languages' },
             ].map(stat => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl font-bold text-amber-400">{stat.value}</div>
-                <div className="text-zinc-500 text-xs mt-1">{stat.label}</div>
+                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                <div className="text-zinc-600 text-xs mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -391,42 +441,12 @@ function ReviewsSlide() {
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   const reviews = [
-    {
-      stars: 5,
-      text: 'Our website chatbot now handles 80% of customer inquiries automatically. Our team is free to focus on real work.',
-      name: 'Matti K.',
-      role: 'CEO, Verkkokauppa Oy',
-    },
-    {
-      stars: 5,
-      text: 'We installed it on our real estate site and leads went up 40% in the first month. It books viewings automatically.',
-      name: 'Laura V.',
-      role: 'Founder, Nordic Properties',
-    },
-    {
-      stars: 5,
-      text: 'The quality of answers is incredible. Customers can\'t tell it\'s a bot — and we\'re available 24/7 now.',
-      name: 'Juho A.',
-      role: 'Head of Sales, TechStore Finland',
-    },
-    {
-      stars: 5,
-      text: 'Setup was done in 48 hours. Pantteri AI handled everything — we just gave them our product info and they did the rest.',
-      name: 'Sanna M.',
-      role: 'Marketing Director, Klinikka Pro',
-    },
-    {
-      stars: 5,
-      text: 'It speaks perfect Finnish and Swedish. Our Nordic customers get instant, accurate answers in their own language.',
-      name: 'Pekka R.',
-      role: 'CTO, Logistiikka Nord',
-    },
-    {
-      stars: 5,
-      text: 'ROI was clear within 2 weeks. Fewer support tickets, more leads, happier customers. Simple as that.',
-      name: 'Elina T.',
-      role: 'Operations Manager, Palvelu Plus',
-    },
+    { stars: 5, text: 'Our chatbot now handles 80% of inquiries automatically. Our team focuses on real work.', name: 'Matti K.', role: 'CEO, Verkkokauppa Oy' },
+    { stars: 5, text: 'Leads went up 40% in the first month. It books viewings automatically — incredible.', name: 'Laura V.', role: 'Founder, Nordic Properties' },
+    { stars: 5, text: 'Customers can\'t tell it\'s a bot. The quality of answers is remarkable.', name: 'Juho A.', role: 'Head of Sales, TechStore Finland' },
+    { stars: 5, text: 'Setup done in 48 hours. Pantteri AI handled everything — we just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
+    { stars: 5, text: 'It speaks perfect Finnish and Swedish. Nordic customers get instant, accurate answers.', name: 'Pekka R.', role: 'CTO, Logistiikka Nord' },
+    { stars: 5, text: 'ROI clear within 2 weeks. Fewer support tickets, more leads, happier customers.', name: 'Elina T.', role: 'Operations Manager, Palvelu Plus' },
   ];
 
   return (
@@ -447,7 +467,7 @@ function ReviewsSlide() {
           </h2>
           <div className="flex items-center justify-center gap-1 mt-4">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="size-5 text-amber-400 fill-amber-400" />
+              <Star key={i} className="size-4 text-zinc-950 fill-zinc-950" />
             ))}
             <span className="text-zinc-400 text-sm ml-2">5.0 · Verified business reviews</span>
           </div>
@@ -461,14 +481,14 @@ function ReviewsSlide() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-zinc-50 border border-zinc-100 rounded-2xl p-6"
+              className="bg-zinc-50 border border-zinc-100 rounded-2xl p-6 hover:border-zinc-200 hover:shadow-md transition-all"
             >
               <div className="flex gap-0.5 mb-4">
                 {[...Array(r.stars)].map((_, j) => (
-                  <Star key={j} className="size-4 text-amber-400 fill-amber-400" />
+                  <Star key={j} className="size-4 text-zinc-800 fill-zinc-800" />
                 ))}
               </div>
-              <p className="text-zinc-700 font-light leading-relaxed mb-5">"{r.text}"</p>
+              <p className="text-zinc-700 font-light leading-relaxed mb-5 text-sm">"{r.text}"</p>
               <div>
                 <div className="font-semibold text-zinc-950 text-sm">{r.name}</div>
                 <div className="text-zinc-400 text-xs">{r.role}</div>
@@ -486,7 +506,7 @@ function PricingSlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.3], [0.95, 1]);
+  const cardScale = useTransform(scrollYProgress, [0, 0.3], [0.95, 1]);
 
   const plans = [
     {
@@ -494,13 +514,7 @@ function PricingSlide() {
       price: '€199',
       period: '/month',
       desc: 'For small businesses getting started.',
-      features: [
-        'Chatbot on 1 website',
-        'Trained on your content',
-        'Up to 1 000 chats/mo',
-        'Email support',
-        '48h setup',
-      ],
+      features: ['Chatbot on 1 website', 'Trained on your content', 'Up to 1 000 chats/mo', 'Email support', '48h setup'],
       cta: 'Get started',
       highlight: false,
     },
@@ -509,14 +523,7 @@ function PricingSlide() {
       price: '€499',
       period: '/month',
       desc: 'For growing businesses.',
-      features: [
-        'Chatbot on 3 websites',
-        'Advanced training & updates',
-        'Up to 5 000 chats/mo',
-        'Lead capture integration',
-        'Analytics dashboard',
-        'Priority support',
-      ],
+      features: ['Chatbot on 3 websites', 'Advanced training & updates', 'Up to 5 000 chats/mo', 'Lead capture integration', 'Analytics dashboard', 'Priority support'],
       cta: 'Get a demo',
       highlight: true,
     },
@@ -525,14 +532,7 @@ function PricingSlide() {
       price: 'Custom',
       period: '',
       desc: 'For large organisations.',
-      features: [
-        'Unlimited websites',
-        'Unlimited chats',
-        'Custom integrations (CRM, etc.)',
-        'White-label option',
-        'Dedicated account manager',
-        'SLA guarantee',
-      ],
+      features: ['Unlimited websites', 'Unlimited chats', 'Custom integrations (CRM, etc.)', 'White-label option', 'Dedicated account manager', 'SLA guarantee'],
       cta: 'Contact us',
       highlight: false,
     },
@@ -543,9 +543,10 @@ function PricingSlide() {
       id="pricing"
       ref={ref}
       style={{ opacity }}
-      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6"
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6 relative overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto w-full">
+      <ParticleField count={10} />
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -555,54 +556,54 @@ function PricingSlide() {
           <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
             Simple <span className="font-bold">pricing</span>
           </h2>
-          <p className="text-xl text-zinc-400 font-light">No hidden fees. Cancel anytime.</p>
+          <p className="text-lg text-zinc-500 font-light">No hidden fees. Cancel anytime.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              style={plan.highlight ? { scale } : {}}
+              style={plan.highlight ? { scale: cardScale } : {}}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className={`rounded-3xl p-8 relative ${
+              className={`rounded-2xl p-8 relative transition-all duration-300 ${
                 plan.highlight
-                  ? 'bg-white text-zinc-950 shadow-2xl scale-105'
-                  : 'bg-zinc-900 border border-zinc-800'
+                  ? 'bg-zinc-100 text-zinc-950 shadow-2xl shadow-white/5 scale-105 border border-white/20'
+                  : 'bg-zinc-900/70 border border-zinc-800 hover:border-zinc-600 backdrop-blur-sm'
               }`}
             >
               {plan.highlight && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-400 text-zinc-950 rounded-full text-sm font-semibold">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-950 text-white rounded-full text-xs font-semibold border border-zinc-700">
                   Most popular
                 </div>
               )}
-              <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-400'}`}>
+              <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-500'}`}>
                 {plan.name}
               </div>
               <div className={`text-5xl font-light mb-1 ${plan.highlight ? 'text-zinc-950' : 'text-white'}`}>
                 {plan.price}
               </div>
-              <div className={`text-sm mb-2 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-500'}`}>
+              <div className={`text-sm mb-2 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-600'}`}>
                 {plan.period}
               </div>
-              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-500'}`}>
                 {plan.desc}
               </p>
               <ul className="space-y-3 mb-8">
                 {plan.features.map(f => (
-                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                    <Check className="size-4 text-emerald-500 shrink-0" />
+                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                    <Check className={`size-4 shrink-0 ${plan.highlight ? 'text-zinc-950' : 'text-zinc-400'}`} />
                     {f}
                   </li>
                 ))}
               </ul>
               <button
-                className={`w-full py-3 rounded-full text-sm font-semibold transition-colors ${
+                className={`w-full py-3 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
                   plan.highlight
                     ? 'bg-zinc-950 text-white hover:bg-zinc-800'
-                    : 'bg-zinc-800 text-white hover:bg-zinc-700'
+                    : 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700'
                 }`}
               >
                 {plan.cta}
@@ -615,7 +616,7 @@ function PricingSlide() {
   );
 }
 
-/* ─── CTA ─────────────────────────────────────────────────────── */
+/* ─── CTA (B&W image) ─────────────────────────────────────────── */
 function CTASlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
@@ -632,9 +633,9 @@ function CTASlide() {
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwYXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZSUyMG1vZGVybnxlbnwxfHx8fDE3ODAyMjUzMTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="CTA"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover grayscale"
         />
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/75" />
       </div>
 
       <motion.div
@@ -649,14 +650,14 @@ function CTASlide() {
           <br />
           <span className="font-bold">transform?</span>
         </h2>
-        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
+        <p className="text-2xl text-white/70 font-light mb-10 max-w-2xl mx-auto">
           Get an AI chatbot on your website within 48 hours. Free demo — no commitment.
         </p>
         <MagneticButton className="px-14 py-5 bg-white text-zinc-950 rounded-full text-xl font-semibold hover:shadow-2xl transition-shadow inline-flex items-center gap-3">
           Book a free demo
           <ArrowRight className="size-5" />
         </MagneticButton>
-        <p className="text-white/50 mt-5 text-sm">No credit card required · Live in 48 hours</p>
+        <p className="text-white/40 mt-5 text-sm">No credit card required · Live in 48 hours</p>
       </motion.div>
     </motion.section>
   );
