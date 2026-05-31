@@ -364,7 +364,7 @@ function WhyPantteriSlide() {
   const reasons = [
     {
       icon: Brain,
-      title: 'Built on Claude, the world\'s smartest AI',
+      title: 'Powered by Claude',
       desc: 'Ranks #1 in reasoning and accuracy. Your chatbot is not just fast. It is genuinely intelligent.',
     },
     {
