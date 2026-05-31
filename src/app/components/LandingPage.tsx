@@ -638,14 +638,11 @@ function PricingSlide() {
   );
 }
 
-/* ─── CTA — reveal-from-small animation ──────────────────────── */
+/* ─── CTA ─────────────────────────────────────────────────────── */
 function CTASlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end center'] });
 
-  // Image scales from tiny to full as user scrolls in
-  const imgScale = useTransform(scrollYProgress, [0, 0.6], [0.15, 1]);
-  const imgBorderRadius = useTransform(scrollYProgress, [0, 0.6], [48, 0]);
   const sectionOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const contentY = useTransform(scrollYProgress, [0.2, 0.7], [40, 0]);
   const contentOpacity = useTransform(scrollYProgress, [0.2, 0.7], [0, 1]);
@@ -654,25 +651,9 @@ function CTASlide() {
     <motion.section
       ref={ref}
       style={{ opacity: sectionOpacity }}
-      className="h-screen flex items-center justify-center relative overflow-hidden"
+      className="h-screen flex items-center justify-center relative overflow-hidden bg-zinc-900"
     >
-      {/* Background image grows from center */}
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{ scale: 1 }}
-      >
-        <motion.div
-          className="absolute inset-0 overflow-hidden"
-          style={{ scale: imgScale, borderRadius: imgBorderRadius }}
-        >
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwYXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZSUyMG1vZGVybnxlbnwxfHx8fDE3ODAyMjUzMTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="CTA"
-            className="w-full h-full object-cover object-[center_80%] grayscale"
-          />
-          <div className="absolute inset-0 bg-black/72" />
-        </motion.div>
-      </motion.div>
+      <ParticleField count={20} />
 
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
