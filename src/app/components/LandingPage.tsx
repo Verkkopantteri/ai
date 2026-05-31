@@ -338,9 +338,9 @@ function ProblemSlide() {
   const y = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [80, 0, 0, -80]);
 
   const stats = [
-    { animated: true, target: 73, suffix: '%', label: 'of customers leave if they don\'t get an instant answer' },
+    { animated: true, target: 73, suffix: '%', label: 'of customers leave if they don\'t get an instant answer.' },
     { animated: false, display: '24/7', label: 'availability your team cannot provide. Your chatbot can.' },
-    { animated: true, target: 3, suffix: '×', label: 'more leads converted with instant chat support' },
+    { animated: true, target: 3, suffix: '×', label: 'more leads converted with instant chat support.' },
   ];
 
   return (
@@ -357,7 +357,7 @@ function ProblemSlide() {
           <span className="text-red-400">waiting</span>
         </h2>
         <p className="text-xl text-zinc-400 font-light mb-16 max-w-2xl mx-auto">
-          Every unanswered question on your website is a lost customer. An AI chatbot fixes that. 24/7, instantly.
+          Every unanswered question on your website is a lost customer.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -419,7 +419,7 @@ function FeaturesSlide() {
             business needs
           </h2>
           <p className="text-xl text-zinc-500 font-light max-w-xl mx-auto">
-            A fully managed AI chatbot. You focus on your business. We handle the AI.
+            Focus on your business. We'll handle the AI.
           </p>
         </motion.div>
 
