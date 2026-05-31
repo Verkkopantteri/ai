@@ -77,11 +77,12 @@ function Header() {
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-white/5' : 'bg-transparent'
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
+        scrolled
+          ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
+          : 'mx-0 mt-0 rounded-none bg-transparent'
+      }`}>
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* Left: Logo + Nav */}
@@ -134,6 +135,7 @@ function Header() {
         <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
+      </div>
       </div>
 
       <AnimatePresence>
