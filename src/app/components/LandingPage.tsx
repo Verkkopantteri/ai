@@ -272,6 +272,7 @@ const CHAT_THEMES = [
     inputBg: '#1e1e22',
     chipColor: 'rgba(255,255,255,0.45)',
     textColor: 'rgba(232,232,232,0.95)',
+    userTextColor: 'rgba(232,232,232,0.95)',
     subtleText: 'rgba(255,255,255,0.22)',
     accentDot: '#34d399',
     sendArrow: 'rgba(255,255,255,0.6)',
@@ -283,11 +284,12 @@ const CHAT_THEMES = [
     bg: '#f4f4f5',
     headerBg: '#ffffff',
     msgBg: '#e4e4e7',
-    userMsgBg: '#27272a',
+    userMsgBg: '#e4e4e7',
     border: 'rgba(0,0,0,0.08)',
     inputBg: '#ffffff',
     chipColor: 'rgba(0,0,0,0.45)',
     textColor: '#18181b',
+    userTextColor: '#18181b',
     subtleText: 'rgba(0,0,0,0.3)',
     accentDot: '#34d399',
     sendArrow: 'rgba(0,0,0,0.5)',
@@ -355,7 +357,7 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
               style={{
                 background: msg.from === 'bot' ? theme.msgBg : theme.userMsgBg,
                 border: `1px solid ${theme.border}`,
-                color: theme.textColor,
+                color: msg.from === 'user' ? theme.userTextColor : theme.textColor,
                 borderRadius: msg.from === 'bot' ? '3px 14px 14px 14px' : '14px 14px 3px 14px',
               }}
               className="max-w-[200px] px-3 py-2 text-[11px] leading-relaxed"
@@ -410,7 +412,7 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
       </div>
 
       {/* Footer */}
-      <div style={{ background: theme.headerBg }} className="flex items-center justify-center gap-1.5 py-2">
+      <div style={{ background: theme.headerBg }} className="flex items-center justify-center gap-1.5 py-2 pr-10">
         <span style={{ color: theme.subtleText, fontSize: '9px', letterSpacing: '0.04em' }}>Powered by</span>
         <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA"
           className="h-2.5"
