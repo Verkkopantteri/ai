@@ -248,7 +248,7 @@ function ProblemSlide() {
 
   const stats = [
     { animated: true, target: 73, suffix: '%', label: 'of customers leave if they don\'t get an instant answer' },
-    { animated: false, display: '24/7', label: 'availability your team can\'t provide — your chatbot can' },
+    { animated: false, display: '24/7', label: 'availability your team cannot provide. Your chatbot can.' },
     { animated: true, target: 3, suffix: '×', label: 'more leads converted with instant chat support' },
   ];
 
@@ -266,7 +266,7 @@ function ProblemSlide() {
           <span className="text-red-400">waiting</span>
         </h2>
         <p className="text-xl text-zinc-400 font-light mb-16 max-w-2xl mx-auto">
-          Every unanswered question on your website is a lost customer. An AI chatbot fixes that — 24/7, instantly.
+          Every unanswered question on your website is a lost customer. An AI chatbot fixes that. 24/7, instantly.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -303,9 +303,9 @@ function FeaturesSlide() {
     { icon: MessageSquare, title: 'Installed on your website', desc: 'A small code snippet. Works on WordPress, Shopify, or any custom site.' },
     { icon: Brain, title: 'Trained on your content', desc: 'Knows your products, FAQs, and pricing. Answers like a real team member.' },
     { icon: Clock, title: 'Available 24/7', desc: 'Answers at 3am on Sunday. No overtime, no missed opportunities.' },
-    { icon: TrendingUp, title: 'Converts visitors to leads', desc: 'Guides users toward booking, buying, or contacting you — intelligently.' },
+    { icon: TrendingUp, title: 'Converts visitors to leads', desc: 'Guides users toward booking, buying, or contacting you. Intelligently.' },
     { icon: Users, title: 'Unlimited simultaneous chats', desc: 'One chatbot, thousands of conversations. Your team handles none of them.' },
-    { icon: Zap, title: 'Live in 48 hours', desc: 'We handle everything — training, setup, launch. You just share your content.' },
+    { icon: Zap, title: 'Live in 48 hours', desc: 'We handle everything: training, setup, launch. You just share your content.' },
   ];
 
   return (
@@ -328,7 +328,7 @@ function FeaturesSlide() {
             business needs
           </h2>
           <p className="text-xl text-zinc-500 font-light max-w-xl mx-auto">
-            A fully managed AI chatbot. You focus on your business — we handle the AI.
+            A fully managed AI chatbot. You focus on your business. We handle the AI.
           </p>
         </motion.div>
 
@@ -364,8 +364,8 @@ function WhyPantteriSlide() {
   const reasons = [
     {
       icon: Brain,
-      title: 'Built on Claude — world\'s smartest AI',
-      desc: 'Ranks #1 in reasoning and accuracy. Your chatbot isn\'t just fast — it\'s genuinely intelligent.',
+      title: 'Built on Claude, the world\'s smartest AI',
+      desc: 'Ranks #1 in reasoning and accuracy. Your chatbot is not just fast. It is genuinely intelligent.',
     },
     {
       icon: Shield,
@@ -375,7 +375,7 @@ function WhyPantteriSlide() {
     {
       icon: TrendingUp,
       title: 'We manage everything',
-      desc: 'Training, updates, monitoring — TIA AI handles the full AI stack. Zero technical headache.',
+      desc: 'Training, updates, monitoring. TIA AI handles the full AI stack. Zero technical headache.',
     },
   ];
 
@@ -470,8 +470,8 @@ function ReviewsSlide() {
 
   const reviews = [
     { stars: 5, text: 'Our chatbot now handles 80% of inquiries automatically. Our team focuses on real work.', name: 'Matti K.', role: 'CEO, Verkkokauppa Oy' },
-    { stars: 5, text: 'Leads went up 40% in the first month. It books viewings automatically — incredible.', name: 'Laura V.', role: 'Founder, Nordic Properties' },
-    { stars: 5, text: 'Setup done in 48 hours. TIA AI handled everything — we just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
+    { stars: 5, text: 'Leads went up 40% in the first month. It books viewings automatically. Incredible.', name: 'Laura V.', role: 'Founder, Nordic Properties' },
+    { stars: 5, text: 'Setup done in 48 hours. TIA AI handled everything. We just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
   ];
 
   return (
@@ -712,7 +712,7 @@ function Footer() {
               <span className="text-white font-semibold text-sm">TIA AI</span>
             </div>
             <p className="text-sm font-light leading-relaxed">
-              AI chatbots for businesses — powered by Claude.
+              AI chatbots for businesses, powered by Claude.
             </p>
           </div>
           {[
