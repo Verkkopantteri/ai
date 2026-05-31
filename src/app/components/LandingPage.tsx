@@ -182,9 +182,9 @@ function HeroSlide() {
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1625314887424-9f190599bd56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBSSUyMGNoYXRib3QlMjByb2JvdCUyMGludGVyZmFjZSUyMGZ1dHVyaXN0aWN8ZW58MXx8fHwxNzgwMjI1MzE2fDA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="AI Robot"
-          className="w-full h-full object-cover object-[center_30%]"
+          className="w-full h-full object-cover object-[center_20%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/35 to-zinc-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/45 to-zinc-950" />
       </div>
 
       <ParticleField count={24} />
@@ -668,7 +668,7 @@ function CTASlide() {
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwYXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZSUyMG1vZGVybnxlbnwxfHx8fDE3ODAyMjUzMTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="CTA"
-            className="w-full h-full object-cover object-[center_30%] grayscale"
+            className="w-full h-full object-cover object-[center_60%] grayscale"
           />
           <div className="absolute inset-0 bg-black/72" />
         </motion.div>
