@@ -412,7 +412,7 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
       </div>
 
       {/* Footer */}
-      <div style={{ background: theme.headerBg }} className="flex items-center justify-center gap-1.5 py-2 pr-10">
+      <div style={{ background: theme.headerBg }} className="flex items-center justify-center gap-1.5 py-2">
         <span style={{ color: theme.subtleText, fontSize: '9px', letterSpacing: '0.04em' }}>Powered by</span>
         <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA"
           className="h-2.5"
