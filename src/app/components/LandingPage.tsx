@@ -80,10 +80,10 @@ function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
         scrolled
-          ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
+          ? 'mx-auto mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40 max-w-3xl px-2'
           : 'mx-0 mt-0 rounded-none bg-transparent'
       }`}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className={`max-w-7xl mx-auto flex items-center justify-between transition-all duration-500 ${scrolled ? 'px-4 py-2.5' : 'px-6 py-4'}`}>
 
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8">
@@ -403,7 +403,7 @@ function WhyPantteriSlide() {
             <img src="/logo.png" alt="Pantteri AI" className="w-24 h-24 object-contain" />
           </motion.div>
           <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
-            Why Pantteri AI?
+            Why
           </h2>
           <p className="text-lg text-zinc-500 font-light max-w-lg mx-auto">
             Not all AI chatbots are created equal.
@@ -687,6 +687,22 @@ function CTASlide() {
   );
 }
 
+/* ─── VIDEO ───────────────────────────────────────────────────── */
+function VideoSlide() {
+  return (
+    <section className="bg-zinc-950 py-0">
+      <video
+        src="/dots.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-auto block"
+      />
+    </section>
+  );
+}
+
 /* ─── FOOTER ──────────────────────────────────────────────────── */
 function Footer() {
   return (
@@ -740,6 +756,7 @@ export function LandingPage() {
       <ReviewsSlide />
       <PricingSlide />
       <CTASlide />
+      <VideoSlide />
       <Footer />
     </div>
   );
