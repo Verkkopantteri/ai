@@ -94,7 +94,7 @@ function Header() {
           ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
           : 'mx-0 mt-0 rounded-none bg-transparent'
       }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
 
           {/* Left: Logo + Nav */}
           <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ function Header() {
               transition={{ duration: 0.6 }}
               className="flex items-center"
             >
-              <img src="/logo.png" alt="TIA AI" className="size-14 object-contain" />
+              <img src="/logo.png" alt="TIA AI" className="size-9 object-contain" />
               
             </motion.div>
 
