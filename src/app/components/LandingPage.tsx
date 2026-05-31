@@ -644,31 +644,30 @@ function PricingSlide() {
 /* ─── CTA ─────────────────────────────────────────────────────── */
 function CTASlide() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end center'] });
+  // Mirror hero: track from when section enters viewport to center
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
 
-  const sectionOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
-  const contentY = useTransform(scrollYProgress, [0.2, 0.7], [40, 0]);
-  const contentOpacity = useTransform(scrollYProgress, [0.2, 0.7], [0, 1]);
-  // Reverse of hero: starts small/zoomed-in (scale 1.18) and expands to full (1.0)
-  const bgScale = useTransform(scrollYProgress, [0, 0.7], [1.18, 1.0]);
+  // Reverse of hero exit: scale 0.9→1, opacity 0→1
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.9, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const contentY = useTransform(scrollYProgress, [0.1, 0.6], [30, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0.1, 0.6], [0, 1]);
 
   return (
     <motion.section
       ref={ref}
-      style={{ opacity: sectionOpacity }}
+      style={{ scale, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden bg-zinc-900"
     >
-      {/* Video background — zooms out as section scrolls in (reverse of hero) */}
-      <motion.div style={{ scale: bgScale }} className="absolute inset-0">
-        <video
-          src="/dots.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-        />
-      </motion.div>
+      {/* Video background */}
+      <video
+        src="/dots.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-40"
+      />
       <ParticleField count={20} />
 
       <motion.div
