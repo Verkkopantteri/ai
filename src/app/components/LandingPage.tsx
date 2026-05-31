@@ -63,13 +63,16 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [scrollingDown, setScrollingDown] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
+      const isDown = y > lastY.current;
       setScrolled(y > 40);
-      if (y > 80) setHidden(y > lastY.current);
+      setScrollingDown(isDown);
+      if (y > 80) setHidden(isDown);
       else setHidden(false);
       lastY.current = y;
     };
@@ -104,8 +107,12 @@ function Header() {
       className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
         scrolled
-          ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
-          : 'mx-0 mt-0 rounded-none bg-transparent'
+          ? `mx-4 mt-3 rounded-2xl backdrop-blur-xl border shadow-2xl shadow-black/40 ${
+              scrollingDown
+                ? 'bg-zinc-900/70 border-white/5'
+                : 'bg-zinc-900/20 border-white/5'
+            }`
+          : 'mx-0 mt-0 rounded-none bg-transparent border-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
