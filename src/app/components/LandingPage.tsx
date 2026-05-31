@@ -62,16 +62,9 @@ function AnimatedNumber({ target, suffix = '', duration = 2 }: { target: number;
 function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 40);
-      setHidden(y > 80 && y > lastY.current);
-      lastY.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -84,10 +77,7 @@ function Header() {
   ];
 
   return (
-    <motion.header
-      animate={{ y: hidden ? "-120%" : "0%" }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
         scrolled
           ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
@@ -173,7 +163,7 @@ function Header() {
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+    </header>
   );
 }
 
@@ -656,9 +646,11 @@ function CTASlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end center'] });
 
-  const sectionOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const sectionOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
   const contentY = useTransform(scrollYProgress, [0.2, 0.7], [40, 0]);
   const contentOpacity = useTransform(scrollYProgress, [0.2, 0.7], [0, 1]);
+  // Reverse of hero: starts small/zoomed-in (scale 1.18) and expands to full (1.0)
+  const bgScale = useTransform(scrollYProgress, [0, 0.7], [1.18, 1.0]);
 
   return (
     <motion.section
@@ -666,15 +658,17 @@ function CTASlide() {
       style={{ opacity: sectionOpacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden bg-zinc-900"
     >
-      {/* Video background */}
-      <video
-        src="/dots.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-40"
-      />
+      {/* Video background — zooms out as section scrolls in (reverse of hero) */}
+      <motion.div style={{ scale: bgScale }} className="absolute inset-0">
+        <video
+          src="/dots.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        />
+      </motion.div>
       <ParticleField count={20} />
 
       <motion.div
