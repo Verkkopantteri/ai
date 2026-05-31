@@ -260,6 +260,305 @@ function Header() {
   );
 }
 
+/* ─── CHAT THEMES ─────────────────────────────────────────────── */
+const CHAT_THEMES = [
+  {
+    name: 'Obsidian',
+    accent: '#ffffff',
+    accentDim: 'rgba(255,255,255,0.55)',
+    bg: '#09090b',
+    headerBg: 'rgba(13,13,15,0.97)',
+    msgBg: '#232325',
+    userMsgBg: '#2c2c30',
+    border: 'rgba(255,255,255,0.09)',
+    inputBg: '#1e1e22',
+    chipBg: 'rgba(20,20,24,0.85)',
+    glowColor: 'rgba(255,255,255,0.06)',
+    label: 'Classic Dark',
+  },
+  {
+    name: 'Ember',
+    accent: '#f97316',
+    accentDim: 'rgba(249,115,22,0.6)',
+    bg: '#0d0a08',
+    headerBg: 'rgba(15,10,8,0.97)',
+    msgBg: '#1f1410',
+    userMsgBg: '#2a1a0f',
+    border: 'rgba(249,115,22,0.15)',
+    inputBg: '#1a1008',
+    chipBg: 'rgba(20,12,6,0.85)',
+    glowColor: 'rgba(249,115,22,0.08)',
+    label: 'Ember Orange',
+  },
+  {
+    name: 'Aurora',
+    accent: '#22d3ee',
+    accentDim: 'rgba(34,211,238,0.55)',
+    bg: '#060d10',
+    headerBg: 'rgba(6,12,16,0.97)',
+    msgBg: '#0d1f26',
+    userMsgBg: '#102530',
+    border: 'rgba(34,211,238,0.12)',
+    inputBg: '#0a1a20',
+    chipBg: 'rgba(6,16,22,0.85)',
+    glowColor: 'rgba(34,211,238,0.07)',
+    label: 'Aurora Cyan',
+  },
+];
+
+/* ─── MINI CHAT WIDGET ────────────────────────────────────────── */
+function MiniChat({ theme, index, isActive }: { theme: typeof CHAT_THEMES[0]; index: number; isActive: boolean }) {
+  const messages = [
+    { from: 'bot', text: "Hey! I'm TIA, your AI assistant. How can I help?" },
+    { from: 'user', text: 'Can you set up a demo for us?' },
+    { from: 'bot', text: "Absolutely! I'll connect you with our team. Leave your email and we'll schedule within 24h." },
+  ];
+
+  return (
+    <div
+      style={{
+        background: theme.bg,
+        border: `1px solid ${theme.border}`,
+        boxShadow: `0 0 60px ${theme.glowColor}, 0 40px 80px rgba(0,0,0,0.6)`,
+      }}
+      className="w-[340px] rounded-[20px] overflow-hidden flex flex-col"
+      aria-hidden={!isActive}
+    >
+      {/* Header */}
+      <div style={{ background: theme.headerBg, borderBottom: `1px solid ${theme.border}` }}
+        className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+            className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
+            <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA" className="w-full h-full object-contain p-0.5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span style={{ color: 'rgba(255,255,255,0.92)' }} className="text-sm font-semibold">TIA</span>
+              <span style={{ background: theme.accent }} className="w-1.5 h-1.5 rounded-full opacity-90 animate-pulse" />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 items-center">
+          <div style={{ background: theme.accent, opacity: 0.15 }} className="w-4 h-0.5 rounded-full" />
+          <div style={{ border: `1px solid ${theme.border}` }} className="w-3.5 h-3.5 rounded-sm opacity-40" />
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div style={{ background: 'transparent' }} className="flex flex-col gap-3 p-4 flex-1">
+        {messages.map((msg, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: isActive ? 1 : 0.7, y: 0 }}
+            transition={{ delay: index * 0.15 + i * 0.12, duration: 0.4 }}
+            className={`flex gap-2 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
+          >
+            {msg.from === 'bot' && (
+              <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+                className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-1">
+                <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="T" className="w-full h-full object-contain p-0.5" />
+              </div>
+            )}
+            <div
+              style={{
+                background: msg.from === 'bot' ? theme.msgBg : theme.userMsgBg,
+                border: `1px solid ${msg.from === 'bot' ? theme.border : (theme.accent + '30')}`,
+                color: 'rgba(232,232,232,0.95)',
+                borderRadius: msg.from === 'bot' ? '3px 14px 14px 14px' : '14px 14px 3px 14px',
+                boxShadow: msg.from === 'user' ? `0 0 12px ${theme.accent}15` : 'none',
+              }}
+              className="max-w-[210px] px-3 py-2 text-xs leading-relaxed"
+            >
+              {msg.text}
+            </div>
+          </motion.div>
+        ))}
+
+        {/* Typing indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isActive ? 1 : 0.5 }}
+          transition={{ delay: index * 0.15 + 0.5 }}
+          className="flex gap-2"
+        >
+          <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+            className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-1">
+            <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="T" className="w-full h-full object-contain p-0.5" />
+          </div>
+          <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, borderRadius: '3px 14px 14px 14px' }}
+            className="flex items-center gap-1 px-3 py-2">
+            {[0, 1, 2].map(d => (
+              <motion.div
+                key={d}
+                style={{ background: theme.accent }}
+                className="w-1 h-1 rounded-full opacity-60"
+                animate={{ y: [0, -3, 0], opacity: [0.4, 1, 0.4] }}
+                transition={{ repeat: Infinity, duration: 1.2, delay: d * 0.2, ease: 'easeInOut' }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Chips */}
+      <div style={{ background: 'transparent' }} className="flex gap-1.5 flex-wrap px-4 pb-2">
+        {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+          <span
+            key={chip}
+            style={{
+              color: theme.accentDim,
+              border: `1px solid ${theme.accent}25`,
+              background: theme.chipBg,
+            }}
+            className="text-[10px] px-2.5 py-1 rounded-full backdrop-blur-sm whitespace-nowrap"
+          >
+            {chip}
+          </span>
+        ))}
+      </div>
+
+      {/* Input */}
+      <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
+        <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
+          className="flex items-center gap-2 rounded-xl px-3 py-2">
+          <span style={{ color: 'rgba(255,255,255,0.22)' }} className="text-xs flex-1">Send a message…</span>
+          <div style={{ background: theme.msgBg, border: `1px solid ${theme.accent}30` }}
+            className="w-6 h-6 rounded-lg flex items-center justify-center">
+            <svg width="8" height="8" viewBox="0 0 10 16" fill="none">
+              <polyline points="2,1 9,8 2,15" stroke={theme.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ background: theme.headerBg }}
+        className="flex items-center justify-center gap-1.5 py-2 pb-2.5">
+        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '9px', letterSpacing: '0.04em' }}>Powered by</span>
+        <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA" className="h-2.5 opacity-50 brightness-200" />
+      </div>
+    </div>
+  );
+}
+
+/* ─── CHAT CAROUSEL ───────────────────────────────────────────── */
+function ChatCarousel() {
+  const [active, setActive] = useState(0);
+
+  const prev = () => setActive(a => (a - 1 + CHAT_THEMES.length) % CHAT_THEMES.length);
+  const next = () => setActive(a => (a + 1) % CHAT_THEMES.length);
+
+  // Stack positions: active=front, others behind offset diagonally
+  const getTransform = (idx: number) => {
+    const rel = ((idx - active) + CHAT_THEMES.length) % CHAT_THEMES.length;
+    if (rel === 0) return { x: 0, y: 0, z: 0, rotateY: 0, rotateX: 0, scale: 1, opacity: 1, zIndex: 30 };
+    if (rel === 1) return { x: 52, y: -36, z: -1, rotateY: -10, rotateX: 4, scale: 0.88, opacity: 0.65, zIndex: 20 };
+    return { x: 96, y: -66, z: -2, rotateY: -18, rotateX: 7, scale: 0.78, opacity: 0.35, zIndex: 10 };
+  };
+
+  return (
+    <div className="relative flex flex-col items-center">
+      {/* 3D stack container */}
+      <div className="relative" style={{ width: 340, height: 540, perspective: '1200px' }}>
+        {CHAT_THEMES.map((theme, i) => {
+          const pos = getTransform(i);
+          return (
+            <motion.div
+              key={theme.name}
+              animate={{
+                x: pos.x,
+                y: pos.y,
+                rotateY: pos.rotateY,
+                rotateX: pos.rotateX,
+                scale: pos.scale,
+                opacity: pos.opacity,
+              }}
+              transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: pos.zIndex,
+                transformStyle: 'preserve-3d',
+                cursor: i !== active ? 'pointer' : 'default',
+              }}
+              onClick={() => i !== active && setActive(i)}
+            >
+              <MiniChat theme={theme} index={i} isActive={i === active} />
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Theme label */}
+      <motion.div
+        key={active}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-6 flex items-center gap-2"
+      >
+        <span
+          style={{ background: CHAT_THEMES[active].accent, boxShadow: `0 0 8px ${CHAT_THEMES[active].accent}80` }}
+          className="w-2 h-2 rounded-full"
+        />
+        <span style={{ color: 'rgba(255,255,255,0.5)' }} className="text-xs tracking-widest uppercase">
+          {CHAT_THEMES[active].label}
+        </span>
+      </motion.div>
+
+      {/* Glass arrow buttons */}
+      <div className="flex gap-3 mt-4">
+        {[
+          { fn: prev, dir: 'left', label: '←' },
+          { fn: next, dir: 'right', label: '→' },
+        ].map(({ fn, dir, label }) => (
+          <motion.button
+            key={dir}
+            onClick={fn}
+            whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.14)' }}
+            whileTap={{ scale: 0.93 }}
+            style={{
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.14)',
+              backdropFilter: 'blur(12px)',
+              color: 'rgba(255,255,255,0.75)',
+            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm transition-colors"
+          >
+            {dir === 'left' ? (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <polyline points="10,2 4,8 10,14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <polyline points="6,2 12,8 6,14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Dots */}
+      <div className="flex gap-2 mt-3">
+        {CHAT_THEMES.map((t, i) => (
+          <button
+            key={t.name}
+            onClick={() => setActive(i)}
+            style={{
+              background: i === active ? CHAT_THEMES[active].accent : 'rgba(255,255,255,0.2)',
+              boxShadow: i === active ? `0 0 8px ${CHAT_THEMES[active].accent}70` : 'none',
+              width: i === active ? 20 : 6,
+            }}
+            className="h-1.5 rounded-full transition-all duration-300"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide() {
   const ref = useRef<HTMLDivElement>(null);
@@ -267,64 +566,126 @@ function HeroSlide() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
   const y = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+  const textY = useTransform(scrollYProgress, [0, 0.5], [0, -40]);
+  const chatY = useTransform(scrollYProgress, [0, 0.5], [0, -20]);
 
   return (
     <motion.section
       ref={ref}
       style={{ opacity, scale }}
-      className="h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden"
     >
+      {/* Background image */}
       <div className="absolute inset-0">
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1625314887424-9f190599bd56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBSSUyMGNoYXRib3QlMjByb2JvdCUyMGludGVyZmFjZSUyMGZ1dHVyaXN0aWN8ZW58MXx8fHwxNzgwMjI1MzE2fDA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="AI Robot"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/45 to-zinc-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/55 to-zinc-950" />
+        {/* Subtle right vignette to blend chat cards */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/40" />
       </div>
 
       <ParticleField count={24} />
 
-      <motion.div
-        style={{ y }}
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.3 }}
-        className="relative z-10 w-full max-w-7xl mx-auto px-10 text-center"
-      >
-        <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight whitespace-nowrap">
-          The Future is here
-        </h1>
-        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
-          TIA AI chatbots for your website — installed in minutes.
-        </p>
+      {/* Split layout */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-8 lg:px-12 py-28 flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="#pricing"
-            className="group px-8 py-4 bg-white text-zinc-950 rounded-full text-base font-semibold inline-flex items-center gap-2 hover:bg-zinc-100 transition-colors"
+        {/* LEFT — text content */}
+        <motion.div
+          style={{ y: textY }}
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="flex-1 max-w-xl"
+        >
+          {/* Eyebrow tag */}
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
           >
-            Get a free demo
-            <motion.span
-              animate={{ x: [0, 4, 0] }}
-              transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            >
-              <ArrowRight className="size-4" />
-            </motion.span>
-          </a>
-          <a href="#features" className="px-8 py-4 border border-white/30 text-white rounded-full text-base font-light hover:border-white/60 transition-colors">
-            See how it works
-          </a>
-        </div>
-      </motion.div>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs text-white/60 tracking-widest uppercase">AI Chat for your website</span>
+          </motion.div>
 
-      {/* Scroll indicator — only the line, no text */}
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-white mb-6 leading-[1.05]">
+            The Future<br />
+            <span className="italic text-white/70">is here</span>
+          </h1>
+
+          <p className="text-xl text-white/65 font-light mb-10 leading-relaxed max-w-md">
+            TIA AI chatbots for your website — trained on your content, live in 48 hours.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-start gap-4">
+            <a
+              href="#pricing"
+              className="group px-7 py-3.5 bg-white text-zinc-950 rounded-full text-sm font-semibold inline-flex items-center gap-2 hover:bg-zinc-100 transition-colors"
+            >
+              Get a free demo
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+              >
+                <ArrowRight className="size-4" />
+              </motion.span>
+            </a>
+            <a href="#features"
+              className="px-7 py-3.5 border border-white/25 text-white/80 rounded-full text-sm font-light hover:border-white/50 hover:text-white transition-colors"
+              style={{ backdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.04)' }}>
+              See how it works
+            </a>
+          </div>
+
+          {/* Social proof tickers */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            className="flex items-center gap-6 mt-10"
+          >
+            {[
+              { val: '48h', label: 'setup time' },
+              { val: '24/7', label: 'availability' },
+              { val: '3×', label: 'more leads' },
+            ].map(stat => (
+              <div key={stat.val} className="text-center">
+                <div className="text-2xl font-light text-white">{stat.val}</div>
+                <div className="text-xs text-white/35 mt-0.5 tracking-wide">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* RIGHT — chat carousel */}
+        <motion.div
+          style={{ y: chatY }}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.6 }}
+          className="flex-shrink-0"
+        >
+          {/* Section label above carousel */}
+          <div className="mb-5 flex items-center gap-2 opacity-50">
+            <div className="h-px flex-1 bg-white/15 max-w-[60px]" />
+            <span className="text-[10px] text-white/40 tracking-[0.2em] uppercase">Live preview</span>
+            <div className="h-px flex-1 bg-white/15 max-w-[60px]" />
+          </div>
+          <ChatCarousel />
+        </motion.div>
+      </div>
+
+      {/* Scroll indicator */}
       <motion.div
         animate={{ y: [0, 8, 0] }}
         transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
       >
-        <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
+        <div className="w-px h-10 bg-gradient-to-b from-white/25 to-transparent" />
       </motion.div>
     </motion.section>
   );
