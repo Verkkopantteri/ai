@@ -184,7 +184,7 @@ function HeroSlide() {
           alt="AI Robot"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-zinc-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/35 to-zinc-950" />
       </div>
 
       <ParticleField count={24} />
@@ -196,16 +196,6 @@ function HeroSlide() {
         transition={{ duration: 1, delay: 0.3 }}
         className="relative z-10 text-center px-6"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 bg-white/8 backdrop-blur-sm rounded-full text-white/80 text-sm mb-8"
-        >
-          <span className="size-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          Pantteri AI
-        </motion.div>
-
         <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight">
           The Future
           <br />
@@ -678,7 +668,7 @@ function CTASlide() {
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwYXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZSUyMG1vZGVybnxlbnwxfHx8fDE3ODAyMjUzMTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="CTA"
-            className="w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover object-center grayscale scale-125"
           />
           <div className="absolute inset-0 bg-black/72" />
         </motion.div>
