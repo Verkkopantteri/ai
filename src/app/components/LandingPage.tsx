@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'mot
 import { MagneticButton } from './MagneticButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import {
-  ArrowRight, Check, Menu, X, Star,
+  ArrowRight, Check, Menu, X, Star, ChevronRight,
   Zap, Brain, Shield, TrendingUp, Clock, Users, MessageSquare
 } from 'lucide-react';
 
@@ -84,6 +84,19 @@ function Header() {
     { label: 'Contact', href: '#contact' },
   ];
 
+  const [termsOpen, setTermsOpen] = useState(false);
+  const termsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (termsRef.current && !termsRef.current.contains(e.target as Node)) {
+        setTermsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   return (
     <motion.header
       animate={{ y: hidden ? '-120%' : '0%' }}
@@ -104,7 +117,7 @@ function Header() {
               transition={{ duration: 0.6 }}
               className="flex items-center"
             >
-              <img src="/logo.png" alt="TIA AI" className="size-9 object-contain" />
+              <img src="/logo.png" alt="TIA AI" className="h-8 w-auto object-contain" />
               
             </motion.div>
 
@@ -121,6 +134,59 @@ function Header() {
                   {item.label}
                 </motion.a>
               ))}
+
+              {/* Terms dropdown */}
+              <motion.div
+                ref={termsRef}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 + navItems.length * 0.07 }}
+                className="relative"
+              >
+                <button
+                  onClick={() => setTermsOpen(v => !v)}
+                  className="flex items-center gap-1 px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                >
+                  Terms
+                  <motion.span
+                    animate={{ rotate: termsOpen ? 90 : 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="inline-flex"
+                  >
+                    <ChevronRight className="size-3.5 opacity-70" />
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {termsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
+                      className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1"
+                    >
+                      {[
+                        { label: 'Terms of Service', href: '#' },
+                        { label: 'Privacy Policy', href: '#' },
+                        { label: 'Refund Policy', href: '#' },
+                      ].map((item, i) => (
+                        <motion.a
+                          key={item.label}
+                          href={item.href}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05, duration: 0.15 }}
+                          className="block px-4 py-2.5 text-sm text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 transition-colors"
+                          onClick={() => setTermsOpen(false)}
+                        >
+                          {item.label}
+                        </motion.a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </nav>
           </div>
 
@@ -167,6 +233,14 @@ function Header() {
                   {item.label}
                 </a>
               ))}
+              <div className="border-t border-zinc-800 pt-2 mt-1 flex flex-col gap-1">
+                <span className="text-xs text-zinc-600 uppercase tracking-widest py-1">Terms</span>
+                {['Terms of Service', 'Privacy Policy', 'Refund Policy'].map(label => (
+                  <a key={label} href="#" onClick={() => setOpen(false)} className="py-2 text-zinc-400 hover:text-white transition-colors text-sm pl-2">
+                    {label}
+                  </a>
+                ))}
+              </div>
               <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-semibold">
                 Get a demo
               </a>
@@ -190,7 +264,7 @@ function HeroSlide() {
     <motion.section
       ref={ref}
       style={{ opacity, scale }}
-      className="h-screen flex items-center justify-center relative overflow-hidden"
+      className="h-screen flex flex-col items-start justify-end relative overflow-hidden"
     >
       <div className="absolute inset-0">
         <ImageWithFallback
@@ -208,18 +282,18 @@ function HeroSlide() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
-        className="relative z-10 text-center px-6"
+        className="relative z-10 w-full max-w-7xl mx-auto px-10 pb-20 self-end"
       >
         <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight">
           The Future
           <br />
           is here
         </h1>
-        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
+        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl">
           TIA AI chatbots for your website — installed in minutes.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
           <a
             href="#pricing"
             className="group px-8 py-4 bg-white text-zinc-950 rounded-full text-base font-semibold inline-flex items-center gap-2 hover:bg-zinc-100 transition-colors"
