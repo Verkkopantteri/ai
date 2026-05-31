@@ -414,9 +414,7 @@ function FeaturesSlide() {
           className="text-center mb-20"
         >
           <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">
-            Everything your
-            <br />
-            business needs
+            The AI team
           </h2>
           <p className="text-xl text-zinc-500 font-light max-w-xl mx-auto">
             Focus on your business. We'll handle the AI.
