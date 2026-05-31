@@ -93,7 +93,7 @@ function Header() {
               transition={{ duration: 0.6 }}
               className="flex items-center gap-2.5"
             >
-              <img src="/logo.png" alt="TIA AI" className="size-8 object-contain" />
+              <img src="/logo.png" alt="TIA AI" className="size-14 object-contain" />
               
             </motion.div>
 
