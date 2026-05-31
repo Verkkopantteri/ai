@@ -71,7 +71,7 @@ function Header() {
 
   const navItems = [
     { label: 'Features', href: '#features' },
-    { label: 'Why Pantteri AI', href: '#why-pantteri' },
+    { label: 'Why TIA AI', href: '#why-pantteri' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
@@ -93,8 +93,8 @@ function Header() {
               transition={{ duration: 0.6 }}
               className="flex items-center gap-2.5"
             >
-              <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
-              <span className="font-semibold text-white tracking-tight text-sm">Pantteri AI</span>
+              <img src="/logo.png" alt="TIA AI" className="size-8 object-contain" />
+              
             </motion.div>
 
             <nav className="hidden md:flex items-center gap-0.5">
@@ -205,7 +205,7 @@ function HeroSlide() {
           is here
         </h1>
         <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
-          AI chatbots for your website — built on Claude, installed in minutes.
+          TIA AI chatbots for your website — installed in minutes.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -375,7 +375,7 @@ function WhyPantteriSlide() {
     {
       icon: TrendingUp,
       title: 'We manage everything',
-      desc: 'Training, updates, monitoring — Pantteri AI handles the full AI stack. Zero technical headache.',
+      desc: 'Training, updates, monitoring — TIA AI handles the full AI stack. Zero technical headache.',
     },
   ];
 
@@ -401,7 +401,7 @@ function WhyPantteriSlide() {
             transition={{ duration: 0.6 }}
             className="flex justify-center mb-8"
           >
-            <img src="/logo.png" alt="Pantteri AI" className="w-24 h-24 object-contain" />
+            <img src="/logo.png" alt="TIA AI" className="w-24 h-24 object-contain" />
           </motion.div>
           <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
             Why
@@ -471,7 +471,7 @@ function ReviewsSlide() {
   const reviews = [
     { stars: 5, text: 'Our chatbot now handles 80% of inquiries automatically. Our team focuses on real work.', name: 'Matti K.', role: 'CEO, Verkkokauppa Oy' },
     { stars: 5, text: 'Leads went up 40% in the first month. It books viewings automatically — incredible.', name: 'Laura V.', role: 'Founder, Nordic Properties' },
-    { stars: 5, text: 'Setup done in 48 hours. Pantteri AI handled everything — we just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
+    { stars: 5, text: 'Setup done in 48 hours. TIA AI handled everything — we just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
   ];
 
   return (
@@ -708,8 +708,8 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logo.png" alt="Pantteri AI" className="size-7 object-contain" />
-              <span className="text-white font-semibold text-sm">Pantteri AI</span>
+              <img src="/logo.png" alt="TIA AI" className="size-7 object-contain" />
+              <span className="text-white font-semibold text-sm">TIA AI</span>
             </div>
             <p className="text-sm font-light leading-relaxed">
               AI chatbots for businesses — powered by Claude.
@@ -733,7 +733,7 @@ function Footer() {
           ))}
         </div>
         <div className="border-t border-zinc-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs">© 2025 Pantteri AI. All rights reserved.</p>
+          <p className="text-xs">© 2025 TIA AI. All rights reserved.</p>
           <p className="text-xs text-zinc-600">Powered by Anthropic's Claude API.</p>
         </div>
       </div>
