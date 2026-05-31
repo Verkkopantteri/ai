@@ -62,10 +62,17 @@ function AnimatedNumber({ target, suffix = '', duration = 2 }: { target: number;
 function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      setHidden(y > 80 && y > lastY.current);
+      lastY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -77,92 +84,96 @@ function Header() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+    <motion.header
+      animate={{ y: hidden ? "-120%" : "0%" }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
         scrolled
           ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
           : 'mx-0 mt-0 rounded-none bg-transparent'
       }`}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-8">
+          {/* Left: Logo + Nav */}
+          <div className="flex items-center gap-8">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-2.5"
+            >
+              <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
+              <span className="font-semibold text-white tracking-tight text-sm">Pantteri AI</span>
+            </motion.div>
+
+            <nav className="hidden md:flex items-center gap-0.5">
+              {navItems.map((item, i) => (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
+                  className="px-3.5 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                >
+                  {item.label}
+                </motion.a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Right: Sign in + CTA */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-2.5"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden md:flex items-center gap-3"
           >
-            <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
-            <span className="font-semibold text-white tracking-tight text-sm">Pantteri AI</span>
-          </motion.div>
-
-          <nav className="hidden md:flex items-center gap-0.5">
-            {navItems.map((item, i) => (
-              <motion.a
-                key={item.label}
-                href={item.href}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
-                className="px-3.5 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-              >
-                {item.label}
-              </motion.a>
-            ))}
-          </nav>
-        </div>
-
-        {/* Right: Sign in + CTA */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="hidden md:flex items-center gap-3"
-        >
-          <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-2">
-            Sign in
-          </a>
-          <a
-            href="#pricing"
-            className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10"
-          >
-            Get a demo
-          </a>
-        </motion.div>
-
-        {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white">
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </div>
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col gap-2 overflow-hidden"
-          >
-            {navItems.map(item => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="py-2 text-zinc-300 hover:text-white transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
-            <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-semibold">
+            <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-2">
+              Sign in
+            </a>
+            <a
+              href="#pricing"
+              className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10"
+            >
               Get a demo
             </a>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+
+          {/* Mobile toggle */}
+          <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white">
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
+
+        {/* Mobile menu — inside the fixed pill so it stays attached */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-zinc-800 px-6 py-4 flex flex-col gap-2 overflow-hidden rounded-b-2xl bg-zinc-900/95"
+            >
+              {navItems.map(item => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="py-2 text-zinc-300 hover:text-white transition-colors"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-semibold">
+                Get a demo
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
   );
 }
 
