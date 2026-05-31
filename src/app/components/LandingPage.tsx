@@ -158,31 +158,31 @@ function Header() {
                   </motion.span>
                 </button>
 
+                {/* invisible bridge fills the gap so hover doesn't flicker */}
+                {termsOpen && <div className="absolute top-full left-0 w-full h-2" />}
+
                 <AnimatePresence>
                   {termsOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
-                      transition={{ duration: 0.18, ease: 'easeOut' }}
-                      className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute top-[calc(100%+4px)] left-0 w-44 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1"
                     >
                       {[
                         { label: 'Terms of Service', href: '#' },
                         { label: 'Privacy Policy', href: '#' },
                         { label: 'Refund Policy', href: '#' },
-                      ].map((item, i) => (
-                        <motion.a
+                      ].map((item) => (
+                        <a
                           key={item.label}
                           href={item.href}
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05, duration: 0.15 }}
                           className="block px-4 py-2.5 text-sm text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 transition-colors"
                           onClick={() => setTermsOpen(false)}
                         >
                           {item.label}
-                        </motion.a>
+                        </a>
                       ))}
                     </motion.div>
                   )}
@@ -285,10 +285,8 @@ function HeroSlide() {
         transition={{ duration: 1, delay: 0.3 }}
         className="relative z-10 w-full max-w-7xl mx-auto px-10 pb-20 self-end"
       >
-        <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight">
-          The Future
-          <br />
-          is here
+        <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight whitespace-nowrap">
+          The Future is here
         </h1>
         <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl">
           TIA AI chatbots for your website — installed in minutes.
