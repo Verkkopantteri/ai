@@ -117,7 +117,7 @@ function Header() {
               transition={{ duration: 0.6 }}
               className="flex items-center"
             >
-              <img src="/logo.png" alt="TIA AI" className="h-8 w-auto object-contain" />
+              <img src="/logo.png" alt="TIA AI" className="h-12 w-auto object-contain" />
               
             </motion.div>
 
@@ -129,7 +129,7 @@ function Header() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
-                  className="px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                  className="px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors"
                 >
                   {item.label}
                 </motion.a>
@@ -142,10 +142,11 @@ function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 + navItems.length * 0.07 }}
                 className="relative"
+                onMouseEnter={() => setTermsOpen(true)}
+                onMouseLeave={() => setTermsOpen(false)}
               >
                 <button
-                  onClick={() => setTermsOpen(v => !v)}
-                  className="flex items-center gap-1 px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                  className="flex items-center gap-1 px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors"
                 >
                   Terms
                   <motion.span
