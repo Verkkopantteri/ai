@@ -265,7 +265,7 @@ function HeroSlide() {
     <motion.section
       ref={ref}
       style={{ opacity, scale }}
-      className="h-screen flex flex-col items-start justify-end relative overflow-hidden"
+      className="h-screen flex flex-col items-center justify-center relative overflow-hidden"
     >
       <div className="absolute inset-0">
         <ImageWithFallback
@@ -283,16 +283,16 @@ function HeroSlide() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
-        className="relative z-10 w-full max-w-7xl mx-auto px-10 pb-20 self-end"
+        className="relative z-10 w-full max-w-7xl mx-auto px-10 text-center"
       >
         <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight whitespace-nowrap">
           The Future is here
         </h1>
-        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl">
+        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
           TIA AI chatbots for your website — installed in minutes.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-start gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#pricing"
             className="group px-8 py-4 bg-white text-zinc-950 rounded-full text-base font-semibold inline-flex items-center gap-2 hover:bg-zinc-100 transition-colors"
