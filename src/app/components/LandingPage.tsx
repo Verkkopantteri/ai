@@ -276,6 +276,7 @@ const CHAT_THEMES = [
     accentDot: '#34d399',
     sendArrow: 'rgba(255,255,255,0.6)',
     glow: '0 32px 80px rgba(0,0,0,0.7)',
+    avatarSrc: '/logo.png',
   },
   {
     name: 'Light',
@@ -291,6 +292,7 @@ const CHAT_THEMES = [
     accentDot: '#34d399',
     sendArrow: 'rgba(0,0,0,0.5)',
     glow: '0 32px 80px rgba(0,0,0,0.35)',
+    avatarSrc: '/logo-black.png',
   },
 ];
 
@@ -320,7 +322,7 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
         <div className="flex items-center gap-2.5">
           <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
             className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
-            <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA" className="w-full h-full object-contain p-0.5" />
+            <img src={theme.avatarSrc} alt="TIA" className="w-full h-full object-contain p-0.5" />
           </div>
           <div className="flex items-center gap-1.5">
             <span style={{ color: theme.textColor }} className="text-sm font-semibold">TIA</span>
@@ -346,14 +348,14 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
             {msg.from === 'bot' && (
               <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
                 className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
-                <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="T" className="w-full h-full object-contain p-0.5" />
+                <img src={theme.avatarSrc} alt="T" className="w-full h-full object-contain p-0.5" />
               </div>
             )}
             <div
               style={{
                 background: msg.from === 'bot' ? theme.msgBg : theme.userMsgBg,
                 border: `1px solid ${theme.border}`,
-                color: msg.from === 'user' ? (isLight ? '#ffffff' : theme.textColor) : theme.textColor,
+                color: theme.textColor,
                 borderRadius: msg.from === 'bot' ? '3px 14px 14px 14px' : '14px 14px 3px 14px',
               }}
               className="max-w-[200px] px-3 py-2 text-[11px] leading-relaxed"
@@ -366,7 +368,7 @@ function MiniChat({ theme, isActive }: { theme: typeof CHAT_THEMES[0]; isActive:
         <div className="flex gap-2">
           <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
             className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
-            <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="T" className="w-full h-full object-contain p-0.5" />
+            <img src={theme.avatarSrc} alt="T" className="w-full h-full object-contain p-0.5" />
           </div>
           <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, borderRadius: '3px 14px 14px 14px' }}
             className="flex items-center gap-1 px-3 py-2.5">
