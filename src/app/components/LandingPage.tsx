@@ -94,7 +94,7 @@ function Header() {
           ? 'mx-4 mt-3 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-white/8 shadow-2xl shadow-black/40'
           : 'mx-0 mt-0 rounded-none bg-transparent'
       }`}>
-        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Left: Logo + Nav */}
           <div className="flex items-center gap-3">
@@ -116,7 +116,7 @@ function Header() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
-                  className="px-3.5 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                  className="px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
                 >
                   {item.label}
                 </motion.a>
@@ -131,12 +131,12 @@ function Header() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="hidden md:flex items-center gap-3"
           >
-            <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-2">
+            <a href="#contact" className="text-base text-zinc-400 hover:text-white transition-colors px-3 py-2">
               Sign in
             </a>
             <a
               href="#pricing"
-              className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10"
+              className="px-4 py-2 bg-white text-zinc-950 text-base rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10"
             >
               Get a demo
             </a>
