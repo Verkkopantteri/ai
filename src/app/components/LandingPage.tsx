@@ -655,6 +655,15 @@ function CTASlide() {
       style={{ opacity: sectionOpacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden bg-zinc-900"
     >
+      {/* Video background */}
+      <video
+        src="/dots.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-40"
+      />
       <ParticleField count={20} />
 
       <motion.div
@@ -684,22 +693,6 @@ function CTASlide() {
         <p className="text-white/40 mt-5 text-sm">No credit card required · Live in 48 hours</p>
       </motion.div>
     </motion.section>
-  );
-}
-
-/* ─── VIDEO ───────────────────────────────────────────────────── */
-function VideoSlide() {
-  return (
-    <section className="bg-zinc-950 py-0">
-      <video
-        src="/dots.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-full h-auto block"
-      />
-    </section>
   );
 }
 
@@ -756,7 +749,6 @@ export function LandingPage() {
       <ReviewsSlide />
       <PricingSlide />
       <CTASlide />
-      <VideoSlide />
       <Footer />
     </div>
   );
