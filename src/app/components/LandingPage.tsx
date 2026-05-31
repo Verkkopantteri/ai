@@ -2,7 +2,10 @@ import { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { MagneticButton } from './MagneticButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { ArrowRight, Check, Menu, X, Star, Zap, Brain, Shield, MessageSquare } from 'lucide-react';
+import {
+  ArrowRight, Check, Menu, X, Star,
+  Zap, Brain, Shield, TrendingUp, Clock, Users, MessageSquare
+} from 'lucide-react';
 
 /* ─── HEADER ─────────────────────────────────────────────────── */
 function Header() {
@@ -14,17 +17,15 @@ function Header() {
 
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="size-8 bg-white rounded-lg flex items-center justify-center">
-            <MessageSquare className="size-4 text-zinc-950" strokeWidth={1.5} />
-          </div>
-          <span className="font-semibold text-white tracking-tight">AI Chat</span>
+          <img src="/logo.png" alt="Pantteri AI" className="size-8 object-contain" />
+          <span className="font-semibold text-white tracking-tight">Pantteri AI</span>
         </div>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {[
             { label: 'Features', href: '#features' },
-            { label: 'Why Claude', href: '#why-claude' },
+            { label: 'Why Pantteri AI', href: '#why-pantteri' },
             { label: 'Pricing', href: '#pricing' },
             { label: 'Contact', href: '#contact' },
           ].map(item => (
@@ -40,14 +41,14 @@ function Header() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <a href="#pricing" className="text-sm text-zinc-400 hover:text-white transition-colors">
+          <a href="#contact" className="text-sm text-zinc-400 hover:text-white transition-colors">
             Sign in
           </a>
           <a
             href="#pricing"
             className="px-4 py-2 bg-white text-zinc-950 text-sm rounded-lg font-medium hover:bg-zinc-100 transition-colors"
           >
-            Try free
+            Get a demo
           </a>
         </div>
 
@@ -59,10 +60,10 @@ function Header() {
 
       {open && (
         <div className="md:hidden border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col gap-2">
-          {['Features', 'Why Claude', 'Pricing', 'Contact'].map(item => (
+          {['Features', 'Why Pantteri AI', 'Pricing', 'Contact'].map(item => (
             <a
               key={item}
-              href={`#${item.toLowerCase().replace(' ', '-')}`}
+              href={`#${item.toLowerCase().replace(/ /g, '-')}`}
               onClick={() => setOpen(false)}
               className="py-2 text-zinc-300 hover:text-white transition-colors"
             >
@@ -70,7 +71,7 @@ function Header() {
             </a>
           ))}
           <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-medium">
-            Try free
+            Get a demo
           </a>
         </div>
       )}
@@ -81,10 +82,7 @@ function Header() {
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start start', 'end start'],
-  });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
@@ -94,7 +92,6 @@ function HeroSlide() {
       style={{ opacity, scale }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Background */}
       <div className="absolute inset-0">
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1625314887424-9f190599bd56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBSSUyMGNoYXRib3QlMjByb2JvdCUyMGludGVyZmFjZSUyMGZ1dHVyaXN0aWN8ZW58MXx8fHwxNzgwMjI1MzE2fDA&ixlib=rb-4.1.0&q=80&w=1080"
@@ -104,7 +101,6 @@ function HeroSlide() {
         <div className="absolute inset-0 bg-black/65" />
       </div>
 
-      {/* Content */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -126,17 +122,17 @@ function HeroSlide() {
           <br />
           <span className="font-bold">is here</span>
         </h1>
-        <p className="text-2xl text-white/80 font-light mb-10 max-w-xl mx-auto">
-          The world's most thoughtful AI, now accessible to everyone.
+        <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
+          AI chatbots for your website — built on Claude, installed in minutes.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <MagneticButton className="px-8 py-4 bg-white text-zinc-950 rounded-full text-base font-semibold hover:bg-zinc-100 transition-colors inline-flex items-center gap-2">
-            Start for free
+            Get a free demo
             <ArrowRight className="size-4" />
           </MagneticButton>
-          <a href="#why-claude" className="px-8 py-4 border border-white/30 text-white rounded-full text-base font-light hover:border-white/60 transition-colors">
-            Why Claude?
+          <a href="#features" className="px-8 py-4 border border-white/30 text-white rounded-full text-base font-light hover:border-white/60 transition-colors">
+            See how it works
           </a>
         </div>
       </motion.div>
@@ -154,8 +150,8 @@ function HeroSlide() {
   );
 }
 
-/* ─── POWERED BY CLAUDE ───────────────────────────────────────── */
-function PoweredBySlide() {
+/* ─── WHY YOUR BUSINESS NEEDS THIS ───────────────────────────── */
+function ProblemSlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
@@ -167,44 +163,31 @@ function PoweredBySlide() {
       style={{ opacity, y }}
       className="h-screen flex items-center justify-center bg-zinc-950 text-white px-6"
     >
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Claude logo placeholder */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center justify-center size-24 bg-gradient-to-br from-orange-400 to-amber-500 rounded-3xl mb-10 shadow-2xl"
-        >
-          <Brain className="size-12 text-white" strokeWidth={1.5} />
-        </motion.div>
-
+      <div className="max-w-5xl mx-auto text-center">
         <h2 className="text-6xl md:text-7xl font-light mb-6">
-          Powered by
+          Your customers are
           <br />
-          <span className="font-bold">Claude</span>
+          <span className="font-bold text-red-400">waiting</span>
         </h2>
-        <p className="text-xl text-zinc-400 font-light max-w-2xl mx-auto leading-relaxed">
-          Built on Anthropic's Claude — one of the world's most capable and safest AI models.
-          Exceptional writing, reasoning, and analysis, every single time.
+        <p className="text-xl text-zinc-400 font-light mb-16 max-w-2xl mx-auto">
+          Every unanswered question on your website is a lost customer. An AI chatbot fixes that — 24/7, instantly.
         </p>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-8 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { value: '#1', label: 'In reasoning benchmarks' },
-            { value: '200K', label: 'Token context window' },
-            { value: '100+', label: 'Languages supported' },
+            { value: '73%', desc: 'of customers leave if they don\'t get an instant answer' },
+            { value: '24/7', desc: 'availability your team can\'t provide — your chatbot can' },
+            { value: '3×', desc: 'more leads converted with instant chat support' },
           ].map((stat, i) => (
             <motion.div
-              key={stat.label}
+              key={stat.value}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
+              transition={{ delay: i * 0.15 }}
             >
-              <div className="text-5xl font-bold text-amber-400 mb-2">{stat.value}</div>
-              <p className="text-zinc-400 text-sm font-light">{stat.label}</p>
+              <div className="text-6xl font-bold text-red-400 mb-4">{stat.value}</div>
+              <p className="text-zinc-400 text-lg font-light">{stat.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -213,33 +196,48 @@ function PoweredBySlide() {
   );
 }
 
-/* ─── WHY CLAUDE ──────────────────────────────────────────────── */
-function WhyClaudeSlide() {
+/* ─── FEATURES ────────────────────────────────────────────────── */
+function FeaturesSlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
-  const reasons = [
+  const features = [
     {
-      icon: Brain,
-      title: 'Exceptional reasoning',
-      desc: 'Claude understands nuance, context, and complex instructions better than any other model.',
+      icon: MessageSquare,
+      title: 'Installed on your website',
+      desc: 'A small snippet of code is all it takes. Works on any website — WordPress, Shopify, custom-built.',
     },
     {
-      icon: Shield,
-      title: 'Safe & reliable',
-      desc: 'Built by Anthropic with safety at its core. Honest, harmless, and helpful by design.',
+      icon: Brain,
+      title: 'Trained on your content',
+      desc: 'The chatbot knows your products, services, FAQs and pricing — and answers like a real team member.',
+    },
+    {
+      icon: Clock,
+      title: 'Available 24/7',
+      desc: 'Answers customers at 3am on a Sunday. No extra cost, no overtime, no missed opportunities.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Converts visitors to leads',
+      desc: 'Guides users toward booking, buying, or contacting you — proactively and intelligently.',
+    },
+    {
+      icon: Users,
+      title: 'Handles multiple chats at once',
+      desc: 'One chatbot handles thousands of simultaneous conversations. Your team handles none of them.',
     },
     {
       icon: Zap,
-      title: 'Incredibly fast',
-      desc: 'Get detailed, thoughtful responses in seconds — even for long, complex requests.',
+      title: 'Instant setup',
+      desc: 'We handle everything. From training to installation — your chatbot is live within 48 hours.',
     },
   ];
 
   return (
     <motion.section
-      id="why-claude"
+      id="features"
       ref={ref}
       style={{ opacity }}
       className="min-h-screen flex items-center justify-center bg-white py-24 px-6"
@@ -252,14 +250,88 @@ function WhyClaudeSlide() {
           className="text-center mb-20"
         >
           <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">
-            Why <span className="font-bold">Claude?</span>
+            Everything your
+            <br />
+            <span className="font-bold">business needs</span>
           </h2>
           <p className="text-xl text-zinc-500 font-light max-w-xl mx-auto">
-            Not all AI is created equal. Here's why Claude stands apart.
+            A fully managed AI chatbot. You focus on your business — we handle the AI.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+              className="group p-8 rounded-2xl border border-zinc-100 hover:border-zinc-300 hover:shadow-lg transition-all"
+            >
+              <div className="size-12 bg-zinc-950 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <f.icon className="size-6 text-white" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-zinc-950 mb-3">{f.title}</h3>
+              <p className="text-zinc-500 font-light leading-relaxed">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+/* ─── WHY PANTTERI AI ─────────────────────────────────────────── */
+function WhyPantteriSlide() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  const reasons = [
+    {
+      icon: Brain,
+      title: 'Built on Claude — the world\'s smartest AI',
+      desc: 'Claude by Anthropic consistently ranks #1 in reasoning, writing quality, and accuracy. Your chatbot isn\'t just fast — it\'s actually intelligent.',
+    },
+    {
+      icon: Shield,
+      title: 'Safe, honest, brand-safe responses',
+      desc: 'Claude is designed to be honest and refuse harmful requests. Your brand reputation is protected — the bot will never say anything embarrassing.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'We manage everything for you',
+      desc: 'Training, updates, monitoring, improvements — Pantteri AI handles the entire AI stack. You get results without the technical headache.',
+    },
+  ];
+
+  return (
+    <motion.section
+      id="why-pantteri"
+      ref={ref}
+      style={{ opacity }}
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6"
+    >
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <div className="inline-flex items-center gap-3 mb-6">
+            <img src="/logo.png" alt="Pantteri AI" className="size-12 object-contain" />
+          </div>
+          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
+            Why <span className="font-bold">Pantteri AI?</span>
+          </h2>
+          <p className="text-xl text-zinc-400 font-light max-w-xl mx-auto">
+            Not all AI chatbots are created equal. Here's why Pantteri AI stands apart.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {reasons.map((r, i) => (
             <motion.div
               key={r.title}
@@ -269,14 +341,44 @@ function WhyClaudeSlide() {
               transition={{ delay: i * 0.2, duration: 0.6 }}
               className="text-center"
             >
-              <div className="size-20 bg-zinc-950 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <r.icon className="size-10 text-white" strokeWidth={1.5} />
+              <div className="size-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <r.icon className="size-10 text-zinc-950" strokeWidth={1.5} />
               </div>
-              <h3 className="text-2xl font-semibold text-zinc-950 mb-3">{r.title}</h3>
-              <p className="text-zinc-500 font-light leading-relaxed">{r.desc}</p>
+              <h3 className="text-xl font-semibold text-white mb-3">{r.title}</h3>
+              <p className="text-zinc-400 font-light leading-relaxed">{r.desc}</p>
             </motion.div>
           ))}
         </div>
+
+        {/* Claude callout */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="mt-16 bg-zinc-900 border border-zinc-700 rounded-3xl p-8 md:p-12 text-center"
+        >
+          <p className="text-zinc-400 text-sm uppercase tracking-widest mb-4">Powered by</p>
+          <h3 className="text-4xl font-light text-white mb-3">
+            Anthropic's <span className="font-bold">Claude</span>
+          </h3>
+          <p className="text-zinc-400 font-light max-w-2xl mx-auto">
+            The same AI trusted by Fortune 500 companies, researchers, and millions of professionals worldwide.
+            200K token context window. Ranked #1 in reasoning. Available in 100+ languages.
+          </p>
+          <div className="flex justify-center gap-8 mt-8">
+            {[
+              { value: '#1', label: 'Reasoning benchmarks' },
+              { value: '200K', label: 'Token context' },
+              { value: '100+', label: 'Languages' },
+            ].map(stat => (
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl font-bold text-amber-400">{stat.value}</div>
+                <div className="text-zinc-500 text-xs mt-1">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -291,39 +393,39 @@ function ReviewsSlide() {
   const reviews = [
     {
       stars: 5,
-      text: 'Claude understands what I actually mean — not just what I typed. It\'s on another level compared to anything else I\'ve tried.',
+      text: 'Our website chatbot now handles 80% of customer inquiries automatically. Our team is free to focus on real work.',
       name: 'Matti K.',
-      role: 'Product Designer',
+      role: 'CEO, Verkkokauppa Oy',
     },
     {
       stars: 5,
-      text: 'The writing quality is unmatched. I use it for everything from emails to long-form articles. It sounds human, not robotic.',
+      text: 'We installed it on our real estate site and leads went up 40% in the first month. It books viewings automatically.',
       name: 'Laura V.',
-      role: 'Content Strategist',
+      role: 'Founder, Nordic Properties',
     },
     {
       stars: 5,
-      text: 'I\'ve tried every AI tool out there. Claude is the only one that actually reasons through problems instead of just pattern-matching.',
+      text: 'The quality of answers is incredible. Customers can\'t tell it\'s a bot — and we\'re available 24/7 now.',
       name: 'Juho A.',
-      role: 'Software Developer',
+      role: 'Head of Sales, TechStore Finland',
     },
     {
       stars: 5,
-      text: 'The context window is huge and it actually remembers what you said earlier in the conversation. Game changer for complex work.',
+      text: 'Setup was done in 48 hours. Pantteri AI handled everything — we just gave them our product info and they did the rest.',
       name: 'Sanna M.',
-      role: 'Research Analyst',
+      role: 'Marketing Director, Klinikka Pro',
     },
     {
       stars: 5,
-      text: 'Safe, honest, and incredibly capable. I trust Claude with sensitive business documents in a way I wouldn\'t with other models.',
+      text: 'It speaks perfect Finnish and Swedish. Our Nordic customers get instant, accurate answers in their own language.',
       name: 'Pekka R.',
-      role: 'Legal Consultant',
+      role: 'CTO, Logistiikka Nord',
     },
     {
       stars: 5,
-      text: 'It refuses to just tell you what you want to hear. It pushes back, corrects mistakes, and gives you the real answer.',
+      text: 'ROI was clear within 2 weeks. Fewer support tickets, more leads, happier customers. Simple as that.',
       name: 'Elina T.',
-      role: 'Marketing Manager',
+      role: 'Operations Manager, Palvelu Plus',
     },
   ];
 
@@ -331,7 +433,7 @@ function ReviewsSlide() {
     <motion.section
       ref={ref}
       style={{ opacity }}
-      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6"
+      className="min-h-screen flex items-center justify-center bg-white py-24 px-6"
     >
       <div className="max-w-6xl mx-auto">
         <motion.div
@@ -340,14 +442,14 @@ function ReviewsSlide() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
-            What users <span className="font-bold">say</span>
+          <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">
+            What clients <span className="font-bold">say</span>
           </h2>
           <div className="flex items-center justify-center gap-1 mt-4">
             {[...Array(5)].map((_, i) => (
               <Star key={i} className="size-5 text-amber-400 fill-amber-400" />
             ))}
-            <span className="text-zinc-400 text-sm ml-2">5.0 · Thousands of reviews</span>
+            <span className="text-zinc-400 text-sm ml-2">5.0 · Verified business reviews</span>
           </div>
         </motion.div>
 
@@ -359,17 +461,17 @@ function ReviewsSlide() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+              className="bg-zinc-50 border border-zinc-100 rounded-2xl p-6"
             >
               <div className="flex gap-0.5 mb-4">
                 {[...Array(r.stars)].map((_, j) => (
                   <Star key={j} className="size-4 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <p className="text-zinc-300 font-light leading-relaxed mb-5">"{r.text}"</p>
+              <p className="text-zinc-700 font-light leading-relaxed mb-5">"{r.text}"</p>
               <div>
-                <div className="text-white font-medium text-sm">{r.name}</div>
-                <div className="text-zinc-500 text-xs">{r.role}</div>
+                <div className="font-semibold text-zinc-950 text-sm">{r.name}</div>
+                <div className="text-zinc-400 text-xs">{r.role}</div>
               </div>
             </motion.div>
           ))}
@@ -389,40 +491,47 @@ function PricingSlide() {
   const plans = [
     {
       name: 'Starter',
-      price: '€9',
+      price: '€199',
       period: '/month',
-      desc: 'Perfect for personal use.',
-      features: ['Claude access', '500 messages/mo', 'Basic features', 'Email support'],
+      desc: 'For small businesses getting started.',
+      features: [
+        'Chatbot on 1 website',
+        'Trained on your content',
+        'Up to 1 000 chats/mo',
+        'Email support',
+        '48h setup',
+      ],
       cta: 'Get started',
       highlight: false,
     },
     {
-      name: 'Pro',
-      price: '€19',
+      name: 'Growth',
+      price: '€499',
       period: '/month',
-      desc: 'For power users.',
+      desc: 'For growing businesses.',
       features: [
-        'Unlimited Claude access',
-        'Unlimited messages',
-        'Priority responses',
-        'File uploads',
-        'Chat history',
+        'Chatbot on 3 websites',
+        'Advanced training & updates',
+        'Up to 5 000 chats/mo',
+        'Lead capture integration',
+        'Analytics dashboard',
         'Priority support',
       ],
-      cta: 'Start free trial',
+      cta: 'Get a demo',
       highlight: true,
     },
     {
       name: 'Enterprise',
       price: 'Custom',
       period: '',
-      desc: 'For teams and businesses.',
+      desc: 'For large organisations.',
       features: [
-        'Everything in Pro',
-        'Team management',
-        'Custom integrations',
+        'Unlimited websites',
+        'Unlimited chats',
+        'Custom integrations (CRM, etc.)',
+        'White-label option',
+        'Dedicated account manager',
         'SLA guarantee',
-        'Dedicated support',
       ],
       cta: 'Contact us',
       highlight: false,
@@ -434,7 +543,7 @@ function PricingSlide() {
       id="pricing"
       ref={ref}
       style={{ opacity }}
-      className="min-h-screen flex items-center justify-center bg-white py-24 px-6"
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6"
     >
       <div className="max-w-6xl mx-auto w-full">
         <motion.div
@@ -443,10 +552,10 @@ function PricingSlide() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">
+          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
             Simple <span className="font-bold">pricing</span>
           </h2>
-          <p className="text-xl text-zinc-500 font-light">No hidden fees. Cancel anytime.</p>
+          <p className="text-xl text-zinc-400 font-light">No hidden fees. Cancel anytime.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
@@ -460,8 +569,8 @@ function PricingSlide() {
               transition={{ delay: i * 0.1 }}
               className={`rounded-3xl p-8 relative ${
                 plan.highlight
-                  ? 'bg-zinc-950 text-white shadow-2xl scale-105'
-                  : 'bg-zinc-50 border border-zinc-100'
+                  ? 'bg-white text-zinc-950 shadow-2xl scale-105'
+                  : 'bg-zinc-900 border border-zinc-800'
               }`}
             >
               {plan.highlight && (
@@ -472,18 +581,18 @@ function PricingSlide() {
               <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-400'}`}>
                 {plan.name}
               </div>
-              <div className={`text-5xl font-light mb-1 ${plan.highlight ? 'text-white' : 'text-zinc-950'}`}>
+              <div className={`text-5xl font-light mb-1 ${plan.highlight ? 'text-zinc-950' : 'text-white'}`}>
                 {plan.price}
               </div>
-              <div className={`text-sm mb-2 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-400'}`}>
+              <div className={`text-sm mb-2 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-500'}`}>
                 {plan.period}
               </div>
-              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-500'}`}>
+              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-400'}`}>
                 {plan.desc}
               </p>
               <ul className="space-y-3 mb-8">
                 {plan.features.map(f => (
-                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-zinc-700' : 'text-zinc-300'}`}>
                     <Check className="size-4 text-emerald-500 shrink-0" />
                     {f}
                   </li>
@@ -492,8 +601,8 @@ function PricingSlide() {
               <button
                 className={`w-full py-3 rounded-full text-sm font-semibold transition-colors ${
                   plan.highlight
-                    ? 'bg-white text-zinc-950 hover:bg-zinc-100'
-                    : 'bg-zinc-950 text-white hover:bg-zinc-800'
+                    ? 'bg-zinc-950 text-white hover:bg-zinc-800'
+                    : 'bg-zinc-800 text-white hover:bg-zinc-700'
                 }`}
               >
                 {plan.cta}
@@ -506,7 +615,7 @@ function PricingSlide() {
   );
 }
 
-/* ─── CTA FINAL ───────────────────────────────────────────────── */
+/* ─── CTA ─────────────────────────────────────────────────────── */
 function CTASlide() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
@@ -522,7 +631,7 @@ function CTASlide() {
       <div className="absolute inset-0">
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwYXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZSUyMG1vZGVybnxlbnwxfHx8fDE3ODAyMjUzMTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-          alt="Start Now"
+          alt="CTA"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/70" />
@@ -541,13 +650,13 @@ function CTASlide() {
           <span className="font-bold">transform?</span>
         </h2>
         <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl mx-auto">
-          Join thousands of users already using Claude — the world's most thoughtful AI.
+          Get an AI chatbot on your website within 48 hours. Free demo — no commitment.
         </p>
         <MagneticButton className="px-14 py-5 bg-white text-zinc-950 rounded-full text-xl font-semibold hover:shadow-2xl transition-shadow inline-flex items-center gap-3">
-          Start free trial
+          Book a free demo
           <ArrowRight className="size-5" />
         </MagneticButton>
-        <p className="text-white/50 mt-5 text-sm">No credit card required</p>
+        <p className="text-white/50 mt-5 text-sm">No credit card required · Live in 48 hours</p>
       </motion.div>
     </motion.section>
   );
@@ -561,17 +670,15 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="size-7 bg-white rounded-md flex items-center justify-center">
-                <MessageSquare className="size-3.5 text-zinc-950" strokeWidth={1.5} />
-              </div>
-              <span className="text-white font-semibold text-sm">AI Chat</span>
+              <img src="/logo.png" alt="Pantteri AI" className="size-7 object-contain" />
+              <span className="text-white font-semibold text-sm">Pantteri AI</span>
             </div>
             <p className="text-sm font-light leading-relaxed">
-              Powered by Claude — the world's most thoughtful AI.
+              AI chatbots for businesses — powered by Claude.
             </p>
           </div>
           {[
-            { title: 'Product', links: ['Features', 'Pricing', 'Changelog'] },
+            { title: 'Product', links: ['Features', 'Pricing', 'Case studies'] },
             { title: 'Company', links: ['About', 'Blog', 'Contact'] },
             { title: 'Legal', links: ['Terms', 'Privacy', 'Refund policy'] },
           ].map(col => (
@@ -588,7 +695,7 @@ function Footer() {
           ))}
         </div>
         <div className="border-t border-zinc-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs">© 2025 AI Chat. All rights reserved.</p>
+          <p className="text-xs">© 2025 Pantteri AI. All rights reserved.</p>
           <p className="text-xs text-zinc-600">Powered by Anthropic's Claude API.</p>
         </div>
       </div>
@@ -602,8 +709,9 @@ export function LandingPage() {
     <div className="bg-zinc-950">
       <Header />
       <HeroSlide />
-      <PoweredBySlide />
-      <WhyClaudeSlide />
+      <ProblemSlide />
+      <FeaturesSlide />
+      <WhyPantteriSlide />
       <ReviewsSlide />
       <PricingSlide />
       <CTASlide />
