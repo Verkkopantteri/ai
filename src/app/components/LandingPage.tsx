@@ -7,6 +7,85 @@ import {
   Zap, Brain, Shield, TrendingUp, Clock, Users, MessageSquare, Globe
 } from 'lucide-react';
 
+/* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
+function LeadFormModal({ isDark, onClose }) {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ company: '', website: '', email: '' });
+
+  const handleSubmit = () => {
+    if (!form.company || !form.website || !form.email) return;
+    setSubmitted(true);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+          onClick={e => e.stopPropagation()}
+          className={`w-full max-w-md rounded-2xl p-8 relative shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'}`}
+        >
+          <button onClick={onClose} className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors ${isDark ? 'text-zinc-500 hover:text-white hover:bg-zinc-800' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}`}>
+            <X className="size-4" />
+          </button>
+
+          {!submitted ? (
+            <>
+              <h3 className={`text-2xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Get Started</h3>
+              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>We'll review your website and build a custom AI chatbot plan for you.</p>
+              <div className="flex flex-col gap-3">
+                {[
+                  { key: 'company', label: 'Company Name', placeholder: 'Acme Inc.' },
+                  { key: 'website', label: 'Website URL', placeholder: 'https://yourcompany.com' },
+                  { key: 'email', label: 'Email Address', placeholder: 'you@yourcompany.com' },
+                ].map(({ key, label, placeholder }) => (
+                  <div key={key}>
+                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{label}</label>
+                    <input
+                      type={key === 'email' ? 'email' : 'text'}
+                      placeholder={placeholder}
+                      value={form[key]}
+                      onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                      className={`w-full px-4 py-2.5 rounded-xl text-sm border outline-none transition-colors ${isDark ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-600 focus:border-zinc-500' : 'bg-zinc-50 border-zinc-200 text-zinc-950 placeholder-zinc-400 focus:border-zinc-400'}`}
+                    />
+                  </div>
+                ))}
+                <button
+                  onClick={handleSubmit}
+                  className={`mt-2 w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
+                >
+                  Get Started →
+                </button>
+                <p className={`text-center text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>No commitment · We'll review your website and get back to you within 24 hours.</p>
+              </div>
+            </>
+          ) : (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                <Check className="size-6 text-emerald-400" />
+              </div>
+              <h3 className={`text-xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>You're all set!</h3>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                Thanks! We'll review your website and contact you within 24 hours with a custom AI chatbot plan.
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 /* ─── PARTICLES ───────────────────────────────────────────────── */
 function FloatingParticle({ delay, duration, x, size }) {
   return (
@@ -30,7 +109,7 @@ function ParticleField({ count = 18 }) {
 }
 
 /* ─── HEADER ──────────────────────────────────────────────────── */
-function Header({ isDark }) {
+function Header({ isDark, onGetStarted }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -111,7 +190,7 @@ function Header({ isDark }) {
           </div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="hidden md:flex items-center gap-3">
             <a href="#contact" className={`text-base transition-colors px-3 py-2 ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>Sign in</a>
-            <a href="#pricing" className={`px-4 py-2 text-base rounded-lg font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>Get a demo</a>
+            <button onClick={() => onGetStarted()} className={`px-4 py-2 text-base rounded-lg font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>Get Started</button>
           </motion.div>
           <button onClick={() => setOpen(!open)} className={`md:hidden p-2 ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -125,7 +204,7 @@ function Header({ isDark }) {
                 <a key={item.label} href={item.href} onClick={() => setOpen(false)}
                   className={`py-2 transition-colors ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>{item.label}</a>
               ))}
-              <a href="#pricing" className={`mt-2 py-3 text-sm rounded-lg text-center font-semibold ${isDark ? 'bg-white text-zinc-950' : 'bg-zinc-950 text-white'}`}>Get a demo</a>
+              <button onClick={() => { setOpen(false); onGetStarted(); }} className={`mt-2 py-3 text-sm rounded-lg text-center font-semibold ${isDark ? 'bg-white text-zinc-950' : 'bg-zinc-950 text-white'}`}>Get Started</button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -539,7 +618,7 @@ function AnimatedChatLoop({ theme }) {
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
                       className="px-3 pb-2 overflow-hidden flex-shrink-0">
                       <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                        Book a free demo →
+                        Get Started →
                       </div>
                     </motion.div>
                   )}
@@ -665,7 +744,7 @@ function ThemeArcHint() {
 }
 
 /* ─── HERO ────────────────────────────────────────────────────── */
-function HeroSlide({ activeTheme, setActiveTheme }) {
+function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -682,12 +761,8 @@ function HeroSlide({ activeTheme, setActiveTheme }) {
           alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-zinc-950/80" />
       </div>
-      {/* Light hero background */}
-      <div className={`absolute inset-0 transition-opacity duration-700 ${!isDark ? 'opacity-100' : 'opacity-0'}`}>
-        <img src="https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-wt.jpg"
-          alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/30" />
-      </div>
+      {/* Light hero background — clean, no image */}
+      <div className={`absolute inset-0 transition-opacity duration-700 ${!isDark ? 'opacity-100' : 'opacity-0'} bg-white`} />
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -719,36 +794,39 @@ function HeroSlide({ activeTheme, setActiveTheme }) {
           </div>
 
           {/* Theme switcher */}
-          <div className="flex items-center gap-2 mb-8 justify-center lg:justify-start relative">
-            <ThemeArcHint />
-            <button onClick={() => setActiveTheme('dark')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeTheme === 'dark'
-                  ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
-                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-              }`}>
-              <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
-              Obsidian Black
-            </button>
-            <button onClick={() => setActiveTheme('light')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeTheme === 'light'
-                  ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
-                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-              }`}>
-              <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
-              Pearl White
-            </button>
+          <div className="flex flex-col items-center lg:items-start gap-2 mb-8">
+            <p className={`text-xs font-medium tracking-widest uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Choose theme</p>
+            <div className="flex items-center gap-2 relative">
+              <ThemeArcHint />
+              <button onClick={() => setActiveTheme('dark')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                  activeTheme === 'dark'
+                    ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
+                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+                }`}>
+                <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
+                Black
+              </button>
+              <button onClick={() => setActiveTheme('light')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                  activeTheme === 'light'
+                    ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
+                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+                }`}>
+                <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
+                White
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
-            <a href="#pricing"
+            <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
-              Get a free demo
+              Get Started
               <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
                 <ArrowRight className="size-4" />
               </motion.span>
-            </a>
+            </button>
             <a href="#features"
               className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
               See how it works
@@ -903,7 +981,7 @@ function FeaturesSlide({ activeTheme }) {
 }
 
 /* ─── PRICING ─────────────────────────────────────────────────── */
-function PricingSlide({ activeTheme }) {
+function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const plans = [
     {
@@ -916,7 +994,7 @@ function PricingSlide({ activeTheme }) {
       name: 'Growth', price: '€499', period: '/month',
       desc: 'For growing businesses.',
       features: ['Chatbot on 3 websites', 'Advanced training & updates', 'Up to 5 000 chats/mo', 'Lead capture integration', 'Analytics dashboard', 'Priority support'],
-      cta: 'Get a demo', highlight: true,
+      cta: 'Get Started', highlight: true,
     },
   ];
 
@@ -957,7 +1035,7 @@ function PricingSlide({ activeTheme }) {
                   </li>
                 ))}
               </ul>
-              <button className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
+              <button onClick={onGetStarted} className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
                 plan.highlight
                   ? isDark ? 'bg-zinc-950 text-white hover:bg-zinc-800' : 'bg-white text-zinc-950 hover:bg-zinc-100'
                   : isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'
@@ -982,7 +1060,7 @@ function PricingSlide({ activeTheme }) {
 }
 
 /* ─── CTA ─────────────────────────────────────────────────────── */
-function CTASlide({ activeTheme }) {
+function CTASlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   return (
     <section className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-900' : 'bg-zinc-100'}`}>
@@ -996,16 +1074,16 @@ function CTASlide({ activeTheme }) {
           Ready to<br />transform?
         </h2>
         <p className={`text-xl font-light mb-10 max-w-xl mx-auto ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-          Get an AI chatbot on your website within 48 hours. Free demo — no commitment.
+          Get an AI chatbot on your website within 48 hours.
         </p>
-        <a href="#contact"
+        <button onClick={onGetStarted}
           className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold hover:shadow-2xl transition-all ${isDark ? 'bg-white text-zinc-950 hover:shadow-white/10' : 'bg-zinc-950 text-white hover:shadow-black/20'}`}>
-          Book a free demo
+          Get Started
           <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}>
             <ArrowRight className="size-5" />
           </motion.span>
-        </a>
-        <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No credit card required · Live in 48 hours</p>
+        </button>
+        <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No commitment · We'll review your website and get back to you within 24 hours.</p>
       </motion.div>
     </section>
   );
@@ -1052,15 +1130,17 @@ function Footer({ activeTheme }) {
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
   const [activeTheme, setActiveTheme] = useState('dark');
+  const [leadOpen, setLeadOpen] = useState(false);
 
   return (
     <div className={`transition-colors duration-700 ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
-      <Header isDark={activeTheme === 'dark'} />
-      <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} />
+      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} />}
+      <Header isDark={activeTheme === 'dark'} onGetStarted={() => setLeadOpen(true)} />
+      <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => setLeadOpen(true)} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
-      <PricingSlide activeTheme={activeTheme} />
-      <CTASlide activeTheme={activeTheme} />
+      <PricingSlide activeTheme={activeTheme} onGetStarted={() => setLeadOpen(true)} />
+      <CTASlide activeTheme={activeTheme} onGetStarted={() => setLeadOpen(true)} />
       <Footer activeTheme={activeTheme} />
     </div>
   );
