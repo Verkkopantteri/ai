@@ -9,8 +9,8 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'S', label: 'S — Starter', desc: '49€/mo · ~3–4 chats/day' },
-  { id: 'M', label: 'M — Growth', desc: '149€/mo · ~8–15 chats/day' },
+  { id: 'S', label: 'S — Lite', desc: '49€/mo · ~3–4 chats/day' },
+  { id: 'M', label: 'M — Core', desc: '149€/mo · ~8–15 chats/day' },
   { id: 'L', label: 'L — Pro', desc: '299€/mo · ~20–40 chats/day' },
   { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
 ];
@@ -49,7 +49,7 @@ function LeadFormModal({ isDark, onClose }) {
           {!submitted ? (
             <>
               <h3 className={`text-2xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Get Started</h3>
-              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>We'll review your website and build a custom AI chatbot plan for you.</p>
+              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No commitment</p>
               <div className="flex flex-col gap-4">
                 {/* Service selector */}
                 <div>
@@ -90,9 +90,8 @@ function LeadFormModal({ isDark, onClose }) {
                   onClick={handleSubmit}
                   className={`mt-1 w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
                 >
-                  Get Started →
+                  Send Message
                 </button>
-                <p className={`text-center text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>No commitment</p>
               </div>
             </>
           ) : (
@@ -794,7 +793,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            The Future<br />is here
+            Hire AI<br />stay open 24/7
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
@@ -816,27 +815,26 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           </div>
 
           {/* Theme switcher */}
-          <div className="flex flex-col items-center lg:items-start gap-2 mb-8">
-            <p className={`text-xs font-medium tracking-widest uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Choose theme</p>
-            <div className="flex items-center gap-3 relative">
-              <ThemeArcHint />
-              {/* Black swatch */}
-              <button onClick={() => setActiveTheme('dark')}
-                className={`relative w-20 h-10 rounded-xl border-2 flex items-center justify-center transition-all overflow-hidden ${
-                  activeTheme === 'dark' ? 'border-zinc-400 shadow-lg scale-105' : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-300 hover:border-zinc-500'
-                }`}
-                style={{ background: '#09090b' }}>
-                <span className="text-white text-xs font-semibold">Black</span>
-              </button>
-              {/* White swatch */}
-              <button onClick={() => setActiveTheme('light')}
-                className={`relative w-20 h-10 rounded-xl border-2 flex items-center justify-center transition-all overflow-hidden ${
-                  activeTheme === 'light' ? 'border-zinc-400 shadow-lg scale-105' : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-300 hover:border-zinc-500'
-                }`}
-                style={{ background: '#f4f4f5' }}>
-                <span className="text-zinc-900 text-xs font-semibold">White</span>
-              </button>
-            </div>
+          <div className="flex items-center gap-2 mb-8 justify-center lg:justify-start relative">
+            <ThemeArcHint />
+            <button onClick={() => setActiveTheme('dark')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                activeTheme === 'dark'
+                  ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
+                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+              }`}>
+              <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
+              Obsidian Black
+            </button>
+            <button onClick={() => setActiveTheme('light')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                activeTheme === 'light'
+                  ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
+                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+              }`}>
+              <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
+              Pearl White
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
@@ -1002,6 +1000,7 @@ const PLANS = [
   {
     id: 'S',
     name: 'S',
+    label: 'Lite',
     tagline: 'For small size business',
     price: '49€',
     period: '/month',
@@ -1019,7 +1018,8 @@ const PLANS = [
   {
     id: 'M',
     name: 'M',
-    tagline: 'For small size business',
+    label: 'Core',
+    tagline: 'For medium size business',
     price: '149€',
     period: '/month',
     volume: '~8–15 chats per day',
@@ -1036,6 +1036,7 @@ const PLANS = [
   {
     id: 'L',
     name: 'L',
+    label: 'Pro',
     tagline: 'For medium size business',
     price: '299€',
     period: '/month',
@@ -1043,7 +1044,6 @@ const PLANS = [
     messages: '2,500 messages / month',
     features: [
       'Advanced training & updates',
-      'Auto update bots information weekly',
       'Lead capture integration to email',
       'Analytics dashboard',
       'Priority support',
@@ -1055,6 +1055,7 @@ const PLANS = [
   {
     id: 'XL',
     name: 'XL',
+    label: 'Enterprise',
     tagline: 'For large size business',
     price: '499€',
     period: '/month',
@@ -1062,7 +1063,8 @@ const PLANS = [
     messages: '10,000 messages / month',
     features: [
       'Advanced training & updates',
-      'Auto update bots information weekly',
+      'Lead capture integration to email',
+      'Analytics dashboard',
       'Priority support',
       '48h setup',
     ],
@@ -1075,10 +1077,45 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const [planIdx, setPlanIdx] = useState(1); // default M = index 1
   const plan = PLANS[planIdx];
+  const trackRef = useRef(null);
+  const isDragging = useRef(false);
 
   const trackBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
   const fillColor = isDark ? '#ffffff' : '#09090b';
   const fillPct = (planIdx / (PLANS.length - 1)) * 100;
+
+  const getPctFromEvent = (clientX) => {
+    const rect = trackRef.current.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  };
+
+  const snapToNearest = (pct) => {
+    const raw = pct * (PLANS.length - 1);
+    setPlanIdx(Math.round(raw));
+  };
+
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    e.preventDefault();
+    const move = (e) => {
+      if (!isDragging.current) return;
+      snapToNearest(getPctFromEvent(e.clientX));
+    };
+    const up = () => { isDragging.current = false; window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  const handleTouchStart = (e) => {
+    isDragging.current = true;
+    const move = (e) => {
+      if (!isDragging.current) return;
+      snapToNearest(getPctFromEvent(e.touches[0].clientX));
+    };
+    const end = () => { isDragging.current = false; window.removeEventListener('touchmove', move); window.removeEventListener('touchend', end); };
+    window.addEventListener('touchmove', move);
+    window.addEventListener('touchend', end);
+  };
 
   return (
     <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6`}>
@@ -1092,15 +1129,13 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
         {/* Single card */}
         <motion.div
-          key={plan.id}
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
           className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
         >
           {/* Size badge */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <span className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
+              <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
               {plan.highlight && (
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
                   Most popular
@@ -1117,9 +1152,9 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           <p className={`text-xs mb-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
           <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
 
-          <ul className="space-y-2.5 mb-8">
+          <ul className="mb-8" style={{ minHeight: 150 }}>
             {plan.features.map(f => (
-              <li key={f} className={`flex items-center gap-3 text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+              <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
                 <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 {f}
               </li>
@@ -1133,35 +1168,47 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
           {/* Slider */}
           <div>
-            <div className="flex justify-between mb-2.5">
+            <div className="flex justify-between mb-3">
               {PLANS.map((p, i) => (
                 <button key={p.id} onClick={() => setPlanIdx(i)}
-                  className={`text-xs font-semibold transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                  {p.id}
+                  className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                  <span className="text-xs font-semibold">{p.id}</span>
                 </button>
               ))}
             </div>
             {/* Track */}
-            <div className="relative h-3 rounded-full cursor-pointer"
+            <div
+              ref={trackRef}
+              className="relative h-4 rounded-full cursor-pointer select-none"
               style={{ background: trackBg }}
               onClick={e => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const pct = (e.clientX - rect.left) / rect.width;
                 setPlanIdx(Math.round(pct * (PLANS.length - 1)));
-              }}>
+              }}
+            >
               {/* Fill */}
-              <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
+              <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
                 style={{ width: `${fillPct}%`, background: fillColor }} />
               {/* Thumb */}
               <motion.div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 shadow-lg cursor-grab active:cursor-grabbing transition-all duration-300"
-                style={{ left: `${fillPct}%`, background: fillColor, borderColor: isDark ? '#3f3f46' : '#e4e4e7', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 1.1 }}
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
+                style={{
+                  left: `${fillPct}%`,
+                  background: fillColor,
+                  borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+                  border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
+                  boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
+                  transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+                whileHover={{ scale: 1.25 }}
+                whileTap={{ scale: 1.15 }}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
               />
             </div>
-            <p className={`text-center text-xs mt-3 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-              Drag or click to change plan
+            <p className={`text-center text-xs mt-3 font-medium ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+              ← Drag to change plan →
             </p>
           </div>
         </motion.div>
@@ -1220,7 +1267,7 @@ function Footer({ activeTheme }) {
               <img src={isDark ? '/logo.png' : '/logo-black.png'} alt="TIA AI" className="size-6 object-contain" />
               <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-zinc-950'}`}>TIA AI</span>
             </div>
-            <p className="text-sm font-light leading-relaxed">AI chatbots for businesses, powered by Claude.</p>
+            <p className="text-sm font-light leading-relaxed">Your website's smartest employee.</p>
           </div>
           {[
             { title: 'Product', links: ['Features', 'Pricing', 'Case studies'] },
