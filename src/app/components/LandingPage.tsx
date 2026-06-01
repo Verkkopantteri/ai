@@ -9,20 +9,54 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'S', label: 'S — Lite', desc: '69€/mo · ~3–4 chats/day' },
-  { id: 'M', label: 'M — Core', desc: '99€/mo · ~8–15 chats/day' },
-  { id: 'L', label: 'L — Pro', desc: '199€/mo · ~20–40 chats/day' },
-  { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
+  { id: 'S', label: 'TIA BOT S', desc: '49€/mo · ~3–4 chats/day' },
+  { id: 'M', label: 'TIA BOT M', desc: '99€/mo · ~8–15 chats/day' },
+  { id: 'L', label: 'TIA BOT L', desc: '199€/mo · ~20–40 chats/day' },
+  { id: 'XL', label: 'TIA BOT XL', desc: '499€/mo · ~80–150 chats/day' },
 ];
+
+const SERVICE_PRICES = { S: 49, M: 99, L: 199, XL: 499 };
 
 function LeadFormModal({ isDark, onClose, initialService = '', initialBranding = false }) {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ service: initialService, company: '', website: '', email: '', branding: initialBranding });
+  const [form, setForm] = useState({
+    service: initialService,
+    company: '',
+    website: '',
+    email: '',
+    branding: initialBranding,
+    analytics: 'basic', // 'basic' | 'advanced'
+  });
+
+  const basePrice = SERVICE_PRICES[form.service] || 0;
+  const brandingPrice = form.branding ? 20 : 0;
+  const analyticsPrice = form.analytics === 'advanced' ? 50 : 0;
+  const total = basePrice + brandingPrice + analyticsPrice;
 
   const handleSubmit = () => {
     if (!form.service || !form.company || !form.website || !form.email) return;
     setSubmitted(true);
   };
+
+  const ToggleAddon = ({ active, onClick, children }) => (
+    <button
+      onClick={onClick}
+      className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+        active
+          ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+          : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+      }`}
+    >
+      <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+        active
+          ? 'bg-white border-white'
+          : isDark ? 'border-zinc-600' : 'border-zinc-300'
+      }`}>
+        {active && <Check className="size-3 text-zinc-950" />}
+      </div>
+      {children}
+    </button>
+  );
 
   return (
     <AnimatePresence>
@@ -40,7 +74,7 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
           exit={{ opacity: 0, scale: 0.94, y: 20 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
           onClick={e => e.stopPropagation()}
-          className={`w-full max-w-md rounded-2xl p-8 relative shadow-2xl ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'}`}
+          className={`w-full max-w-md rounded-2xl p-8 relative shadow-2xl overflow-y-auto max-h-[92vh] ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'}`}
         >
           <button onClick={onClose} className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors ${isDark ? 'text-zinc-500 hover:text-white hover:bg-zinc-800' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}`}>
             <X className="size-4" />
@@ -49,8 +83,9 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
           {!submitted ? (
             <>
               <h3 className={`text-2xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Get Started</h3>
-              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No commitment</p>
+              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No commitment · cancel anytime</p>
               <div className="flex flex-col gap-4">
+
                 {/* Service selector */}
                 <div>
                   <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which plan interests you?</label>
@@ -69,32 +104,65 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
                   </div>
                 </div>
 
-                {/* Branding addon */}
-                <button
-                  onClick={() => setForm(f => ({ ...f, branding: !f.branding }))}
-                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                    form.branding
-                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-                    form.branding
-                      ? isDark ? 'bg-white border-white' : 'bg-white border-white'
-                      : isDark ? 'border-zinc-600' : 'border-zinc-300'
-                  }`}>
-                    {form.branding && <Check className={`size-3 ${isDark ? 'text-zinc-950' : 'text-zinc-950'}`} />}
-                  </div>
+                {/* Custom Chat Window addon */}
+                <ToggleAddon active={form.branding} onClick={() => setForm(f => ({ ...f, branding: !f.branding }))}>
                   <div>
-                    <div className={`text-xs font-semibold ${form.branding ? (isDark ? 'text-white' : 'text-white') : (isDark ? 'text-zinc-300' : 'text-zinc-700')}`}>
-                      Custom chat panel
-                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? (isDark ? 'bg-white/20' : 'bg-white/20') : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>100€ one-time</span>
+                    <div className={`text-xs font-semibold ${form.branding ? 'text-white' : (isDark ? 'text-zinc-300' : 'text-zinc-700')}`}>
+                      Custom Chat Window
+                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? 'bg-white/20 text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>+20€/month</span>
                     </div>
                     <div className={`text-[10px] mt-0.5 ${form.branding ? 'opacity-70 text-white' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
                       Colors & design match your brand
                     </div>
                   </div>
-                </button>
+                </ToggleAddon>
+
+                {/* Analytics Dashboard */}
+                <div>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Analytics Dashboard</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'basic', label: 'Basic', price: '0€/mo' },
+                      { id: 'advanced', label: 'Advanced', price: '+50€/mo' },
+                    ].map(opt => (
+                      <button key={opt.id} onClick={() => setForm(f => ({ ...f, analytics: opt.id }))}
+                        className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
+                          form.analytics === opt.id
+                            ? isDark ? 'border-white bg-white/10 text-white' : 'border-zinc-950 bg-zinc-950 text-white'
+                            : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-600 hover:border-zinc-400'
+                        }`}>
+                        <div className="text-xs font-semibold">{opt.label}</div>
+                        <div className={`text-[10px] mt-0.5 ${form.analytics === opt.id ? 'opacity-70' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{opt.price}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className={`rounded-xl px-4 py-4 border ${isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
+                  {form.service && (
+                    <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                      <span>{SERVICES.find(s => s.id === form.service)?.label}</span>
+                      <span>{basePrice}€/mo</span>
+                    </div>
+                  )}
+                  {form.branding && (
+                    <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                      <span>Custom Chat Window</span>
+                      <span>+20€/mo</span>
+                    </div>
+                  )}
+                  {form.analytics === 'advanced' && (
+                    <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                      <span>Advanced Analytics</span>
+                      <span>+50€/mo</span>
+                    </div>
+                  )}
+                  <div className={`flex justify-between text-sm font-semibold pt-2 mt-1 border-t ${isDark ? 'border-zinc-700 text-white' : 'border-zinc-200 text-zinc-950'}`}>
+                    <span>Total</span>
+                    <span>{total > 0 ? `${total}€/mo` : '—'}</span>
+                  </div>
+                </div>
 
                 {/* Text fields */}
                 {[
@@ -838,14 +906,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* Dark hero background */}
-      <div className={`absolute inset-0 transition-opacity duration-700 ${isDark ? 'opacity-100' : 'opacity-0'}`}>
-        <img src="https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg"
-          alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-zinc-950/80" />
-      </div>
-      {/* Light hero background — clean, no image */}
-      <div className={`absolute inset-0 transition-opacity duration-700 ${!isDark ? 'opacity-100' : 'opacity-0'} bg-white`} />
+      {/* Clean background — no image */}
+      <div className={`absolute inset-0 ${isDark ? 'bg-zinc-950' : 'bg-white'}`} />
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -1063,10 +1125,11 @@ function FeaturesSlide({ activeTheme }) {
 const PLANS = [
   {
     id: 'S',
-    name: 'S',
+    name: 'TIA BOT S',
     label: 'Lite',
     tagline: 'For small size business',
-    price: '69€',
+    price: '49€',
+    priceNum: 49,
     period: '/month',
     volume: '~3–4 chats per day',
     messages: '500 messages / month',
@@ -1082,10 +1145,11 @@ const PLANS = [
   },
   {
     id: 'M',
-    name: 'M',
+    name: 'TIA BOT M',
     label: 'Core',
     tagline: 'For medium size business',
     price: '99€',
+    priceNum: 99,
     period: '/month',
     volume: '~8–15 chats per day',
     messages: '1,000 messages / month',
@@ -1101,10 +1165,11 @@ const PLANS = [
   },
   {
     id: 'L',
-    name: 'L',
+    name: 'TIA BOT L',
     label: 'Pro',
     tagline: 'For medium size business',
     price: '199€',
+    priceNum: 199,
     period: '/month',
     volume: '~20–40 chats per day',
     messages: '2,500 messages / month',
@@ -1121,10 +1186,11 @@ const PLANS = [
   },
   {
     id: 'XL',
-    name: 'XL',
+    name: 'TIA BOT XL',
     label: 'Enterprise',
     tagline: 'For large size business',
     price: '499€',
+    priceNum: 499,
     period: '/month',
     volume: '~80–150 chats per day',
     messages: '10,000 messages / month',
@@ -1195,16 +1261,14 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
         </motion.div>
 
-        {/* Cards row: main plan card + branding addon card */}
-        <div className="flex gap-4 items-stretch">
-          {/* Main plan card */}
-          <motion.div
-            className={`flex-1 rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
-          >
+        {/* Main plan card */}
+        <motion.div
+          className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+        >
             {/* Size badge */}
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <span className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className={`text-2xl font-semibold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
                 <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
                 {plan.highlight && (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
@@ -1283,34 +1347,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             </p>
           </div>
         </motion.div>
-
-          {/* Branding addon card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }} transition={{ delay: 0.15, duration: 0.5 }}
-            className={`rounded-2xl p-8 border flex flex-col transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
-            style={{ width: 200, flexShrink: 0 }}
-          >
-            <div className="flex-1">
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-6 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={isDark ? 'text-white' : 'text-zinc-950'}>
-                  <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
-                  <path d="m12 2 3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6L12 19.5l-6.8 3.5 1.3-7.6L1 9.9l7.6-1.1L12 2z"/>
-                </svg>
-              </div>
-              <h3 className={`text-base font-semibold mb-2 leading-snug ${isDark ? 'text-white' : 'text-zinc-950'}`}>Custom chat panel</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Colors & design match your brand</p>
-            </div>
-            <div className="mt-8">
-              <div className={`text-4xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>100€</div>
-              <div className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>one-time</div>
-              <button onClick={() => onGetStarted(plan.id, true)}
-                className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'}`}>
-                Add on
-              </button>
-            </div>
-          </motion.div>
-        </div>
 
         {/* Powered by Anthropic */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
