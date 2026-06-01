@@ -442,7 +442,7 @@ const CONVERSATION = [
 ];
 
 /* Smooth character-by-character reveal for a single message */
-function TypedText({ text, color, onDone }) {
+function TypedText({ text, color, onDone, onChar }) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
   const iRef = useRef(0);
@@ -454,6 +454,7 @@ function TypedText({ text, color, onDone }) {
     const interval = setInterval(() => {
       iRef.current += 1;
       setDisplayed(text.slice(0, iRef.current));
+      onChar?.();
       if (iRef.current >= text.length) {
         clearInterval(interval);
         setDone(true);
@@ -635,7 +636,7 @@ function AnimatedChatLoop({ theme }) {
                           maxWidth: '82%',
                         }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
                           {msg.from === 'bot' && i === visibleMessages - 1 ? (
-                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} />
+                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} onChar={() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }} />
                           ) : (
                             <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
                           )}
