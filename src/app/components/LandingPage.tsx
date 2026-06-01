@@ -678,7 +678,7 @@ function AnimatedChatLoop({ theme }) {
                   </AnimatePresence>
                   {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
                   <div style={{
-                    height: showCTA ? 0 : 48,
+                    height: showCTA ? 0 : 32,
                     flexShrink: 0,
                     overflow: 'hidden',
                   }} />
@@ -694,9 +694,9 @@ function AnimatedChatLoop({ theme }) {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.25 }}
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
-                      className="px-3 pt-2.5 pb-2 flex-shrink-0"
+                      className="px-3 pt-1.5 pb-1 flex-shrink-0"
                     >
-                      <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                      <div className="w-full py-1.5 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
                         Get Started
                       </div>
                     </motion.div>
