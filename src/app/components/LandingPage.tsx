@@ -906,17 +906,15 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
-        style={{
-          backgroundImage: isDark
-            ? 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-we.jpg)'
-            : 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ew.jpg)',
-        }}
-      />
-      {/* Overlay to maintain text readability */}
-      <div className={`absolute inset-0 transition-colors duration-700 ${isDark ? 'bg-zinc-950/60' : 'bg-white/50'}`} />
+      {/* Background image — dark only */}
+      {isDark && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg)' }}
+        />
+      )}
+      {/* Overlay */}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/50" />}
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -926,7 +924,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            HIRE AI<br />Stay open 24/7
+            HIRE AI<br />STAY OPEN 24/7
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
