@@ -906,8 +906,17 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* Clean background — no image */}
-      <div className={`absolute inset-0 ${isDark ? 'bg-zinc-950' : 'bg-white'}`} />
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
+        style={{
+          backgroundImage: isDark
+            ? 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-we.jpg)'
+            : 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ew.jpg)',
+        }}
+      />
+      {/* Overlay to maintain text readability */}
+      <div className={`absolute inset-0 transition-colors duration-700 ${isDark ? 'bg-zinc-950/60' : 'bg-white/50'}`} />
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
