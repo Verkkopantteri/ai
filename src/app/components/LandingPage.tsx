@@ -527,7 +527,7 @@ function AnimatedChatLoop({ theme }) {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     }
-  }, [visibleMessages, typingIdx, showCTA]);
+  }, [visibleMessages, typingIdx]);
 
   // Fixed outer dimensions match the hero MiniChat (width:320)
   // Chat panel height is fixed so it never grows
@@ -666,11 +666,12 @@ function AnimatedChatLoop({ theme }) {
                     )}
                   </AnimatePresence>
                   {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
-                  <motion.div
-                    animate={{ height: showCTA ? 0 : 48 }}
-                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ flexShrink: 0 }}
-                  />
+                  <div style={{
+                    height: showCTA ? 0 : 48,
+                    flexShrink: 0,
+                    transition: 'height 0.3s cubic-bezier(0.16,1,0.3,1)',
+                    overflow: 'hidden',
+                  }} />
                 </div>
 
                 {/* CTA — OUTSIDE scroll area, always visible at bottom, never hidden */}
@@ -678,10 +679,10 @@ function AnimatedChatLoop({ theme }) {
                   {showCTA && (
                     <motion.div
                       key="cta"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
                       className="px-3 pt-2.5 pb-2 flex-shrink-0"
                     >
