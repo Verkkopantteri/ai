@@ -1203,7 +1203,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             <p className={`text-xs h-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
             <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
 
-            <ul className="mb-8" style={{ minHeight: 168 }}>
+            <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
               {plan.features.map(f => (
                 <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
                   <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
