@@ -438,7 +438,7 @@ const CONVERSATION = [
   { from: 'user', text: "What if someone wants to book a call instead?",                     delay: 5400 },
   { from: 'bot',  text: "No problem. I capture their details and schedule the call directly. Your team gets a notification right away.", delay: 7000 },
   { from: 'user', text: "How long does setup take?",                                         delay: 8800 },
-  { from: 'bot',  text: "Usually 48 hours. We train TIA on your content and you're live. Click below to get started.", delay: 10000 },
+  { from: 'bot',  text: "Usually 48 hours. We train TIA on your content and you're live. Check below 👇", delay: 10000 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -480,6 +480,8 @@ function AnimatedChatLoop({ theme }) {
   const scrollRef = useRef(null);
   const isLight = theme.name === 'Pearl White';
 
+  const [justRevealedIdx, setJustRevealedIdx] = useState(-1);
+
   const addTimer = (fn, ms) => {
     const t = setTimeout(fn, ms);
     timersRef.current.push(t);
@@ -494,6 +496,7 @@ function AnimatedChatLoop({ theme }) {
     setVisibleMessages(0);
     setTypingIdx(-1);
     setShowCTA(false);
+    setJustRevealedIdx(-1);
 
     // Bubble shows, then chat opens after a beat
     addTimer(() => setPhase('chat'), 1400);
@@ -506,6 +509,7 @@ function AnimatedChatLoop({ theme }) {
         // Hide typing & reveal message (TypedText takes over)
         addTimer(() => {
           setTypingIdx(-1);
+          setJustRevealedIdx(i);
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
@@ -516,7 +520,7 @@ function AnimatedChatLoop({ theme }) {
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
     addTimer(() => setShowCTA(true), lastDelay + 500);
-    addTimer(() => runLoop(), lastDelay + 3800);
+    addTimer(() => runLoop(), lastDelay + 5500);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
@@ -525,7 +529,7 @@ function AnimatedChatLoop({ theme }) {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     }
-  }, [visibleMessages, typingIdx]);
+  }, [visibleMessages, typingIdx, showCTA]);
 
   // Fixed outer dimensions match the hero MiniChat (width:320)
   // Chat panel height is fixed so it never grows
@@ -616,7 +620,7 @@ function AnimatedChatLoop({ theme }) {
                   <AnimatePresence initial={false}>
                     {CONVERSATION.slice(0, visibleMessages).map((msg, i) => (
                       <motion.div key={i}
-                        initial={{ opacity: 0, y: 6 }}
+                        initial={msg.from === 'bot' && i === justRevealedIdx ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                         className={`flex gap-1.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
@@ -937,24 +941,7 @@ function TiaInActionSlide({ activeTheme }) {
               Watch how TIA handles a real customer conversation on your website.
             </p>
 
-            {/* TIA pointing down + CTA hint */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }} transition={{ delay: 0.4, duration: 0.6 }}
-              className="mt-8 flex flex-col items-center lg:items-start gap-2"
-            >
-              <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                See it live on your site in 48h
-              </p>
-              <motion.span
-                animate={{ y: [0, 6, 0] }}
-                transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-                className="text-2xl select-none"
-                style={{ display: 'inline-block' }}
-              >
-                👇
-              </motion.span>
-            </motion.div>
+
           </motion.div>
 
           {/* Browser */}
