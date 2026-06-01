@@ -503,33 +503,36 @@ function AnimatedChatLoop({ theme }) {
 
   const runLoop = useCallback(() => {
     clearAll();
-    // Reset all state synchronously before next paint
     setPhase('bubble');
     setVisibleMessages(0);
     setTypingIdx(-1);
     setShowCTA(false);
 
-    // Bubble shows, then chat opens after a beat
     addTimer(() => setPhase('chat'), 1400);
 
     CONVERSATION.forEach((msg, i) => {
       const t = 1400 + msg.delay;
       if (msg.from === 'bot') {
-        // Show typing indicator ~900ms before message appears
         addTimer(() => setTypingIdx(i), t - 900);
-        // Hide typing & reveal message (TypedText takes over)
         addTimer(() => {
           setTypingIdx(-1);
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
-        // User messages slide in immediately
         addTimer(() => setVisibleMessages(v => v + 1), t);
       }
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
-    addTimer(() => runLoop(), lastDelay + 5500);
+    // First fade out the panel (keep content intact during exit anim)
+    addTimer(() => setPhase('bubble'), lastDelay + 5500);
+    // After exit animation (~650ms), reset content and restart
+    addTimer(() => {
+      setVisibleMessages(0);
+      setTypingIdx(-1);
+      setShowCTA(false);
+      runLoop();
+    }, lastDelay + 5500 + 650);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
