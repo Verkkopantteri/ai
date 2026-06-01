@@ -13,6 +13,7 @@ const SERVICES = [
   { id: 'M', label: 'M — Core', desc: '99€/mo · ~8–15 chats/day' },
   { id: 'L', label: 'L — Pro', desc: '199€/mo · ~20–40 chats/day' },
   { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
+  { id: 'Own', label: 'Own — Custom', desc: 'Fully custom solution' },
 ];
 
 function LeadFormModal({ isDark, onClose, initialService = '' }) {
@@ -531,7 +532,7 @@ function AnimatedChatLoop({ theme }) {
 
   return (
     /* Outer wrapper — fixed size so layout never shifts */
-    <div style={{ width: 300, position: 'relative', height: 390 }}>
+    <div style={{ width: 320, position: 'relative', height: 420 }}>
 
       {/* Bubble — always anchored bottom-right, hidden when chat is open */}
       <div style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 10 }}>
@@ -576,7 +577,7 @@ function AnimatedChatLoop({ theme }) {
                 background: theme.bg,
                 border: `1px solid ${theme.border}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
-                width: 300,
+                width: 320,
               }} className="rounded-[18px] overflow-hidden flex flex-col">
 
                 {/* Header */}
@@ -819,7 +820,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            HIRE AI stay open 24/7
+            HIRE AI<br />Stay open 24/7
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
@@ -834,7 +835,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
                 ))}
               </div>
               <p className={`text-sm font-light italic leading-relaxed ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-                "Set up in 48 hours. Our leads doubled in the first month."
+                "Finally a fair price, and a nice spike in leads."
               </p>
               <p className={`text-xs mt-1 ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Early user</p>
             </div>
@@ -988,10 +989,10 @@ function FeaturesSlide({ activeTheme }) {
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
     { icon: Brain, title: 'Trained on you', desc: 'Knows your products, FAQs, pricing.' },
-    { icon: Clock, title: '24/7 availability', desc: 'Answers at 3am. Zero overtime.' },
+    { icon: Clock, title: '24/7 availability', desc: 'Always available, even at 3am.' },
     { icon: TrendingUp, title: 'Converts leads', desc: 'Guides visitors to book, buy, contact.' },
-    { icon: Zap, title: 'Progressive learning', desc: 'Gets smarter over time — learns from every conversation and adapts to your customers.' },
-    { icon: Users, title: 'Analytics', desc: 'Track conversations, spot trends, and make data-driven decisions in real time.' },
+    { icon: Zap, title: 'Progressive learning', desc: 'Gets smarter over time with data.' },
+    { icon: Users, title: 'Analytics', desc: 'Turn conversations into real-time decisions.' },
   ];
 
   return (
@@ -1072,7 +1073,9 @@ const PLANS = [
     messages: '2,500 messages / month',
     features: [
       'Advanced training & updates',
-      'Lead capture integration to email',
+      'AI evolves weekly with new data',
+      'Auto-detected and alert hot leads',
+      'Lead capture integration',
       'Analytics dashboard',
       'Priority support',
     ],
@@ -1090,11 +1093,33 @@ const PLANS = [
     messages: '10,000 messages / month',
     features: [
       'Advanced training & updates',
-      'Lead capture integration to email',
+      'AI evolves weekly with new data',
+      'Auto-detected and alert hot leads',
+      'Lead capture integration',
       'Analytics dashboard',
       'Priority support',
     ],
     support: 'Priority support',
+    highlight: false,
+  },
+  {
+    id: 'Own',
+    name: 'Own',
+    label: 'Custom',
+    tagline: 'Fully tailored to your brand',
+    price: 'Custom',
+    period: '',
+    volume: 'Unlimited scale',
+    messages: 'Custom message volume',
+    features: [
+      'Everything in XL',
+      'AI evolves weekly with new data',
+      'Auto-detected and alert hot leads',
+      'Lead capture integration',
+      'Custom integrations & workflows',
+      'Dedicated account manager',
+    ],
+    support: 'Dedicated support',
     highlight: false,
   },
 ];
@@ -1187,7 +1212,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             ))}
           </ul>
 
-          <button onClick={onGetStarted}
+          <button onClick={() => onGetStarted(plan.id)}
             className={`w-full py-3 rounded-xl text-sm font-semibold transition-all mb-6 ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
             Get Started
           </button>
@@ -1323,16 +1348,22 @@ function Footer({ activeTheme }) {
 export function LandingPage() {
   const [activeTheme, setActiveTheme] = useState('dark');
   const [leadOpen, setLeadOpen] = useState(false);
+  const [leadService, setLeadService] = useState('');
+
+  const openLead = (service = '') => {
+    setLeadService(service);
+    setLeadOpen(true);
+  };
 
   return (
     <div className={`transition-colors duration-700 ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
-      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} />}
-      <Header isDark={activeTheme === 'dark'} onGetStarted={() => setLeadOpen(true)} />
-      <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => setLeadOpen(true)} />
+      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      <Header isDark={activeTheme === 'dark'} onGetStarted={() => openLead()} />
+      <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
-      <PricingSlide activeTheme={activeTheme} onGetStarted={() => setLeadOpen(true)} />
-      <CTASlide activeTheme={activeTheme} onGetStarted={() => setLeadOpen(true)} />
+      <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
+      <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <Footer activeTheme={activeTheme} />
     </div>
   );
