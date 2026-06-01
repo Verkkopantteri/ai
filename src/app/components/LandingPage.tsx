@@ -480,8 +480,19 @@ function AnimatedChatLoop({ theme }) {
   const [showCTA, setShowCTA] = useState(false);
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
+  const rafRef = useRef(null);
   const isLight = theme.name === 'Pearl White';
   const isLastMessage = (i) => i === CONVERSATION.length - 1;
+
+  const scrollToBottom = useCallback(() => {
+    if (rafRef.current) return; // already scheduled
+    rafRef.current = requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+      rafRef.current = null;
+    });
+  }, []);
 
   const addTimer = (fn, ms) => {
     const t = setTimeout(fn, ms);
@@ -525,7 +536,7 @@ function AnimatedChatLoop({ theme }) {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [visibleMessages, typingIdx]);
 
@@ -636,7 +647,7 @@ function AnimatedChatLoop({ theme }) {
                           maxWidth: '82%',
                         }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
                           {msg.from === 'bot' && i === visibleMessages - 1 ? (
-                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} onChar={() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }} />
+                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} onChar={scrollToBottom} />
                           ) : (
                             <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
                           )}
@@ -669,7 +680,6 @@ function AnimatedChatLoop({ theme }) {
                   <div style={{
                     height: showCTA ? 0 : 48,
                     flexShrink: 0,
-                    transition: 'height 0.3s cubic-bezier(0.16,1,0.3,1)',
                     overflow: 'hidden',
                   }} />
                 </div>
