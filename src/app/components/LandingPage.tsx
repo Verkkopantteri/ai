@@ -442,7 +442,7 @@ const CONVERSATION = [
 ];
 
 /* Smooth character-by-character reveal for a single message */
-function TypedText({ text, color }) {
+function TypedText({ text, color, onDone }) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
   const iRef = useRef(0);
@@ -457,6 +457,7 @@ function TypedText({ text, color }) {
       if (iRef.current >= text.length) {
         clearInterval(interval);
         setDone(true);
+        onDone?.();
       }
     }, 18);
     return () => clearInterval(interval);
@@ -479,6 +480,7 @@ function AnimatedChatLoop({ theme }) {
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const isLight = theme.name === 'Pearl White';
+  const isLastMessage = (i) => i === CONVERSATION.length - 1;
 
   const addTimer = (fn, ms) => {
     const t = setTimeout(fn, ms);
@@ -515,7 +517,6 @@ function AnimatedChatLoop({ theme }) {
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
-    addTimer(() => setShowCTA(true), lastDelay + 500);
     addTimer(() => runLoop(), lastDelay + 5500);
   }, []);
 
@@ -634,7 +635,7 @@ function AnimatedChatLoop({ theme }) {
                           maxWidth: '82%',
                         }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
                           {msg.from === 'bot' && i === visibleMessages - 1 ? (
-                            <TypedText text={msg.text} color={theme.textColor} />
+                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} />
                           ) : (
                             <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
                           )}
