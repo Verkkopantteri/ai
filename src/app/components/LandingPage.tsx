@@ -9,15 +9,15 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'S', label: 'S — Lite', desc: '49€/mo · ~3–4 chats/day' },
-  { id: 'M', label: 'M — Core', desc: '149€/mo · ~8–15 chats/day' },
-  { id: 'L', label: 'L — Pro', desc: '299€/mo · ~20–40 chats/day' },
+  { id: 'S', label: 'S — Lite', desc: '69€/mo · ~3–4 chats/day' },
+  { id: 'M', label: 'M — Core', desc: '99€/mo · ~8–15 chats/day' },
+  { id: 'L', label: 'L — Pro', desc: '199€/mo · ~20–40 chats/day' },
   { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
 ];
 
-function LeadFormModal({ isDark, onClose }) {
+function LeadFormModal({ isDark, onClose, initialService = '' }) {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ service: '', company: '', website: '', email: '' });
+  const [form, setForm] = useState({ service: initialService, company: '', website: '', email: '', branding: false });
 
   const handleSubmit = () => {
     if (!form.service || !form.company || !form.website || !form.email) return;
@@ -68,6 +68,33 @@ function LeadFormModal({ isDark, onClose }) {
                     ))}
                   </div>
                 </div>
+
+                {/* Branding addon */}
+                <button
+                  onClick={() => setForm(f => ({ ...f, branding: !f.branding }))}
+                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                    form.branding
+                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+                    form.branding
+                      ? isDark ? 'bg-white border-white' : 'bg-white border-white'
+                      : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                  }`}>
+                    {form.branding && <Check className={`size-3 ${isDark ? 'text-zinc-950' : 'text-zinc-950'}`} />}
+                  </div>
+                  <div>
+                    <div className={`text-xs font-semibold ${form.branding ? (isDark ? 'text-white' : 'text-white') : (isDark ? 'text-zinc-300' : 'text-zinc-700')}`}>
+                      Fully branded chat panel
+                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? (isDark ? 'bg-white/20' : 'bg-white/20') : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>+100€ one-time</span>
+                    </div>
+                    <div className={`text-[10px] mt-0.5 ${form.branding ? 'opacity-70 text-white' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Custom colors, logo & design matched to your brand
+                    </div>
+                  </div>
+                </button>
 
                 {/* Text fields */}
                 {[
@@ -569,12 +596,11 @@ function AnimatedChatLoop({ theme }) {
                 </div>
 
                 {/* Messages */}
-                <motion.div
+                <div
                   ref={scrollRef}
-                  animate={{ height: msgAreaHeight }}
-                  transition={{ duration: 0.4, ease: 'easeInOut' }}
-                  className="flex flex-col gap-2.5 p-3 overflow-y-auto"
+                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1"
                   style={{
+                    height: 200,
                     background: isLight ? '#ececee' : 'transparent',
                     scrollbarWidth: 'thin',
                     scrollbarColor: `${theme.scrollThumb} ${theme.scrollTrack}`,
@@ -643,7 +669,7 @@ function AnimatedChatLoop({ theme }) {
                     )}
                   </AnimatePresence>
                   <div />
-                </motion.div>
+                </div>
 
                 {/* Chips */}
                 <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
@@ -793,7 +819,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            Hire AI<br />stay open 24/7
+            HIRE AI stay open 24/7
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
@@ -964,8 +990,8 @@ function FeaturesSlide({ activeTheme }) {
     { icon: Brain, title: 'Trained on you', desc: 'Knows your products, FAQs, pricing.' },
     { icon: Clock, title: '24/7 availability', desc: 'Answers at 3am. Zero overtime.' },
     { icon: TrendingUp, title: 'Converts leads', desc: 'Guides visitors to book, buy, contact.' },
-    { icon: Users, title: 'Unlimited chats', desc: 'Thousands of conversations, zero load.' },
-    { icon: Zap, title: 'Live in 48h', desc: 'We handle everything. You share content.' },
+    { icon: Zap, title: 'Progressive learning', desc: 'Gets smarter over time — learns from every conversation and adapts to your customers.' },
+    { icon: Users, title: 'Analytics', desc: 'Track conversations, spot trends, and make data-driven decisions in real time.' },
   ];
 
   return (
@@ -974,7 +1000,7 @@ function FeaturesSlide({ activeTheme }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-12">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Focus on your business. We'll handle the AI.</p>
+          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>And analytics</p>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {features.map((f, i) => (
@@ -1002,13 +1028,14 @@ const PLANS = [
     name: 'S',
     label: 'Lite',
     tagline: 'For small size business',
-    price: '49€',
+    price: '69€',
     period: '/month',
     volume: '~3–4 chats per day',
     messages: '500 messages / month',
     features: [
       'Trained on your content',
-      'Update bot\'s information once a month',
+      'AI evolves monthly with new data',
+      'Analytics dashboard',
       'Email support',
       '48h setup',
     ],
@@ -1020,13 +1047,14 @@ const PLANS = [
     name: 'M',
     label: 'Core',
     tagline: 'For medium size business',
-    price: '149€',
+    price: '99€',
     period: '/month',
     volume: '~8–15 chats per day',
     messages: '1,000 messages / month',
     features: [
       'Trained on your content',
-      'Update bot\'s information once a month',
+      'AI evolves monthly with new data',
+      'Analytics dashboard',
       'Email support',
       '48h setup',
     ],
@@ -1038,7 +1066,7 @@ const PLANS = [
     name: 'L',
     label: 'Pro',
     tagline: 'For medium size business',
-    price: '299€',
+    price: '199€',
     period: '/month',
     volume: '~20–40 chats per day',
     messages: '2,500 messages / month',
@@ -1047,7 +1075,6 @@ const PLANS = [
       'Lead capture integration to email',
       'Analytics dashboard',
       'Priority support',
-      '48h setup',
     ],
     support: 'Priority support',
     highlight: false,
@@ -1066,7 +1093,6 @@ const PLANS = [
       'Lead capture integration to email',
       'Analytics dashboard',
       'Priority support',
-      '48h setup',
     ],
     support: 'Priority support',
     highlight: false,
