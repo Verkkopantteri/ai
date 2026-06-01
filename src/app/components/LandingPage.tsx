@@ -607,7 +607,7 @@ function AnimatedChatLoop({ theme }) {
                 {/* Messages — scrollable, fixed height, CTA is OUTSIDE scroll area */}
                 <div
                   ref={scrollRef}
-                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1"
+                  className="flex flex-col gap-2.5 px-3 pt-3 pb-0 overflow-y-auto flex-1"
                   style={{
                     background: isLight ? '#ececee' : 'transparent',
                     scrollbarWidth: 'thin',
@@ -664,7 +664,6 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  <div />
                 </div>
 
                 {/* CTA — OUTSIDE scroll area, always visible at bottom, never hidden */}
@@ -677,7 +676,7 @@ function AnimatedChatLoop({ theme }) {
                       exit={{ opacity: 0, y: 4 }}
                       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
-                      className="px-3 pt-1 pb-2 flex-shrink-0"
+                      className="px-3 pt-2.5 pb-2 flex-shrink-0"
                     >
                       <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
                         Get Started
