@@ -8,12 +8,19 @@ import {
 } from 'lucide-react';
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
+const SERVICES = [
+  { id: 'S', label: 'S — Starter', desc: '49€/mo · ~3–4 chats/day' },
+  { id: 'M', label: 'M — Growth', desc: '149€/mo · ~8–15 chats/day' },
+  { id: 'L', label: 'L — Pro', desc: '299€/mo · ~20–40 chats/day' },
+  { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
+];
+
 function LeadFormModal({ isDark, onClose }) {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ company: '', website: '', email: '' });
+  const [form, setForm] = useState({ service: '', company: '', website: '', email: '' });
 
   const handleSubmit = () => {
-    if (!form.company || !form.website || !form.email) return;
+    if (!form.service || !form.company || !form.website || !form.email) return;
     setSubmitted(true);
   };
 
@@ -43,7 +50,26 @@ function LeadFormModal({ isDark, onClose }) {
             <>
               <h3 className={`text-2xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Get Started</h3>
               <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>We'll review your website and build a custom AI chatbot plan for you.</p>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
+                {/* Service selector */}
+                <div>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which plan interests you?</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SERVICES.map(s => (
+                      <button key={s.id} onClick={() => setForm(f => ({ ...f, service: s.id }))}
+                        className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
+                          form.service === s.id
+                            ? isDark ? 'border-white bg-white/10 text-white' : 'border-zinc-950 bg-zinc-950 text-white'
+                            : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-600 hover:border-zinc-400'
+                        }`}>
+                        <div className="text-xs font-semibold">{s.label}</div>
+                        <div className={`text-[10px] mt-0.5 ${form.service === s.id ? 'opacity-70' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{s.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text fields */}
                 {[
                   { key: 'company', label: 'Company Name', placeholder: 'Acme Inc.' },
                   { key: 'website', label: 'Website URL', placeholder: 'https://yourcompany.com' },
@@ -62,11 +88,11 @@ function LeadFormModal({ isDark, onClose }) {
                 ))}
                 <button
                   onClick={handleSubmit}
-                  className={`mt-2 w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
+                  className={`mt-1 w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
                 >
                   Get Started →
                 </button>
-                <p className={`text-center text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>No commitment · We'll review your website and get back to you within 24 hours.</p>
+                <p className={`text-center text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>No commitment</p>
               </div>
             </>
           ) : (
@@ -475,7 +501,7 @@ function AnimatedChatLoop({ theme }) {
     }
   }, [visibleMessages, typingIdx]);
 
-  const msgAreaHeight = showCTA ? CHAT_MSG_HEIGHT_WITH_CTA : CHAT_MSG_HEIGHT_DEFAULT;
+  const msgAreaHeight = CHAT_MSG_HEIGHT_DEFAULT;
 
   return (
     /* Outer wrapper — fixed size so layout never shifts */
@@ -605,24 +631,20 @@ function AnimatedChatLoop({ theme }) {
                         </div>
                       </motion.div>
                     )}
+
+                    {/* CTA — rendered inside scroll area so it pushes messages up, not over them */}
+                    {showCTA && (
+                      <motion.div key="cta"
+                        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
+                        <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                          Get Started
+                        </div>
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                   <div />
                 </motion.div>
-
-                {/* CTA */}
-                <AnimatePresence>
-                  {showCTA && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.35 }}
-                      style={{ background: isLight ? '#ececee' : 'transparent' }}
-                      className="px-3 pb-2 overflow-hidden flex-shrink-0">
-                      <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                        Get Started →
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 {/* Chips */}
                 <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
@@ -796,25 +818,23 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           {/* Theme switcher */}
           <div className="flex flex-col items-center lg:items-start gap-2 mb-8">
             <p className={`text-xs font-medium tracking-widest uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Choose theme</p>
-            <div className="flex items-center gap-2 relative">
+            <div className="flex items-center gap-3 relative">
               <ThemeArcHint />
+              {/* Black swatch */}
               <button onClick={() => setActiveTheme('dark')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                  activeTheme === 'dark'
-                    ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
-                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-                }`}>
-                <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
-                Black
+                className={`relative w-20 h-10 rounded-xl border-2 flex items-center justify-center transition-all overflow-hidden ${
+                  activeTheme === 'dark' ? 'border-zinc-400 shadow-lg scale-105' : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-300 hover:border-zinc-500'
+                }`}
+                style={{ background: '#09090b' }}>
+                <span className="text-white text-xs font-semibold">Black</span>
               </button>
+              {/* White swatch */}
               <button onClick={() => setActiveTheme('light')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                  activeTheme === 'light'
-                    ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
-                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-                }`}>
-                <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
-                White
+                className={`relative w-20 h-10 rounded-xl border-2 flex items-center justify-center transition-all overflow-hidden ${
+                  activeTheme === 'light' ? 'border-zinc-400 shadow-lg scale-105' : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-300 hover:border-zinc-500'
+                }`}
+                style={{ background: '#f4f4f5' }}>
+                <span className="text-zinc-900 text-xs font-semibold">White</span>
               </button>
             </div>
           </div>
@@ -823,9 +843,6 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
-              <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
-                <ArrowRight className="size-4" />
-              </motion.span>
             </button>
             <a href="#features"
               className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
@@ -981,73 +998,178 @@ function FeaturesSlide({ activeTheme }) {
 }
 
 /* ─── PRICING ─────────────────────────────────────────────────── */
+const PLANS = [
+  {
+    id: 'S',
+    name: 'S',
+    tagline: 'For small size business',
+    price: '49€',
+    period: '/month',
+    volume: '~3–4 chats per day',
+    messages: '500 messages / month',
+    features: [
+      'Trained on your content',
+      'Update bot\'s information once a month',
+      'Email support',
+      '48h setup',
+    ],
+    support: 'Email support',
+    highlight: false,
+  },
+  {
+    id: 'M',
+    name: 'M',
+    tagline: 'For small size business',
+    price: '149€',
+    period: '/month',
+    volume: '~8–15 chats per day',
+    messages: '1,000 messages / month',
+    features: [
+      'Trained on your content',
+      'Update bot\'s information once a month',
+      'Email support',
+      '48h setup',
+    ],
+    support: 'Email support',
+    highlight: true,
+  },
+  {
+    id: 'L',
+    name: 'L',
+    tagline: 'For medium size business',
+    price: '299€',
+    period: '/month',
+    volume: '~20–40 chats per day',
+    messages: '2,500 messages / month',
+    features: [
+      'Advanced training & updates',
+      'Auto update bots information weekly',
+      'Lead capture integration to email',
+      'Analytics dashboard',
+      'Priority support',
+      '48h setup',
+    ],
+    support: 'Priority support',
+    highlight: false,
+  },
+  {
+    id: 'XL',
+    name: 'XL',
+    tagline: 'For large size business',
+    price: '499€',
+    period: '/month',
+    volume: '~80–150 chats per day',
+    messages: '10,000 messages / month',
+    features: [
+      'Advanced training & updates',
+      'Auto update bots information weekly',
+      'Priority support',
+      '48h setup',
+    ],
+    support: 'Priority support',
+    highlight: false,
+  },
+];
+
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
-  const plans = [
-    {
-      name: 'Lite', price: '€199', period: '/month',
-      desc: 'For small businesses getting started.',
-      features: ['Chatbot on 1 website', 'Trained on your content', 'Up to 1 000 chats/mo', 'Email support', '48h setup'],
-      cta: 'Get started', highlight: false,
-    },
-    {
-      name: 'Growth', price: '€499', period: '/month',
-      desc: 'For growing businesses.',
-      features: ['Chatbot on 3 websites', 'Advanced training & updates', 'Up to 5 000 chats/mo', 'Lead capture integration', 'Analytics dashboard', 'Priority support'],
-      cta: 'Get Started', highlight: true,
-    },
-  ];
+  const [planIdx, setPlanIdx] = useState(1); // default M = index 1
+  const plan = PLANS[planIdx];
+
+  const trackBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const fillColor = isDark ? '#ffffff' : '#09090b';
+  const fillPct = (planIdx / (PLANS.length - 1)) * 100;
 
   return (
-    <section id="pricing" className={`h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6`}>
+    <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6`}>
       <ParticleField count={isDark ? 10 : 0} />
-      <div className="max-w-3xl mx-auto w-full relative z-10">
+      <div className="max-w-lg mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.4 }} className="text-center mb-12">
+          viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Simple pricing</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No hidden fees. Cancel anytime.</p>
+          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start mb-10">
-          {plans.map((plan, i) => (
-            <motion.div key={plan.name}
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }} transition={{ delay: i * 0.1 }}
-              className={`rounded-2xl p-8 relative transition-all duration-300 ${
-                plan.highlight
-                  ? isDark ? 'bg-zinc-100 text-zinc-950 shadow-2xl shadow-white/5 scale-105' : 'bg-zinc-950 text-white shadow-2xl scale-105'
-                  : isDark ? 'bg-zinc-900/70 border border-zinc-800 hover:border-zinc-600' : 'bg-zinc-50 border border-zinc-200 hover:border-zinc-300'
-              }`}>
+        {/* Single card */}
+        <motion.div
+          key={plan.id}
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+        >
+          {/* Size badge */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <span className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
               {plan.highlight && (
-                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold border ${isDark ? 'bg-zinc-950 text-white border-zinc-700' : 'bg-white text-zinc-950 border-zinc-200 shadow-sm'}`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
                   Most popular
-                </div>
+                </span>
               )}
-              <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? (isDark ? 'text-zinc-500' : 'text-zinc-400') : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.name}</div>
-              <div className={`text-5xl font-light mb-1 ${plan.highlight ? (isDark ? 'text-zinc-950' : 'text-white') : isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
-              <div className={`text-sm mb-2 ${plan.highlight ? (isDark ? 'text-zinc-400' : 'text-zinc-400') : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{plan.period}</div>
-              <p className={`text-sm font-light mb-6 ${plan.highlight ? (isDark ? 'text-zinc-500' : 'text-zinc-300') : isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{plan.desc}</p>
-              <ul className="space-y-2.5 mb-7">
-                {plan.features.map(f => (
-                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? (isDark ? 'text-zinc-700' : 'text-zinc-300') : isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                    <Check className={`size-4 shrink-0 ${plan.highlight ? (isDark ? 'text-zinc-950' : 'text-white') : isDark ? 'text-zinc-400' : 'text-zinc-400'}`} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={onGetStarted} className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
-                plan.highlight
-                  ? isDark ? 'bg-zinc-950 text-white hover:bg-zinc-800' : 'bg-white text-zinc-950 hover:bg-zinc-100'
-                  : isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'
-              }`}>{plan.cta}</button>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+            <div className="text-right">
+              <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+              <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.period}</div>
+            </div>
+          </div>
+
+          <p className={`text-sm mb-1 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
+          <p className={`text-xs mb-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
+          <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+
+          <ul className="space-y-2.5 mb-8">
+            {plan.features.map(f => (
+              <li key={f} className={`flex items-center gap-3 text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <button onClick={onGetStarted}
+            className={`w-full py-3 rounded-xl text-sm font-semibold transition-all mb-6 ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+            Get Started
+          </button>
+
+          {/* Slider */}
+          <div>
+            <div className="flex justify-between mb-2.5">
+              {PLANS.map((p, i) => (
+                <button key={p.id} onClick={() => setPlanIdx(i)}
+                  className={`text-xs font-semibold transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                  {p.id}
+                </button>
+              ))}
+            </div>
+            {/* Track */}
+            <div className="relative h-3 rounded-full cursor-pointer"
+              style={{ background: trackBg }}
+              onClick={e => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = (e.clientX - rect.left) / rect.width;
+                setPlanIdx(Math.round(pct * (PLANS.length - 1)));
+              }}>
+              {/* Fill */}
+              <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
+                style={{ width: `${fillPct}%`, background: fillColor }} />
+              {/* Thumb */}
+              <motion.div
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 shadow-lg cursor-grab active:cursor-grabbing transition-all duration-300"
+                style={{ left: `${fillPct}%`, background: fillColor, borderColor: isDark ? '#3f3f46' : '#e4e4e7', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 1.1 }}
+              />
+            </div>
+            <p className={`text-center text-xs mt-3 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+              Drag or click to change plan
+            </p>
+          </div>
+        </motion.div>
 
         {/* Powered by Anthropic */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.2 }}
-          className={`text-center rounded-2xl py-5 px-6 border ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
+          className={`text-center rounded-2xl py-5 px-6 border mt-5 ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
           <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
             Powered by{' '}
             <span className={`font-semibold ${isDark ? 'text-white' : 'text-zinc-950'}`}>Anthropic's Claude</span>
@@ -1078,12 +1200,9 @@ function CTASlide({ activeTheme, onGetStarted }) {
         </p>
         <button onClick={onGetStarted}
           className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold hover:shadow-2xl transition-all ${isDark ? 'bg-white text-zinc-950 hover:shadow-white/10' : 'bg-zinc-950 text-white hover:shadow-black/20'}`}>
-          Get Started
-          <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}>
-            <ArrowRight className="size-5" />
-          </motion.span>
+          Let's talk
         </button>
-        <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No commitment · We'll review your website and get back to you within 24 hours.</p>
+        <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No commitment</p>
       </motion.div>
     </section>
   );
