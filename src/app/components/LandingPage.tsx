@@ -665,6 +665,12 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
+                  <motion.div
+                    animate={{ height: showCTA ? 0 : 48 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ flexShrink: 0 }}
+                  />
                 </div>
 
                 {/* CTA — OUTSIDE scroll area, always visible at bottom, never hidden */}
