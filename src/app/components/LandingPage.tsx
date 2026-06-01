@@ -433,12 +433,12 @@ const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
 const CONVERSATION = [
   { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                           delay: 600  },
-  { from: 'user', text: "We're a team of 12 — what plan would suit us?",                    delay: 1800 },
-  { from: 'bot',  text: "For a 12-person team, M Core is your sweet spot. It handles ~8–15 chats/day and 1,000 messages/month — plenty for a growing SME. 👌", delay: 3200 },
-  { from: 'user', text: "What's included in M Core?",                                        delay: 5000 },
-  { from: 'bot',  text: "Analytics dashboard, monthly AI updates, email support, and 48h setup. All for 99€/mo — no hidden fees ✅", delay: 6400 },
-  { from: 'user', text: "Sounds good. How do we get started?",                               delay: 8000 },
-  { from: 'bot',  text: "Easy! Click below to order M Core and we'll have you live within 48 hours 🚀", delay: 9200 },
+  { from: 'user', text: "Hey, we just launched a new product. Can you help visitors find the right option?", delay: 1800 },
+  { from: 'bot',  text: "Absolutely. I can guide visitors through your product range, ask qualifying questions, and recommend the right fit based on their needs.", delay: 3200 },
+  { from: 'user', text: "What if someone wants to book a call instead?",                     delay: 5400 },
+  { from: 'bot',  text: "No problem. I capture their details and schedule the call directly. Your team gets a notification right away.", delay: 7000 },
+  { from: 'user', text: "How long does setup take?",                                         delay: 8800 },
+  { from: 'bot',  text: "Usually 48 hours. We train TIA on your content and you're live. Click below to get started.", delay: 10000 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -516,7 +516,7 @@ function AnimatedChatLoop({ theme }) {
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
     addTimer(() => setShowCTA(true), lastDelay + 500);
-    addTimer(() => runLoop(), lastDelay + 3400);
+    addTimer(() => runLoop(), lastDelay + 3800);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
@@ -527,9 +527,13 @@ function AnimatedChatLoop({ theme }) {
     }
   }, [visibleMessages, typingIdx]);
 
+  // Fixed outer dimensions match the hero MiniChat (width:320)
+  // Chat panel height is fixed so it never grows
+  const CHAT_PANEL_HEIGHT = 420;
+
   return (
     /* Outer wrapper — fixed size so layout never shifts */
-    <div style={{ width: 320, position: 'relative', height: 420 }}>
+    <div style={{ width: 320, position: 'relative', height: CHAT_PANEL_HEIGHT }}>
 
       {/* Bubble — always anchored bottom-right, hidden when chat is open */}
       <div style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 10 }}>
@@ -559,7 +563,7 @@ function AnimatedChatLoop({ theme }) {
         </AnimatePresence>
       </div>
 
-      {/* Chat widget — anchored bottom-right, grows upward */}
+      {/* Chat widget — anchored bottom-right, fixed height */}
       <div style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 20 }}>
         <AnimatePresence>
           {phase === 'chat' && (
@@ -575,6 +579,7 @@ function AnimatedChatLoop({ theme }) {
                 border: `1px solid ${theme.border}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
                 width: 320,
+                height: CHAT_PANEL_HEIGHT,
                 display: 'flex',
                 flexDirection: 'column',
               }} className="rounded-[20px] overflow-hidden">
@@ -598,16 +603,14 @@ function AnimatedChatLoop({ theme }) {
                   </div>
                 </div>
 
-                {/* Messages */}
+                {/* Messages — scrollable, fixed height, CTA is OUTSIDE scroll area */}
                 <div
                   ref={scrollRef}
-                  className="flex flex-col gap-2.5 p-3 overflow-y-auto"
+                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1"
                   style={{
                     background: isLight ? '#ececee' : 'transparent',
                     scrollbarWidth: 'thin',
                     scrollbarColor: `${theme.scrollThumb} ${theme.scrollTrack}`,
-                    maxHeight: 280,
-                    minHeight: 120,
                   }}
                 >
                   <AnimatePresence initial={false}>
@@ -659,20 +662,28 @@ function AnimatedChatLoop({ theme }) {
                         </div>
                       </motion.div>
                     )}
-
-                    {/* CTA — inside scroll area, pushes messages up naturally */}
-                    {showCTA && (
-                      <motion.div key="cta"
-                        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
-                        <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                          Get Started
-                        </div>
-                      </motion.div>
-                    )}
                   </AnimatePresence>
                   <div />
                 </div>
+
+                {/* CTA — OUTSIDE scroll area, always visible at bottom, never hidden */}
+                <AnimatePresence>
+                  {showCTA && (
+                    <motion.div
+                      key="cta"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ background: isLight ? '#ececee' : 'transparent' }}
+                      className="px-3 pb-2 flex-shrink-0"
+                    >
+                      <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                        Get Started
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Chips */}
                 <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
@@ -925,6 +936,25 @@ function TiaInActionSlide({ activeTheme }) {
             <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
               Watch how TIA handles a real customer conversation on your website.
             </p>
+
+            {/* TIA pointing down + CTA hint */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }} transition={{ delay: 0.4, duration: 0.6 }}
+              className="mt-8 flex flex-col items-center lg:items-start gap-2"
+            >
+              <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                See it live on your site in 48h
+              </p>
+              <motion.span
+                animate={{ y: [0, 6, 0] }}
+                transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                className="text-2xl select-none"
+                style={{ display: 'inline-block' }}
+              >
+                👇
+              </motion.span>
+            </motion.div>
           </motion.div>
 
           {/* Browser */}
@@ -943,8 +973,8 @@ function TiaInActionSlide({ activeTheme }) {
               </div>
             </div>
 
-            {/* Fake website */}
-            <div className="relative bg-white" style={{ minHeight: 440 }}>
+            {/* Fake website — fixed height so chat never resizes the panel */}
+            <div className="relative bg-white overflow-hidden" style={{ height: 460 }}>
               <div className="p-8 pb-0">
                 <div className="flex items-center justify-between mb-8">
                   <div className="w-24 h-5 bg-zinc-200 rounded" />
