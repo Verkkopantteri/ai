@@ -480,8 +480,6 @@ function AnimatedChatLoop({ theme }) {
   const scrollRef = useRef(null);
   const isLight = theme.name === 'Pearl White';
 
-  const [justRevealedIdx, setJustRevealedIdx] = useState(-1);
-
   const addTimer = (fn, ms) => {
     const t = setTimeout(fn, ms);
     timersRef.current.push(t);
@@ -496,7 +494,6 @@ function AnimatedChatLoop({ theme }) {
     setVisibleMessages(0);
     setTypingIdx(-1);
     setShowCTA(false);
-    setJustRevealedIdx(-1);
 
     // Bubble shows, then chat opens after a beat
     addTimer(() => setPhase('chat'), 1400);
@@ -509,7 +506,6 @@ function AnimatedChatLoop({ theme }) {
         // Hide typing & reveal message (TypedText takes over)
         addTimer(() => {
           setTypingIdx(-1);
-          setJustRevealedIdx(i);
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
@@ -620,7 +616,7 @@ function AnimatedChatLoop({ theme }) {
                   <AnimatePresence initial={false}>
                     {CONVERSATION.slice(0, visibleMessages).map((msg, i) => (
                       <motion.div key={i}
-                        initial={msg.from === 'bot' && i === justRevealedIdx ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                         className={`flex gap-1.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
@@ -646,10 +642,10 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     ))}
 
-                    {/* Typing indicator */}
-                    {typingIdx >= 0 && (
-                      <motion.div key="typing"
-                        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+                    {/* Typing indicator — uses same key as the upcoming message so React REUSES the DOM node instead of unmount+mount */}
+                    {typingIdx >= 0 && visibleMessages <= typingIdx && (
+                      <motion.div key={typingIdx}
+                        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.22 }}
                         className="flex gap-1.5">
                         <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
