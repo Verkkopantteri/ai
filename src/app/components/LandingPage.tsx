@@ -1,56 +1,78 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useInView, useMotionValue, useSpring } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
+import { MagneticButton } from './MagneticButton';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 import {
   ArrowRight, Check, Menu, X, Star, ChevronRight,
   Zap, Brain, Shield, TrendingUp, Clock, Users, MessageSquare
 } from 'lucide-react';
 
-/* ─── FONTS ─────────────────────────────────────────────────── */
-const FONT_STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-  * { font-family: 'DM Sans', sans-serif; }
-  .font-display { font-family: 'Playfair Display', serif; }
-`;
-
-/* ─── CURSOR GLOW ─────────────────────────────────────────────── */
-function CursorGlow() {
-  const x = useMotionValue(-200);
-  const y = useMotionValue(-200);
-  const sx = useSpring(x, { stiffness: 80, damping: 20 });
-  const sy = useSpring(y, { stiffness: 80, damping: 20 });
-
-  useEffect(() => {
-    const move = (e) => { x.set(e.clientX); y.set(e.clientY); };
-    window.addEventListener('mousemove', move);
-    return () => window.removeEventListener('mousemove', move);
-  }, []);
-
+/* ─── ANIMATED PARTICLES ──────────────────────────────────────── */
+function FloatingParticle({ delay, duration, x, size }) {
   return (
     <motion.div
-      style={{ left: sx, top: sy, translateX: '-50%', translateY: '-50%' }}
-      className="fixed pointer-events-none z-0 w-[600px] h-[600px] rounded-full"
-      style={{
-        left: sx, top: sy,
-        translateX: '-50%', translateY: '-50%',
-        background: 'radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        position: 'fixed',
-        zIndex: 0,
-        width: 600, height: 600,
-        borderRadius: '50%',
-      }}
+      className="absolute rounded-full bg-white/5 pointer-events-none"
+      style={{ left: `${x}%`, bottom: 0, width: size, height: size }}
+      animate={{ y: [0, -900], opacity: [0, 0.6, 0] }}
+      transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
     />
   );
 }
 
-/* ─── HEADER ─────────────────────────────────────────────────── */
+function ParticleField({ count = 18 }) {
+  const particles = Array.from({ length: count }, (_, i) => ({
+    id: i,
+    delay: (i * 0.7) % 8,
+    duration: 6 + (i * 1.3) % 6,
+    x: (i * 7.3) % 100,
+    size: 2 + (i * 3.1) % 6,
+  }));
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map(p => <FloatingParticle key={p.id} {...p} />)}
+    </div>
+  );
+}
+
+/* ─── ANIMATED COUNTER ────────────────────────────────────────── */
+function AnimatedNumber({ target, suffix = '', duration = 2 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    let start = null;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / (duration * 1000), 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+      else setDisplay(target);
+    };
+    requestAnimationFrame(step);
+  }, [inView, target, duration]);
+
+  return <span ref={ref}>{display}{suffix}</span>;
+}
+
+/* ─── HEADER (new layout) ─────────────────────────────────────── */
 function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => { setScrolled(window.scrollY > 40); lastY.current = window.scrollY; };
+    const onScroll = () => {
+      const y = window.scrollY;
+      const isDown = y > lastY.current;
+      setScrolled(y > 40);
+      if (y > 80) setHidden(isDown);
+      else setHidden(false);
+      lastY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -62,337 +84,474 @@ function Header() {
     { label: 'Contact', href: '#contact' },
   ];
 
+  const [termsOpen, setTermsOpen] = useState(false);
+  const termsRef = useRef(null);
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (termsRef.current && !termsRef.current.contains(e.target)) setTermsOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   return (
     <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-0 left-0 right-0 z-50"
+      animate={{ y: hidden ? '-120%' : '0%' }}
+      transition={{ duration: 0.35, ease: 'easeInOut' }}
+      className="fixed top-0 left-0 right-0 z-50 pointer-events-none"
     >
-      <div className={`transition-all duration-500 ${scrolled ? 'mx-4 mt-3 rounded-2xl bg-[#080810]/90 backdrop-blur-2xl border border-white/8 shadow-2xl shadow-black/60' : 'bg-transparent'}`}>
+      <div className={`pointer-events-auto transition-all duration-500 ease-in-out ${
+        scrolled
+          ? 'mx-4 mt-3 rounded-2xl backdrop-blur-xl border shadow-2xl shadow-black/40 bg-zinc-900/20 border-white/5'
+          : 'mx-0 mt-0 rounded-none bg-transparent border-transparent'
+      }`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2.5">
-              <img src="/logo.png" alt="TIA AI" className="h-9 w-auto object-contain" />
-            </div>
+          {/* Left: Logo + Nav */}
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center"
+            >
+              <img src="/logo.png" alt="TIA AI" className="h-12 w-auto object-contain" />
+            </motion.div>
+
             <nav className="hidden md:flex items-center gap-0.5">
-              {navItems.map((item) => (
-                <a key={item.label} href={item.href}
-                  className="px-4 py-2 text-sm text-white/50 hover:text-white/90 transition-colors rounded-lg hover:bg-white/5">
+              {navItems.map((item, i) => (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
+                  className="px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors"
+                >
                   {item.label}
-                </a>
+                </motion.a>
               ))}
+
+              {/* Terms dropdown */}
+              <motion.div
+                ref={termsRef}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 + navItems.length * 0.07 }}
+                className="relative"
+                onMouseEnter={() => setTermsOpen(true)}
+                onMouseLeave={() => setTermsOpen(false)}
+              >
+                <button className="flex items-center gap-1 px-3.5 py-2 text-base text-zinc-400 hover:text-white transition-colors">
+                  Terms
+                  <motion.span
+                    animate={{ rotate: termsOpen ? 90 : 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="inline-flex"
+                  >
+                    <ChevronRight className="size-3.5 opacity-70" />
+                  </motion.span>
+                </button>
+                {termsOpen && <div className="absolute top-full left-0 w-full h-2" />}
+                <AnimatePresence>
+                  {termsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute top-[calc(100%+4px)] left-0 w-44 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1"
+                    >
+                      {[
+                        { label: 'Terms of Service', href: '#' },
+                        { label: 'Privacy Policy', href: '#' },
+                        { label: 'Refund Policy', href: '#' },
+                      ].map((item) => (
+                        <a key={item.label} href={item.href}
+                          className="block px-4 py-2.5 text-sm text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 transition-colors"
+                          onClick={() => setTermsOpen(false)}
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </nav>
           </div>
-          <div className="hidden md:flex items-center gap-3">
-            <a href="#contact" className="text-sm text-white/50 hover:text-white transition-colors px-4 py-2">
+
+          {/* Right: Sign in + CTA */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden md:flex items-center gap-3"
+          >
+            <a href="#contact" className="text-base text-zinc-400 hover:text-white transition-colors px-3 py-2">
               Sign in
             </a>
             <a href="#pricing"
-              className="px-5 py-2.5 bg-white text-black text-sm rounded-xl font-medium hover:bg-white/90 transition-all shadow-lg shadow-white/10">
-              Get a demo →
+              className="px-4 py-2 bg-white text-zinc-950 text-base rounded-lg font-semibold hover:bg-zinc-100 transition-all hover:shadow-lg hover:shadow-white/10">
+              Get a demo
             </a>
-          </div>
+          </motion.div>
+
           <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-zinc-800 px-6 py-4 flex flex-col gap-2 overflow-hidden rounded-b-2xl bg-zinc-900/95"
+            >
+              {navItems.map(item => (
+                <a key={item.label} href={item.href} onClick={() => setOpen(false)}
+                  className="py-2 text-zinc-300 hover:text-white transition-colors">{item.label}</a>
+              ))}
+              <a href="#pricing" className="mt-2 py-3 bg-white text-zinc-950 text-sm rounded-lg text-center font-semibold">
+                Get a demo
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );
 }
 
-/* ─── LIVE CHAT WIDGET ────────────────────────────────────────── */
-function LiveChatWidget() {
-  const [messages, setMessages] = useState([
-    { from: 'bot', text: "Hey! I'm TIA, your AI assistant. How can I help today?", ts: '09:41' },
-  ]);
-  const [typing, setTyping] = useState(false);
-  const [inputVal, setInputVal] = useState('');
-  const [step, setStep] = useState(0);
-  const bottomRef = useRef(null);
+/* ─── CHAT THEMES ─────────────────────────────────────────────── */
+const CHAT_THEMES = [
+  {
+    name: 'Dark',
+    bg: '#09090b',
+    headerBg: 'rgba(13,13,15,0.97)',
+    msgBg: '#232325',
+    userMsgBg: '#2c2c30',
+    border: 'rgba(255,255,255,0.09)',
+    inputBg: '#1e1e22',
+    chipColor: 'rgba(255,255,255,0.45)',
+    textColor: 'rgba(232,232,232,0.95)',
+    userTextColor: 'rgba(232,232,232,0.95)',
+    subtleText: 'rgba(255,255,255,0.22)',
+    accentDot: '#34d399',
+    sendArrow: 'rgba(255,255,255,0.6)',
+    glow: '0 32px 80px rgba(0,0,0,0.7)',
+    avatarSrc: '/logo.png',
+  },
+  {
+    name: 'Light',
+    bg: '#f4f4f5',
+    headerBg: '#ffffff',
+    msgBg: '#e4e4e7',
+    userMsgBg: '#e4e4e7',
+    border: 'rgba(0,0,0,0.08)',
+    inputBg: '#ffffff',
+    chipColor: 'rgba(0,0,0,0.45)',
+    textColor: '#18181b',
+    userTextColor: '#18181b',
+    subtleText: 'rgba(0,0,0,0.3)',
+    accentDot: '#34d399',
+    sendArrow: 'rgba(0,0,0,0.5)',
+    glow: '0 32px 80px rgba(0,0,0,0.35)',
+    avatarSrc: '/logo-black.png',
+  },
+];
 
-  const demoFlow = [
-    { user: 'Can you show me your pricing?', bot: "Absolutely! We have three plans starting at €199/month. All include setup, training, and 24/7 operation. The Growth plan at €499 is most popular 🚀" },
-    { user: 'How fast can you go live?', bot: "Within 48 hours! We handle everything — training, integration, launch. You just share your content and we do the rest ✅" },
-    { user: 'Do you support Finnish?', bot: "Yes, TIA speaks 100+ languages including Finnish, Swedish, and English — simultaneously if needed 🇫🇮" },
+/* ─── MINI CHAT WIDGET ────────────────────────────────────────── */
+function MiniChat({ theme, isActive }) {
+  const messages = [
+    { from: 'bot', text: "Hey! I'm TIA, your AI assistant. How can I help?" },
+    { from: 'user', text: 'Can you set up a demo for us?' },
+    { from: 'bot', text: "Absolutely! I'll connect you with our team. Leave your email and we'll schedule within 24h." },
   ];
-
-  const sendMessage = (text) => {
-    const msg = text || inputVal;
-    if (!msg.trim()) return;
-    setInputVal('');
-    setMessages(m => [...m, { from: 'user', text: msg, ts: '09:4' + (2 + messages.length) }]);
-    setTyping(true);
-
-    const response = demoFlow[step % demoFlow.length];
-    setTimeout(() => {
-      setTyping(false);
-      setMessages(m => [...m, { from: 'bot', text: response.bot, ts: '09:4' + (3 + messages.length) }]);
-      setStep(s => s + 1);
-    }, 1400);
-  };
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, typing]);
-
-  const suggestions = demoFlow.map(d => d.user).filter((_, i) => i >= step % 3);
+  const isLight = theme.name === 'Light';
 
   return (
-    <div className="flex flex-col h-full bg-[#0e0e18] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl shadow-black/60"
-      style={{ background: 'linear-gradient(145deg, #0e0e1c 0%, #080812 100%)' }}>
+    <div
+      style={{
+        background: theme.bg,
+        border: `1px solid ${theme.border}`,
+        boxShadow: theme.glow,
+        width: 320,
+      }}
+      className="rounded-[20px] overflow-hidden flex flex-col"
+    >
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/8"
-        style={{ background: 'rgba(255,255,255,0.03)' }}>
-        <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-            <img src="/logo.png" alt="TIA" className="w-6 h-6 object-contain" />
+      <div style={{ background: theme.headerBg, borderBottom: `1px solid ${theme.border}` }}
+        className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+            className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
+            <img src={theme.avatarSrc} alt="TIA" className="w-full h-full object-contain p-0.5" />
           </div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 rounded-full border-2 border-[#0e0e1c] animate-pulse" />
+          <div className="flex items-center gap-1.5">
+            <span style={{ color: theme.textColor }} className="text-sm font-semibold">TIA</span>
+            <span style={{ background: theme.accentDot }} className="w-1.5 h-1.5 rounded-full animate-pulse" />
+          </div>
         </div>
-        <div>
-          <div className="text-white text-sm font-medium">TIA</div>
-          <div className="text-emerald-400 text-xs">Online now</div>
-        </div>
-        <div className="ml-auto flex gap-2 opacity-30">
-          {['#FF5F57','#FEBC2E','#28C840'].map(c => (
-            <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />
-          ))}
+        <div className="flex gap-2.5 items-center opacity-30">
+          <div style={{ background: theme.textColor }} className="w-3 h-0.5 rounded-full" />
+          <div style={{ border: `1px solid ${theme.textColor}` }} className="w-3 h-3 rounded-sm" />
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4 scrollbar-hide" style={{ minHeight: 0 }}>
-        <AnimatePresence initial={false}>
-          {messages.map((msg, i) => (
-            <motion.div key={i}
-              initial={{ opacity: 0, y: 12, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.3, ease: [0.16,1,0.3,1] }}
-              className={`flex gap-2.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
-            >
-              {msg.from === 'bot' && (
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md shadow-violet-500/20">
-                  <img src="/logo.png" alt="" className="w-4 h-4 object-contain" />
-                </div>
-              )}
-              <div style={{
-                background: msg.from === 'bot'
-                  ? 'rgba(255,255,255,0.07)'
-                  : 'linear-gradient(135deg, rgba(139,92,246,0.35), rgba(99,102,241,0.35))',
-                border: `1px solid ${msg.from === 'bot' ? 'rgba(255,255,255,0.08)' : 'rgba(139,92,246,0.3)'}`,
-                borderRadius: msg.from === 'bot' ? '4px 16px 16px 16px' : '16px 16px 4px 16px',
+      <div className="flex flex-col gap-3 p-4" style={{ background: isLight ? '#ececee' : 'transparent' }}>
+        {messages.map((msg, i) => (
+          <motion.div key={i}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1, duration: 0.35 }}
+            className={`flex gap-2 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
+          >
+            {msg.from === 'bot' && (
+              <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+                className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                <img src={theme.avatarSrc} alt="T" className="w-full h-full object-contain p-0.5" />
+              </div>
+            )}
+            <div
+              style={{
+                background: msg.from === 'bot' ? theme.msgBg : theme.userMsgBg,
+                border: `1px solid ${theme.border}`,
+                color: msg.from === 'user' ? theme.userTextColor : theme.textColor,
+                borderRadius: msg.from === 'bot' ? '3px 14px 14px 14px' : '14px 14px 3px 14px',
               }}
-                className="max-w-[75%] px-4 py-2.5 text-white/90 text-sm leading-relaxed">
-                {msg.text}
-              </div>
-            </motion.div>
-          ))}
-          {typing && (
-            <motion.div key="typing" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="flex gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-violet-500/20">
-                <img src="/logo.png" alt="" className="w-4 h-4 object-contain" />
-              </div>
-              <div className="px-4 py-3 rounded-[4px_16px_16px_16px] border border-white/8 flex gap-1.5 items-center"
-                style={{ background: 'rgba(255,255,255,0.07)' }}>
-                {[0,1,2].map(d => (
-                  <motion.div key={d} className="w-1.5 h-1.5 rounded-full bg-white/40"
-                    animate={{ y: [0,-4,0], opacity:[0.4,1,0.4] }}
-                    transition={{ duration: 0.9, delay: d*0.15, repeat: Infinity }} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <div ref={bottomRef} />
+              className="max-w-[200px] px-3 py-2 text-[11px] leading-relaxed"
+            >
+              {msg.text}
+            </div>
+          </motion.div>
+        ))}
+        {/* Typing dots */}
+        <div className="flex gap-2">
+          <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+            className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+            <img src={theme.avatarSrc} alt="T" className="w-full h-full object-contain p-0.5" />
+          </div>
+          <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, borderRadius: '3px 14px 14px 14px' }}
+            className="flex items-center gap-1 px-3 py-2.5">
+            {[0, 1, 2].map(d => (
+              <motion.div key={d}
+                style={{ background: theme.subtleText }}
+                className="w-1 h-1 rounded-full"
+                animate={{ y: [0, -3, 0], opacity: [0.4, 1, 0.4] }}
+                transition={{ repeat: Infinity, duration: 1.2, delay: d * 0.2 }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Quick replies */}
-      {step < 3 && !typing && (
-        <div className="px-4 pb-2 flex flex-wrap gap-1.5">
-          {demoFlow.slice(step, step+2).map((d, i) => (
-            <motion.button key={i}
-              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              onClick={() => sendMessage(d.user)}
-              className="text-xs px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-300 hover:bg-violet-500/15 transition-colors"
-            >
-              {d.user}
-            </motion.button>
-          ))}
-        </div>
-      )}
+      {/* Chips */}
+      <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-4 pb-2">
+        {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+          <span key={chip}
+            style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: isLight ? 'rgba(255,255,255,0.7)' : 'rgba(20,20,24,0.85)' }}
+            className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">
+            {chip}
+          </span>
+        ))}
+      </div>
 
       {/* Input */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl border border-white/10"
-          style={{ background: 'rgba(255,255,255,0.05)' }}>
-          <input
-            value={inputVal}
-            onChange={e => setInputVal(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && sendMessage()}
-            placeholder="Send a message…"
-            className="flex-1 bg-transparent text-white/80 text-sm outline-none placeholder:text-white/25"
-          />
-          <button onClick={() => sendMessage()}
-            className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity shadow-md shadow-violet-500/30">
-            <ArrowRight className="size-3.5 text-white" />
-          </button>
-        </div>
-        <div className="flex items-center justify-center gap-1 mt-2 opacity-30">
-          <span className="text-white/50 text-[10px]">Powered by</span>
-          <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="" className="h-2.5 brightness-200" />
+      <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
+        <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
+          className="flex items-center gap-2 rounded-xl px-3 py-2">
+          <span style={{ color: theme.subtleText }} className="text-[11px] flex-1">Send a message…</span>
+          <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
+            className="w-6 h-6 rounded-lg flex items-center justify-center">
+            <svg width="8" height="8" viewBox="0 0 10 16" fill="none">
+              <polyline points="2,1 9,8 2,15" stroke={theme.sendArrow} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-2 pl-[105px]">
+        <span style={{ color: theme.subtleText, fontSize: '9px', letterSpacing: '0.04em' }}>Powered by</span>
+        <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="TIA"
+          className="h-2.5"
+          style={{ opacity: 0.5, filter: isLight ? 'brightness(0)' : 'brightness(2)' }} />
+      </div>
+    </div>
+  );
+}
+
+/* ─── CHAT STACK (fixed: light behind, dark front, closer together) */
+function ChatStack() {
+  return (
+    <div className="relative" style={{ width: 380, height: 540 }}>
+      {/* Back card — Light theme, slightly behind and to the right */}
+      <motion.div
+        initial={{ opacity: 0, x: 20, y: -10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 0.9, delay: 0.8 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: -10,
+          zIndex: 10,
+          transform: 'rotate(5deg) translateX(10px) translateY(-10px)',
+          filter: 'brightness(0.88)',
+          pointerEvents: 'none',
+        }}
+      >
+        <MiniChat theme={CHAT_THEMES[1]} isActive={false} />
+      </motion.div>
+
+      {/* Front card — Dark theme */}
+      <motion.div
+        initial={{ opacity: 0, x: -10, y: 15 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 0.9, delay: 0.6 }}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          zIndex: 20,
+          transform: 'rotate(-2deg)',
+        }}
+      >
+        <MiniChat theme={CHAT_THEMES[0]} isActive={true} />
+      </motion.div>
     </div>
   );
 }
 
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+
   return (
-    <section className="min-h-screen flex items-center pt-24 pb-16 px-6 relative overflow-hidden">
-      {/* BG */}
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse 80% 60% at 60% 40%, rgba(109,40,217,0.15) 0%, transparent 70%), radial-gradient(ellipse 60% 80% at 20% 80%, rgba(49,46,129,0.12) 0%, transparent 60%), #060610'
-      }} />
-      {/* Grid lines */}
-      <div className="absolute inset-0 opacity-[0.04]"
-        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+    <motion.section
+      ref={ref}
+      style={{ opacity, scale }}
+      className="h-screen flex flex-col items-center justify-center relative overflow-hidden"
+    >
+      <div className="absolute inset-0">
+        <ImageWithFallback
+          src="https://images.unsplash.com/photo-1625314887424-9f190599bd56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBSSUyMGNoYXRib3QlMjByb2JvdCUyMGludGVyZmFjZSUyMGZ1dHVyaXN0aWN8ZW58MXx8fHwxNzgwMjI1MzE2fDA&ixlib=rb-4.1.0&q=80&w=1080"
+          alt="AI Robot"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/45 to-zinc-950" />
+      </div>
 
-      <div className="max-w-7xl mx-auto w-full relative z-10 grid lg:grid-cols-[1fr_440px] gap-12 xl:gap-20 items-center">
-        {/* LEFT */}
+      <ParticleField count={24} />
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+        {/* LEFT — text */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, ease: [0.16,1,0.3,1] }}
+          style={{ y }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="text-center lg:text-left flex-shrink-0"
         >
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 mb-8"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-            <span className="text-violet-300 text-xs font-medium tracking-wide">Powered by Anthropic Claude</span>
-          </motion.div>
-
-          <h1 className="font-display text-white leading-[1.05] mb-6">
-            <span className="block text-6xl lg:text-7xl xl:text-8xl font-normal">The Future</span>
-            <span className="block text-6xl lg:text-7xl xl:text-8xl font-normal italic text-violet-300"> is here</span>
+          <h1 className="text-8xl md:text-9xl font-light text-white mb-6 leading-tight whitespace-nowrap">
+            The Future is here
           </h1>
-
-          <p className="text-white/55 text-xl lg:text-2xl font-light mb-10 max-w-lg leading-relaxed">
-            TIA AI chatbots for your website —<br />installed in minutes.
+          <p className="text-2xl text-white/80 font-light mb-10 max-w-2xl">
+            TIA AI chatbots for your website — installed in minutes.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
             <a href="#pricing"
-              className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-white text-black rounded-2xl text-base font-medium hover:bg-violet-50 transition-all shadow-2xl shadow-white/10">
+              className="group px-8 py-4 bg-white text-zinc-950 rounded-full text-base font-semibold inline-flex items-center gap-2 hover:bg-zinc-100 transition-colors">
               Get a free demo
-              <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+              <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
                 <ArrowRight className="size-4" />
               </motion.span>
             </a>
-            <a href="#features"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/15 text-white/70 rounded-2xl text-base font-light hover:border-white/30 hover:text-white transition-all">
+            <a href="#features" className="px-8 py-4 border border-white/30 text-white rounded-full text-base font-light hover:border-white/60 transition-colors">
               See how it works
             </a>
           </div>
-
-          {/* Social proof */}
-          <div className="flex items-center gap-4 mt-10 pt-10 border-t border-white/8">
-            <div className="flex -space-x-2">
-              {['#8B5CF6','#6366F1','#4F46E5','#7C3AED'].map((c,i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#060610] flex items-center justify-center text-xs text-white font-medium"
-                  style={{ background: c }}>
-                  {['M','L','S','J'][i]}
-                </div>
-              ))}
-            </div>
-            <div>
-              <div className="flex gap-0.5">{[...Array(5)].map((_,i) => <Star key={i} className="size-3 text-yellow-400 fill-yellow-400" />)}</div>
-              <div className="text-white/40 text-xs mt-0.5">50+ Finnish businesses trust TIA</div>
-            </div>
-          </div>
         </motion.div>
 
-        {/* RIGHT — LIVE CHAT */}
+        {/* RIGHT — chat stack, shifted left */}
         <motion.div
-          initial={{ opacity: 0, x: 40, y: 20 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.16,1,0.3,1] }}
-          className="h-[580px] relative"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="flex-shrink-0 hidden lg:block -ml-8"
         >
-          {/* Glow behind */}
-          <div className="absolute inset-0 -m-8 rounded-full blur-3xl opacity-25"
-            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.6) 0%, transparent 70%)' }} />
-          <LiveChatWidget />
+          <ChatStack />
         </motion.div>
       </div>
-    </section>
+
+      {/* Scroll indicator */}
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
+      >
+        <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
+      </motion.div>
+    </motion.section>
   );
 }
 
-/* ─── PROBLEM STATS ──────────────────────────────────────────── */
-function AnimatedNumber({ target, suffix = '' }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!inView) return;
-    let start = null;
-    const step = (ts) => {
-      if (!start) start = ts;
-      const p = Math.min((ts - start) / 2200, 1);
-      setV(Math.floor((1 - Math.pow(1-p,3)) * target));
-      if (p < 1) requestAnimationFrame(step); else setV(target);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target]);
-  return <span ref={ref}>{v}{suffix}</span>;
-}
-
+/* ─── PROBLEM ─────────────────────────────────────────────────── */
 function ProblemSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [80, 0, 0, -80]);
+
   const stats = [
-    { target: 73, suffix: '%', label: 'of customers leave if they don\'t get an instant answer.' },
-    { display: '24/7', label: 'availability your team cannot provide. Your chatbot can.' },
-    { target: 3, suffix: '×', label: 'more leads converted with instant chat support.' },
+    { animated: true, target: 73, suffix: '%', label: 'of customers leave if they don\'t get an instant answer.' },
+    { animated: false, display: '24/7', label: 'availability your team cannot provide. Your chatbot can.' },
+    { animated: true, target: 3, suffix: '×', label: 'more leads converted with instant chat support.' },
   ];
+
   return (
-    <section className="py-32 px-6 relative overflow-hidden" style={{ background: '#060610' }}>
-      <div className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-      <div className="max-w-5xl mx-auto relative z-10">
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-20">
-          <h2 className="font-display text-6xl lg:text-7xl text-white font-normal mb-4">
-            Your customers are <span className="italic text-red-400">waiting</span>
-          </h2>
-          <p className="text-white/40 text-xl font-light">Every unanswered question is a lost customer.</p>
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {stats.map((s, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-              className="text-center p-8 rounded-3xl border border-white/6"
-              style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <div className="font-display text-7xl font-normal text-red-400 mb-4">
-                {s.target !== undefined ? <AnimatedNumber target={s.target} suffix={s.suffix} /> : s.display}
+    <motion.section ref={ref} style={{ opacity, y }}
+      className="h-screen flex items-center justify-center bg-zinc-950 text-white px-6 relative overflow-hidden">
+      <ParticleField count={12} />
+      <div className="max-w-5xl mx-auto text-center relative z-10">
+        <h2 className="text-6xl md:text-7xl font-light mb-6">
+          Your customers are<br /><span className="text-red-400">waiting</span>
+        </h2>
+        <p className="text-xl text-zinc-400 font-light mb-16 max-w-2xl mx-auto">
+          Every unanswered question on your website is a lost customer.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {stats.map((stat, i) => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: i * 0.2 }}>
+              <div className="text-6xl font-light text-red-400 mb-4 tabular-nums">
+                {stat.animated
+                  ? <AnimatedNumber target={stat.target} suffix={stat.suffix} duration={2.2} />
+                  : stat.display}
               </div>
-              <p className="text-white/45 font-light text-base">{s.label}</p>
+              <p className="text-zinc-400 text-lg font-light">{stat.label}</p>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
 /* ─── FEATURES ────────────────────────────────────────────────── */
 function FeaturesSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
   const features = [
     { icon: MessageSquare, title: 'Installed on your website', desc: 'A small code snippet. Works on WordPress, Shopify, or any custom site.' },
     { icon: Brain, title: 'Trained on your content', desc: 'Knows your products, FAQs, and pricing. Answers like a real team member.' },
@@ -401,253 +560,397 @@ function FeaturesSlide() {
     { icon: Users, title: 'Unlimited simultaneous chats', desc: 'One chatbot, thousands of conversations. Your team handles none of them.' },
     { icon: Zap, title: 'Live in 48 hours', desc: 'We handle everything: training, setup, launch. You just share your content.' },
   ];
+
   return (
-    <section id="features" className="py-32 px-6 bg-white">
+    <motion.section id="features" ref={ref} style={{ opacity }}
+      className="min-h-screen flex items-center justify-center bg-white py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-20">
-          <h2 className="font-display text-6xl lg:text-7xl text-zinc-950 mb-4">The AI team</h2>
-          <p className="text-zinc-400 text-xl font-light">Focus on your business. We'll handle the AI.</p>
+          <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">The AI team</h2>
+          <p className="text-xl text-zinc-500 font-light max-w-xl mx-auto">Focus on your business. We'll handle the AI.</p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((f, i) => (
             <motion.div key={f.title}
               initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.09, duration: 0.5 }}
-              className="group p-8 rounded-3xl border border-zinc-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all duration-400">
-              <div className="size-12 bg-zinc-950 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-violet-600 transition-all duration-300">
-                <f.icon className="size-5 text-white" strokeWidth={1.5} />
+              viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}
+              className="group p-8 rounded-2xl border border-zinc-100 hover:border-zinc-200 hover:shadow-xl transition-all duration-300">
+              <div className="size-12 bg-zinc-950 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <f.icon className="size-6 text-white" strokeWidth={1.5} />
               </div>
-              <h3 className="text-lg font-semibold text-zinc-950 mb-3">{f.title}</h3>
-              <p className="text-zinc-500 font-light leading-relaxed text-sm">{f.desc}</p>
+              <h3 className="text-xl font-semibold text-zinc-950 mb-3">{f.title}</h3>
+              <p className="text-zinc-500 font-light leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
-/* ─── ANIMATED DEMO CONVERSATION ─────────────────────────────── */
-function DemoConversationSlide() {
+/* ─── TIA IN ACTION — animated demo inside a fake website ────── */
+function TiaInActionSlide() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-100px' });
-  const [visible, setVisible] = useState(0);
+  const inView = useInView(ref, { once: true, margin: '-120px' });
+  const [phase, setPhase] = useState(0); // 0=idle, 1=playing, 2=done
 
   const conversation = [
-    { from: 'user', text: 'Hi! We just launched a SaaS startup. Do you handle technical products?', delay: 0 },
-    { from: 'bot', text: 'Absolutely! I can be trained on your entire documentation, pricing pages, and technical specs. I\'ll answer questions as accurately as your best support agent.', delay: 1200 },
-    { from: 'user', text: 'What happens when a question is too complex for you?', delay: 2600 },
-    { from: 'bot', text: 'I\'ll let your visitor know I\'m connecting them with a human expert — and capture their contact info so your team can follow up. No lead lost. ✅', delay: 3900 },
-    { from: 'user', text: 'How do I see what people are asking?', delay: 5200 },
-    { from: 'bot', text: 'You get a live analytics dashboard showing all conversations, top questions, and conversion rates. We send you weekly digest emails too 📊', delay: 6500 },
-    { from: 'user', text: 'Ok, I\'m interested. How do we get started?', delay: 7800 },
-    { from: 'bot', text: 'Great! Book a free demo and we\'ll have your chatbot live within 48 hours. No credit card needed. Want me to schedule that for you right now? 🚀', delay: 9000 },
+    { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                         delay: 500  },
+    { from: 'user', text: "What's included in the Growth plan?",                              delay: 1800 },
+    { from: 'bot',  text: "The Growth plan (€499/mo) includes chatbots on 3 websites, up to 5 000 chats/month, lead capture, analytics, and priority support 🚀", delay: 3200 },
+    { from: 'user', text: "How quickly can we go live?",                                      delay: 5000 },
+    { from: 'bot',  text: "Within 48 hours! We handle training, setup, and launch. You just share your content and we take care of the rest ✅", delay: 6400 },
+    { from: 'user', text: "Perfect. Can I book a demo?",                                      delay: 8000 },
+    { from: 'bot',  text: "Absolutely! Click below and we'll schedule a free 20-min call 👇",  delay: 9200 },
   ];
 
+  const [visible, setVisible] = useState([]);
+  const [showTyping, setShowTyping] = useState(false);
+  const chatBottomRef = useRef(null);
+
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || phase !== 0) return;
+    setPhase(1);
+    setVisible([]);
+    setShowTyping(false);
+
     conversation.forEach((msg, i) => {
-      setTimeout(() => setVisible(i + 1), msg.delay);
+      // Show typing indicator just before each bot message
+      if (msg.from === 'bot') {
+        setTimeout(() => setShowTyping(true), msg.delay - 900);
+        setTimeout(() => setShowTyping(false), msg.delay);
+      }
+      setTimeout(() => {
+        setVisible(v => [...v, i]);
+      }, msg.delay);
     });
+
+    setTimeout(() => setPhase(2), conversation[conversation.length - 1].delay + 600);
   }, [inView]);
 
-  return (
-    <section ref={ref} className="py-32 px-6 relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #060610 0%, #0a0820 50%, #060610 100%)' }}>
-      <div className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: 'linear-gradient(rgba(139,92,246,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.4) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [visible, showTyping]);
 
-      <div className="max-w-3xl mx-auto relative z-10">
+  const darkTheme = CHAT_THEMES[0];
+
+  return (
+    <section ref={ref} className="py-28 px-6 bg-zinc-950 relative overflow-hidden">
+      <ParticleField count={10} />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/25 bg-violet-500/8 mb-6">
-            <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-            <span className="text-violet-300 text-xs font-medium">Live demo</span>
-          </div>
-          <h2 className="font-display text-6xl text-white font-normal mb-4">Watch TIA in action</h2>
-          <p className="text-white/40 text-lg font-light">A real conversation with a SaaS startup founder</p>
+          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">
+            TIA in <span className="text-emerald-400">action</span>
+          </h2>
+          <p className="text-xl text-zinc-500 font-light max-w-lg mx-auto">
+            Watch how TIA handles a real customer conversation on your website.
+          </p>
         </motion.div>
 
-        {/* Fake browser chrome */}
-        <div className="rounded-[24px] overflow-hidden border border-white/10 shadow-2xl shadow-violet-900/20"
-          style={{ background: '#0c0c1e' }}>
-          {/* Browser bar */}
-          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/8"
-            style={{ background: 'rgba(255,255,255,0.03)' }}>
+        {/* Fake browser + website with chat widget */}
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }}
+          className="rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl shadow-black/60 max-w-4xl mx-auto">
+
+          {/* Browser chrome */}
+          <div className="flex items-center gap-3 px-5 py-3 bg-zinc-900 border-b border-zinc-800">
             <div className="flex gap-1.5">
-              {['#FF5F57','#FEBC2E','#28C840'].map(c => <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />)}
-            </div>
-            <div className="flex-1 mx-4 px-4 py-1.5 rounded-lg text-white/20 text-xs"
-              style={{ background: 'rgba(255,255,255,0.04)' }}>
-              yourwebsite.com
-            </div>
-          </div>
-
-          {/* Chat area */}
-          <div className="p-6 space-y-4 min-h-[480px]">
-            <AnimatePresence>
-              {conversation.slice(0, visible).map((msg, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 16, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.45, ease: [0.16,1,0.3,1] }}
-                  className={`flex gap-3 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
-                >
-                  {msg.from === 'bot' && (
-                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5 shadow-lg shadow-violet-500/25"
-                      style={{ background: 'linear-gradient(135deg, #8B5CF6, #6366F1)' }}>
-                      <img src="/logo.png" alt="" className="w-5 h-5 object-contain" />
-                    </div>
-                  )}
-                  {msg.from === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-zinc-600 flex-shrink-0 flex items-center justify-center text-xs text-white font-medium mt-0.5">
-                      A
-                    </div>
-                  )}
-                  <div style={{
-                    background: msg.from === 'bot' ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.06)',
-                    border: `1px solid ${msg.from === 'bot' ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.08)'}`,
-                    borderRadius: msg.from === 'bot' ? '4px 18px 18px 18px' : '18px 18px 4px 18px',
-                  }}
-                    className="max-w-[80%] px-4 py-3 text-white/85 text-sm leading-relaxed">
-                    {msg.text}
-                  </div>
-                </motion.div>
+              {['#FF5F57','#FEBC2E','#28C840'].map(c => (
+                <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />
               ))}
-
-              {/* Typing indicator if next message is from bot and not yet visible */}
-              {visible < conversation.length && conversation[visible]?.from === 'bot' && (
-                <motion.div key="typing-demo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg shadow-violet-500/25"
-                    style={{ background: 'linear-gradient(135deg, #8B5CF6, #6366F1)' }}>
-                    <img src="/logo.png" alt="" className="w-5 h-5 object-contain" />
-                  </div>
-                  <div className="px-4 py-3 rounded-[4px_18px_18px_18px] flex gap-1.5 items-center"
-                    style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)' }}>
-                    {[0,1,2].map(d => (
-                      <motion.div key={d} className="w-1.5 h-1.5 rounded-full bg-violet-400"
-                        animate={{ y:[0,-4,0], opacity:[0.4,1,0.4] }}
-                        transition={{ duration: 0.9, delay: d*0.15, repeat: Infinity }} />
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            </div>
+            <div className="flex-1 mx-4 bg-zinc-800 rounded-md px-4 py-1.5 text-zinc-500 text-xs">
+              yourcompany.com/products
+            </div>
           </div>
-        </div>
 
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="text-center mt-10">
-          <a href="#pricing"
-            className="inline-flex items-center gap-2.5 px-8 py-4 bg-white text-black rounded-2xl text-base font-medium hover:bg-violet-50 transition-all shadow-2xl shadow-white/10">
-            Get your own TIA
-            <ArrowRight className="size-4" />
-          </a>
+          {/* Fake website content */}
+          <div className="relative bg-white" style={{ minHeight: 480 }}>
+            {/* Fake page skeleton */}
+            <div className="p-8 pb-0">
+              {/* Fake nav */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="w-24 h-5 bg-zinc-200 rounded" />
+                <div className="flex gap-4">
+                  {[60,50,70].map((w,i) => <div key={i} className="h-3 bg-zinc-100 rounded" style={{ width: w }} />)}
+                </div>
+                <div className="w-20 h-7 bg-zinc-900 rounded-lg" />
+              </div>
+              {/* Fake hero text */}
+              <div className="mb-6">
+                <div className="w-2/3 h-7 bg-zinc-200 rounded mb-3" />
+                <div className="w-1/2 h-7 bg-zinc-200 rounded mb-5" />
+                <div className="w-full h-3 bg-zinc-100 rounded mb-2" />
+                <div className="w-5/6 h-3 bg-zinc-100 rounded mb-2" />
+                <div className="w-4/6 h-3 bg-zinc-100 rounded mb-6" />
+                <div className="flex gap-3">
+                  <div className="w-28 h-9 bg-zinc-900 rounded-lg" />
+                  <div className="w-28 h-9 bg-zinc-100 rounded-lg border border-zinc-200" />
+                </div>
+              </div>
+              {/* Fake feature cards */}
+              <div className="grid grid-cols-3 gap-4 mt-8 opacity-60">
+                {[0,1,2].map(i => (
+                  <div key={i} className="p-4 border border-zinc-100 rounded-xl">
+                    <div className="w-8 h-8 bg-zinc-200 rounded-lg mb-3" />
+                    <div className="w-3/4 h-3 bg-zinc-200 rounded mb-2" />
+                    <div className="w-full h-2 bg-zinc-100 rounded mb-1" />
+                    <div className="w-5/6 h-2 bg-zinc-100 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── CHAT WIDGET overlaid bottom-right ── */}
+            <div className="absolute bottom-5 right-5" style={{ width: 300 }}>
+              <div
+                style={{
+                  background: darkTheme.bg,
+                  border: `1px solid ${darkTheme.border}`,
+                  boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
+                }}
+                className="rounded-[18px] overflow-hidden flex flex-col"
+              >
+                {/* Widget header */}
+                <div style={{ background: darkTheme.headerBg, borderBottom: `1px solid ${darkTheme.border}` }}
+                  className="flex items-center justify-between px-3.5 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <div style={{ background: darkTheme.msgBg, border: `1px solid ${darkTheme.border}` }}
+                      className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src={darkTheme.avatarSrc} alt="TIA" className="w-full h-full object-contain p-0.5" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span style={{ color: darkTheme.textColor }} className="text-xs font-semibold">TIA</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    </div>
+                  </div>
+                  <X className="size-3.5 opacity-30" style={{ color: darkTheme.textColor }} />
+                </div>
+
+                {/* Messages area */}
+                <div className="flex flex-col gap-2.5 p-3 overflow-y-auto" style={{ maxHeight: 260, minHeight: 120 }}>
+                  <AnimatePresence initial={false}>
+                    {conversation.slice(0, visible.length).map((msg, i) => (
+                      <motion.div key={i}
+                        initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.3, ease: [0.16,1,0.3,1] }}
+                        className={`flex gap-1.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
+                      >
+                        {msg.from === 'bot' && (
+                          <div style={{ background: darkTheme.msgBg, border: `1px solid ${darkTheme.border}` }}
+                            className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                            <img src={darkTheme.avatarSrc} alt="" className="w-full h-full object-contain p-0.5" />
+                          </div>
+                        )}
+                        <div style={{
+                          background: darkTheme.msgBg,
+                          border: `1px solid ${darkTheme.border}`,
+                          color: darkTheme.textColor,
+                          borderRadius: msg.from === 'bot' ? '2px 10px 10px 10px' : '10px 10px 2px 10px',
+                          maxWidth: '82%',
+                        }}
+                          className="px-2.5 py-1.5 text-[10px] leading-relaxed">
+                          {msg.text}
+                        </div>
+                      </motion.div>
+                    ))}
+                    {showTyping && (
+                      <motion.div key="typing" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-1.5">
+                        <div style={{ background: darkTheme.msgBg, border: `1px solid ${darkTheme.border}` }}
+                          className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                          <img src={darkTheme.avatarSrc} alt="" className="w-full h-full object-contain p-0.5" />
+                        </div>
+                        <div style={{ background: darkTheme.msgBg, border: `1px solid ${darkTheme.border}`, borderRadius: '2px 10px 10px 10px' }}
+                          className="flex items-center gap-1 px-2.5 py-2">
+                          {[0,1,2].map(d => (
+                            <motion.div key={d} style={{ background: darkTheme.subtleText }}
+                              className="w-1 h-1 rounded-full"
+                              animate={{ y:[0,-3,0], opacity:[0.4,1,0.4] }}
+                              transition={{ duration: 1, delay: d*0.18, repeat: Infinity }} />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <div ref={chatBottomRef} />
+                </div>
+
+                {/* CTA button appears at end */}
+                <AnimatePresence>
+                  {phase === 2 && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                      transition={{ duration: 0.4 }}
+                      className="px-3 pb-2">
+                      <div className="w-full py-2 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                        Book a free demo →
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Input */}
+                <div style={{ background: darkTheme.headerBg, borderTop: `1px solid ${darkTheme.border}` }}
+                  className="px-2.5 py-2">
+                  <div style={{ background: darkTheme.inputBg, border: `1px solid ${darkTheme.border}` }}
+                    className="flex items-center gap-2 rounded-lg px-2.5 py-1.5">
+                    <span style={{ color: darkTheme.subtleText }} className="text-[10px] flex-1">Reply…</span>
+                    <div style={{ background: darkTheme.msgBg }} className="w-5 h-5 rounded-md flex items-center justify-center">
+                      <svg width="6" height="6" viewBox="0 0 10 16" fill="none">
+                        <polyline points="2,1 9,8 2,15" stroke={darkTheme.sendArrow} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div style={{ background: darkTheme.headerBg }} className="flex items-center gap-1 py-1.5 justify-center">
+                  <span style={{ color: darkTheme.subtleText, fontSize: '8px' }}>Powered by</span>
+                  <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="" className="h-2 brightness-200 opacity-50" />
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
+
+        {/* Replay button */}
+        {phase === 2 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="text-center mt-8">
+            <button
+              onClick={() => { setPhase(0); setVisible([]); setShowTyping(false); setTimeout(() => setPhase(0), 50); }}
+              className="text-zinc-500 hover:text-zinc-300 text-sm transition-colors underline underline-offset-4"
+            >
+              ↺ Replay demo
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
 }
 
-/* ─── WHY TIA ─────────────────────────────────────────────────── */
+/* ─── WHY PANTTERI ────────────────────────────────────────────── */
 function WhyPantteriSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
   const reasons = [
     { icon: Brain, title: 'Powered by Claude', desc: 'Ranks #1 in reasoning and accuracy. Your chatbot is not just fast. It is genuinely intelligent.' },
     { icon: Shield, title: 'Safe, brand-safe responses', desc: 'Claude is designed to be honest and refuse harmful requests. Your brand is protected.' },
     { icon: TrendingUp, title: 'We manage everything', desc: 'Training, updates, monitoring. TIA AI handles the full AI stack. Zero technical headache.' },
   ];
+
   return (
-    <section id="why-pantteri" className="py-32 px-6 bg-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-[0.04]"
-        style={{ background: 'radial-gradient(circle, #7C3AED, transparent)', transform: 'translate(30%, -30%)' }} />
+    <motion.section id="why-pantteri" ref={ref} style={{ opacity }}
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6 relative overflow-hidden">
+      <ParticleField count={16} />
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-20">
-          <h2 className="font-display text-6xl lg:text-7xl text-zinc-950 mb-4">Reliable</h2>
-          <p className="text-zinc-400 text-xl font-light">Not all AI chatbots are created equal.</p>
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="flex justify-center mb-8">
+            <img src="/logo.png" alt="TIA AI" className="w-24 h-24 object-contain" />
+          </motion.div>
+          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">Reliable</h2>
+          <p className="text-lg text-zinc-500 font-light max-w-lg mx-auto">Not all AI chatbots are created equal.</p>
         </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {reasons.map((r, i) => (
             <motion.div key={r.title}
               initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.13 }}
-              className="p-8 rounded-3xl border border-zinc-100 hover:border-violet-100 hover:shadow-xl hover:shadow-violet-50 transition-all duration-400">
-              <div className="size-14 bg-zinc-950 rounded-2xl flex items-center justify-center mb-6">
-                <r.icon className="size-6 text-white" strokeWidth={1.5} />
+              viewport={{ once: true }} transition={{ delay: i * 0.15, duration: 0.6 }}
+              className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-8 backdrop-blur-sm hover:border-zinc-600 transition-colors">
+              <div className="size-14 bg-zinc-800 rounded-xl flex items-center justify-center mb-6">
+                <r.icon className="size-7 text-white" strokeWidth={1.5} />
               </div>
-              <h3 className="text-lg font-semibold text-zinc-950 mb-3">{r.title}</h3>
+              <h3 className="text-lg font-semibold text-white mb-3">{r.title}</h3>
               <p className="text-zinc-400 font-light leading-relaxed text-sm">{r.desc}</p>
             </motion.div>
           ))}
         </div>
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="rounded-3xl border border-zinc-100 p-10 text-center bg-zinc-50">
-          <p className="text-zinc-400 text-xs uppercase tracking-widest mb-3">Powered by</p>
-          <h3 className="font-display text-3xl text-zinc-950 mb-3">Anthropic's Claude</h3>
-          <p className="text-zinc-500 font-light max-w-xl mx-auto text-sm">
+
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ delay: 0.3 }}
+          className="bg-zinc-900/40 border border-zinc-700/60 rounded-3xl p-8 md:p-10 text-center backdrop-blur-sm">
+          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-4">Powered by</p>
+          <h3 className="text-3xl font-light text-white mb-3">Anthropic's Claude</h3>
+          <p className="text-zinc-400 font-light max-w-xl mx-auto text-sm">
             Trusted by Fortune 500 companies and millions of professionals worldwide. 200K token context. Ranked #1 in reasoning. 100+ languages.
           </p>
-          <div className="flex justify-center gap-12 mt-8">
-            {[{ value: '#1', label: 'Reasoning' }, { value: '200K', label: 'Token context' }, { value: '100+', label: 'Languages' }].map(s => (
-              <div key={s.label} className="text-center">
-                <div className="font-display text-3xl text-zinc-950">{s.value}</div>
-                <div className="text-zinc-400 text-xs mt-1">{s.label}</div>
+          <div className="flex justify-center gap-10 mt-8">
+            {[{ value: '#1', label: 'Reasoning' }, { value: '200K', label: 'Token context' }, { value: '100+', label: 'Languages' }].map(stat => (
+              <div key={stat.label} className="text-center">
+                <div className="text-2xl font-light text-white">{stat.value}</div>
+                <div className="text-zinc-600 text-xs mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
 /* ─── REVIEWS ─────────────────────────────────────────────────── */
 function ReviewsSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+
   const reviews = [
     { stars: 5, text: 'Our chatbot now handles 80% of inquiries automatically. Our team focuses on real work.', name: 'Matti K.', role: 'CEO, Verkkokauppa Oy' },
     { stars: 5, text: 'Leads went up 40% in the first month. It books viewings automatically. Incredible.', name: 'Laura V.', role: 'Founder, Nordic Properties' },
     { stars: 5, text: 'Setup done in 48 hours. TIA AI handled everything. We just shared our content.', name: 'Sanna M.', role: 'Marketing Director, Klinikka Pro' },
   ];
+
   return (
-    <section className="py-32 px-6 relative overflow-hidden" style={{ background: '#060610' }}>
+    <motion.section ref={ref} style={{ opacity }}
+      className="min-h-screen flex items-center justify-center bg-white py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16">
-          <h2 className="font-display text-6xl text-white mb-4">Early results</h2>
+          <h2 className="text-6xl md:text-7xl font-light text-zinc-950 mb-4">Early results</h2>
           <div className="flex items-center justify-center gap-1 mt-4">
-            {[...Array(5)].map((_, i) => <Star key={i} className="size-4 text-yellow-400 fill-yellow-400" />)}
-            <span className="text-white/30 text-sm ml-2">5.0 · Verified business reviews</span>
+            {[...Array(5)].map((_, i) => <Star key={i} className="size-4 text-zinc-950 fill-zinc-950" />)}
+            <span className="text-zinc-400 text-sm ml-2">5.0 · Verified business reviews</span>
           </div>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {reviews.map((r, i) => (
             <motion.div key={r.name}
               initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.13 }}
-              className="p-8 rounded-3xl border border-white/8 hover:border-violet-500/30 transition-colors"
-              style={{ background: 'rgba(255,255,255,0.03)' }}>
+              viewport={{ once: true }} transition={{ delay: i * 0.15, duration: 0.5 }}
+              className="bg-zinc-50 border border-zinc-100 rounded-2xl p-7 hover:border-zinc-200 hover:shadow-md transition-all">
               <div className="flex gap-0.5 mb-5">
-                {[...Array(r.stars)].map((_, j) => <Star key={j} className="size-3.5 text-yellow-400 fill-yellow-400" />)}
+                {[...Array(r.stars)].map((_, j) => <Star key={j} className="size-4 text-zinc-800 fill-zinc-800" />)}
               </div>
-              <p className="text-white/60 font-light leading-relaxed mb-6 text-sm">"{r.text}"</p>
+              <p className="text-zinc-700 font-light leading-relaxed mb-6 text-sm">"{r.text}"</p>
               <div>
-                <div className="font-medium text-white text-sm">{r.name}</div>
-                <div className="text-white/30 text-xs">{r.role}</div>
+                <div className="font-semibold text-zinc-950 text-sm">{r.name}</div>
+                <div className="text-zinc-400 text-xs">{r.role}</div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
 /* ─── PRICING ─────────────────────────────────────────────────── */
 function PricingSlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  const cardScale = useTransform(scrollYProgress, [0, 0.3], [0.95, 1]);
+
   const plans = [
     {
       name: 'Starter', price: '€199', period: '/month',
@@ -668,100 +971,111 @@ function PricingSlide() {
       cta: 'Contact us', highlight: false,
     },
   ];
+
   return (
-    <section id="pricing" className="py-32 px-6 bg-white relative overflow-hidden">
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-[0.03]"
-        style={{ background: 'radial-gradient(circle, #7C3AED, transparent)', transform: 'translate(-30%, 30%)' }} />
-      <div className="max-w-5xl mx-auto relative z-10">
+    <motion.section id="pricing" ref={ref} style={{ opacity }}
+      className="min-h-screen flex items-center justify-center bg-zinc-950 py-24 px-6 relative overflow-hidden">
+      <ParticleField count={10} />
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16">
-          <h2 className="font-display text-6xl lg:text-7xl text-zinc-950 mb-4">Simple pricing</h2>
-          <p className="text-zinc-400 text-lg font-light">No hidden fees. Cancel anytime.</p>
+          <h2 className="text-6xl md:text-7xl font-light text-white mb-4">Simple pricing</h2>
+          <p className="text-lg text-zinc-500 font-light">No hidden fees. Cancel anytime.</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
           {plans.map((plan, i) => (
             <motion.div key={plan.name}
+              style={plan.highlight ? { scale: cardScale } : {}}
               initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className={`rounded-3xl p-8 relative transition-all ${plan.highlight
-                ? 'bg-zinc-950 text-white shadow-2xl shadow-zinc-950/20 md:scale-105 border border-violet-500/20'
-                : 'border border-zinc-100 hover:border-zinc-200'}`}>
+              className={`rounded-2xl p-8 relative transition-all duration-300 ${
+                plan.highlight
+                  ? 'bg-zinc-100 text-zinc-950 shadow-2xl shadow-white/5 scale-105 border border-white/20'
+                  : 'bg-zinc-900/70 border border-zinc-800 hover:border-zinc-600 backdrop-blur-sm'
+              }`}>
               {plan.highlight && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-violet-600 text-white rounded-full text-xs font-medium">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-950 text-white rounded-full text-xs font-semibold border border-zinc-700">
                   Most popular
                 </div>
               )}
-              <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? 'text-white/40' : 'text-zinc-400'}`}>
+              <div className={`text-xs uppercase tracking-widest mb-3 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-500'}`}>
                 {plan.name}
               </div>
-              <div className={`font-display text-5xl font-normal mb-1 ${plan.highlight ? 'text-white' : 'text-zinc-950'}`}>
+              <div className={`text-5xl font-light mb-1 ${plan.highlight ? 'text-zinc-950' : 'text-white'}`}>
                 {plan.price}
               </div>
-              <div className={`text-sm mb-2 ${plan.highlight ? 'text-white/40' : 'text-zinc-400'}`}>{plan.period}</div>
-              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-white/50' : 'text-zinc-500'}`}>{plan.desc}</p>
+              <div className={`text-sm mb-2 ${plan.highlight ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.period}</div>
+              <p className={`text-sm font-light mb-8 ${plan.highlight ? 'text-zinc-500' : 'text-zinc-500'}`}>{plan.desc}</p>
               <ul className="space-y-3 mb-8">
                 {plan.features.map(f => (
-                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-white/70' : 'text-zinc-600'}`}>
-                    <Check className={`size-4 shrink-0 ${plan.highlight ? 'text-violet-400' : 'text-zinc-400'}`} />
+                  <li key={f} className={`flex items-center gap-3 text-sm ${plan.highlight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                    <Check className={`size-4 shrink-0 ${plan.highlight ? 'text-zinc-950' : 'text-zinc-400'}`} />
                     {f}
                   </li>
                 ))}
               </ul>
-              <button className={`w-full py-3.5 rounded-2xl text-sm font-medium transition-all ${plan.highlight
-                ? 'bg-violet-600 text-white hover:bg-violet-500 shadow-lg shadow-violet-500/25'
-                : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+              <button className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
+                plan.highlight
+                  ? 'bg-zinc-950 text-white hover:bg-zinc-800'
+                  : 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700'
+              }`}>
                 {plan.cta}
               </button>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
 /* ─── CTA ─────────────────────────────────────────────────────── */
 function CTASlide() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.9, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const contentY = useTransform(scrollYProgress, [0.1, 0.6], [30, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0.1, 0.6], [0, 1]);
+
   return (
-    <section className="py-40 px-6 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #0c0020 0%, #060610 50%, #0a0818 100%)' }}>
-      <div className="absolute inset-0 opacity-[0.08]"
-        style={{ backgroundImage: 'linear-gradient(rgba(139,92,246,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.5) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[800px] h-[800px] rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.8) 0%, transparent 70%)' }} />
-      </div>
-      <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="max-w-3xl mx-auto text-center relative z-10">
-        <h2 className="font-display text-7xl lg:text-8xl text-white font-normal mb-6 leading-[1.05]">
-          Ready to<br /><span className="italic text-violet-300">transform?</span>
+    <motion.section ref={ref} style={{ scale, opacity }}
+      className="h-screen flex items-center justify-center relative overflow-hidden bg-zinc-900">
+      <video src="/dots.mp4" autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-40" />
+      <ParticleField count={20} />
+
+      <motion.div style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-10 text-center px-6">
+        <h2 className="text-8xl md:text-9xl font-light text-white mb-8 leading-tight">
+          Ready to<br />transform?
         </h2>
-        <p className="text-white/50 text-xl font-light mb-10 max-w-xl mx-auto">
+        <p className="text-2xl text-white/70 font-light mb-10 max-w-2xl mx-auto">
           Get an AI chatbot on your website within 48 hours. Free demo — no commitment.
         </p>
         <a href="#contact"
-          className="group inline-flex items-center gap-3 px-12 py-5 bg-white text-black rounded-2xl text-lg font-medium hover:bg-violet-50 transition-all shadow-2xl shadow-white/10">
+          className="group inline-flex items-center gap-3 px-14 py-5 bg-white text-zinc-950 rounded-full text-xl font-semibold hover:shadow-2xl hover:shadow-white/10 transition-all">
           Book a free demo
-          <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>
+          <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}>
             <ArrowRight className="size-5" />
           </motion.span>
         </a>
-        <p className="text-white/25 mt-5 text-sm">No credit card required · Live in 48 hours</p>
+        <p className="text-white/40 mt-5 text-sm">No credit card required · Live in 48 hours</p>
       </motion.div>
-    </section>
+    </motion.section>
   );
 }
 
 /* ─── FOOTER ─────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer id="contact" className="bg-[#040408] text-white/40 py-16 px-6 border-t border-white/6">
+    <footer id="contact" className="bg-zinc-950 text-zinc-400 py-16 px-6 border-t border-zinc-800">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <img src="/logo.png" alt="TIA AI" className="size-7 object-contain" />
-              <span className="text-white font-medium text-sm">TIA AI</span>
+              <span className="text-white font-semibold text-sm">TIA AI</span>
             </div>
             <p className="text-sm font-light leading-relaxed">AI chatbots for businesses, powered by Claude.</p>
           </div>
@@ -771,7 +1085,7 @@ function Footer() {
             { title: 'Legal', links: ['Terms', 'Privacy', 'Refund policy'] },
           ].map(col => (
             <div key={col.title}>
-              <h4 className="text-white text-sm font-medium mb-4">{col.title}</h4>
+              <h4 className="text-white text-sm font-semibold mb-4">{col.title}</h4>
               <ul className="space-y-2">
                 {col.links.map(link => (
                   <li key={link}><a href="#" className="text-sm hover:text-white transition-colors">{link}</a></li>
@@ -780,26 +1094,24 @@ function Footer() {
             </div>
           ))}
         </div>
-        <div className="border-t border-white/6 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-zinc-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs">© 2025 TIA AI. All rights reserved.</p>
-          <p className="text-xs text-white/20">Powered by Anthropic's Claude API.</p>
+          <p className="text-xs text-zinc-600">Powered by Anthropic's Claude API.</p>
         </div>
       </div>
     </footer>
   );
 }
 
-/* ─── MAIN ───────────────────────────────────────────────────── */
+/* ─── MAIN EXPORT ─────────────────────────────────────────────── */
 export function LandingPage() {
   return (
-    <div className="bg-[#060610] min-h-screen">
-      <style>{FONT_STYLE}</style>
-      <CursorGlow />
+    <div className="bg-zinc-950">
       <Header />
       <HeroSlide />
       <ProblemSlide />
       <FeaturesSlide />
-      <DemoConversationSlide />
+      <TiaInActionSlide />
       <WhyPantteriSlide />
       <ReviewsSlide />
       <PricingSlide />
