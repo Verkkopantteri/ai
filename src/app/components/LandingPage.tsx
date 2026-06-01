@@ -15,9 +15,9 @@ const SERVICES = [
   { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
 ];
 
-function LeadFormModal({ isDark, onClose, initialService = '' }) {
+function LeadFormModal({ isDark, onClose, initialService = '', initialBranding = false }) {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ service: initialService, company: '', website: '', email: '', branding: false });
+  const [form, setForm] = useState({ service: initialService, company: '', website: '', email: '', branding: initialBranding });
 
   const handleSubmit = () => {
     if (!form.service || !form.company || !form.website || !form.email) return;
@@ -432,13 +432,13 @@ const CHAT_MSG_HEIGHT_DEFAULT = 200;
 const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
 const CONVERSATION = [
-  { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                         delay: 600  },
-  { from: 'user', text: "What's included in the Growth plan?",                              delay: 1800 },
-  { from: 'bot',  text: "The Growth plan (€499/mo) includes chatbots on 3 websites, up to 5 000 chats/month, lead capture, analytics, and priority support 🚀", delay: 3200 },
-  { from: 'user', text: "How quickly can we go live?",                                      delay: 5000 },
-  { from: 'bot',  text: "Within 48 hours! We handle training, setup, and launch. You just share your content ✅", delay: 6400 },
-  { from: 'user', text: "Perfect. Can I book a demo?",                                      delay: 8000 },
-  { from: 'bot',  text: "Absolutely! Click below and we'll schedule a free 20-min call 👇",  delay: 9200 },
+  { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                           delay: 600  },
+  { from: 'user', text: "We're a team of 12 — what plan would suit us?",                    delay: 1800 },
+  { from: 'bot',  text: "For a 12-person team, M Core is your sweet spot. It handles ~8–15 chats/day and 1,000 messages/month — plenty for a growing SME. 👌", delay: 3200 },
+  { from: 'user', text: "What's included in M Core?",                                        delay: 5000 },
+  { from: 'bot',  text: "Analytics dashboard, monthly AI updates, email support, and 48h setup. All for 99€/mo — no hidden fees ✅", delay: 6400 },
+  { from: 'user', text: "Sounds good. How do we get started?",                               delay: 8000 },
+  { from: 'bot',  text: "Easy! Click below to order M Core and we'll have you live within 48 hours 🚀", delay: 9200 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -575,35 +575,39 @@ function AnimatedChatLoop({ theme }) {
                 border: `1px solid ${theme.border}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
                 width: 320,
-                height: 420,
                 display: 'flex',
                 flexDirection: 'column',
-              }} className="rounded-[18px] overflow-hidden">
+              }} className="rounded-[20px] overflow-hidden">
 
-                {/* Header */}
+                {/* Header — matches MiniChat hero exactly */}
                 <div style={{ background: theme.headerBg, borderBottom: `1px solid ${theme.border}` }}
-                  className="flex items-center justify-between px-3.5 py-2.5 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
-                      className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden">
+                  className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <div style={{ border: `1px solid ${theme.border}`, background: theme.msgBg }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
                       <img src={theme.avatarSrc} alt="TIA" className="w-full h-full object-contain p-0.5" />
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span style={{ color: theme.textColor }} className="text-xs font-semibold">TIA</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span style={{ color: theme.textColor }} className="text-sm font-semibold">TIA</span>
+                      <span style={{ background: theme.accentDot }} className="w-1.5 h-1.5 rounded-full animate-pulse" />
                     </div>
                   </div>
-                  <X className="size-3.5 opacity-30" style={{ color: theme.textColor }} />
+                  <div className="flex gap-2.5 items-center opacity-30">
+                    <div style={{ background: theme.textColor }} className="w-3 h-0.5 rounded-full" />
+                    <div style={{ border: `1px solid ${theme.textColor}` }} className="w-3 h-3 rounded-sm" />
+                  </div>
                 </div>
 
                 {/* Messages */}
                 <div
                   ref={scrollRef}
-                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1 min-h-0"
+                  className="flex flex-col gap-2.5 p-3 overflow-y-auto"
                   style={{
                     background: isLight ? '#ececee' : 'transparent',
                     scrollbarWidth: 'thin',
                     scrollbarColor: `${theme.scrollThumb} ${theme.scrollTrack}`,
+                    maxHeight: 280,
+                    minHeight: 120,
                   }}
                 >
                   <AnimatePresence initial={false}>
@@ -626,7 +630,6 @@ function AnimatedChatLoop({ theme }) {
                           borderRadius: msg.from === 'bot' ? '2px 10px 10px 10px' : '10px 10px 2px 10px',
                           maxWidth: '82%',
                         }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
-                          {/* Most recent bot message types in; older ones are static */}
                           {msg.from === 'bot' && i === visibleMessages - 1 ? (
                             <TypedText text={msg.text} color={theme.textColor} />
                           ) : (
@@ -636,7 +639,7 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     ))}
 
-                    {/* Typing indicator while bot is "thinking" */}
+                    {/* Typing indicator */}
                     {typingIdx >= 0 && (
                       <motion.div key="typing"
                         initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
@@ -657,7 +660,7 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     )}
 
-                    {/* CTA — rendered inside scroll area so it pushes messages up, not over them */}
+                    {/* CTA — inside scroll area, pushes messages up naturally */}
                     {showCTA && (
                       <motion.div key="cta"
                         initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -680,23 +683,24 @@ function AnimatedChatLoop({ theme }) {
                   ))}
                 </div>
 
-                {/* Input */}
-                <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-2.5 py-2 flex-shrink-0">
+                {/* Input — matches MiniChat hero exactly */}
+                <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
                   <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
-                    className="flex items-center gap-2 rounded-lg px-2.5 py-1.5">
-                    <span style={{ color: theme.subtleText }} className="text-[10px] flex-1">Reply…</span>
-                    <div style={{ background: theme.msgBg }} className="w-5 h-5 rounded-md flex items-center justify-center">
-                      <svg width="6" height="6" viewBox="0 0 10 16" fill="none">
-                        <polyline points="2,1 9,8 2,15" stroke={theme.sendArrow} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    className="flex items-center gap-2 rounded-xl px-3 py-2">
+                    <span style={{ color: theme.subtleText }} className="text-[11px] flex-1">Send a message…</span>
+                    <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
+                      className="w-6 h-6 rounded-lg flex items-center justify-center">
+                      <svg width="8" height="8" viewBox="0 0 10 16" fill="none">
+                        <polyline points="2,1 9,8 2,15" stroke={theme.sendArrow} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer */}
-                <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-1.5 justify-center flex-shrink-0">
-                  <span style={{ color: theme.subtleText, fontSize: '8px' }}>Powered by</span>
-                  <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="" className="h-2 opacity-50"
+                <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-2 justify-center flex-shrink-0">
+                  <span style={{ color: theme.subtleText, fontSize: '9px', letterSpacing: '0.04em' }}>Powered by</span>
+                  <img src="https://i.ibb.co/WWGrHnHy/asd3.png" alt="" className="h-2.5 opacity-50"
                     style={{ filter: isLight ? 'brightness(0)' : 'brightness(2)' }} />
                 </div>
               </div>
@@ -1073,9 +1077,9 @@ const PLANS = [
     features: [
       'Advanced training & updates',
       'AI evolves weekly with new data',
+      'Analytics dashboard',
       'Auto-detected and alert hot leads',
       'Lead capture integration',
-      'Analytics dashboard',
       'Priority support',
     ],
     support: 'Priority support',
@@ -1093,9 +1097,9 @@ const PLANS = [
     features: [
       'Advanced training & updates',
       'AI evolves weekly with new data',
+      'Analytics dashboard',
       'Auto-detected and alert hot leads',
       'Lead capture integration',
-      'Analytics dashboard',
       'Priority support',
     ],
     support: 'Priority support',
@@ -1250,22 +1254,24 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           <motion.div
             initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }} transition={{ delay: 0.15, duration: 0.5 }}
-            className={`w-44 rounded-2xl p-5 border flex flex-col justify-between transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+            className={`rounded-2xl p-8 border flex flex-col transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+            style={{ width: 200, flexShrink: 0 }}
           >
-            <div>
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-4 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
+            <div className="flex-1">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-6 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={isDark ? 'text-white' : 'text-zinc-950'}>
                   <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
                   <path d="m12 2 3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6L12 19.5l-6.8 3.5 1.3-7.6L1 9.9l7.6-1.1L12 2z"/>
                 </svg>
               </div>
-              <h3 className={`text-sm font-semibold mb-2 leading-snug ${isDark ? 'text-white' : 'text-zinc-950'}`}>Custom chat panel</h3>
-              <p className={`text-[11px] leading-relaxed mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Colors & design match your brand</p>
+              <h3 className={`text-base font-semibold mb-2 leading-snug ${isDark ? 'text-white' : 'text-zinc-950'}`}>Custom chat panel</h3>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Colors & design match your brand</p>
             </div>
-            <div>
-              <div className={`text-xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>100€ <span className={`text-xs font-normal ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>one-time</span></div>
-              <button onClick={() => onGetStarted(plan.id)}
-                className={`w-full py-2 rounded-xl text-xs font-semibold transition-all ${isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'}`}>
+            <div className="mt-8">
+              <div className={`text-4xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>100€</div>
+              <div className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>one-time</div>
+              <button onClick={() => onGetStarted(plan.id, true)}
+                className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'}`}>
                 Add on
               </button>
             </div>
@@ -1357,20 +1363,22 @@ export function LandingPage() {
   const [activeTheme, setActiveTheme] = useState('dark');
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
+  const [leadBranding, setLeadBranding] = useState(false);
 
-  const openLead = (service = '') => {
+  const openLead = (service = '', branding = false) => {
     setLeadService(service);
+    setLeadBranding(branding);
     setLeadOpen(true);
   };
 
   return (
     <div className={`transition-colors duration-700 ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
-      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} initialBranding={leadBranding} />}
       <Header isDark={activeTheme === 'dark'} onGetStarted={() => openLead()} />
       <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
-      <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
+      <PricingSlide activeTheme={activeTheme} onGetStarted={(id, branding = false) => openLead(id, branding)} />
       <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <Footer activeTheme={activeTheme} />
     </div>
