@@ -13,7 +13,6 @@ const SERVICES = [
   { id: 'M', label: 'M — Core', desc: '99€/mo · ~8–15 chats/day' },
   { id: 'L', label: 'L — Pro', desc: '199€/mo · ~20–40 chats/day' },
   { id: 'XL', label: 'XL — Enterprise', desc: '499€/mo · ~80–150 chats/day' },
-  { id: 'Own', label: 'Own — Custom', desc: 'Fully custom solution' },
 ];
 
 function LeadFormModal({ isDark, onClose, initialService = '' }) {
@@ -88,11 +87,11 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   </div>
                   <div>
                     <div className={`text-xs font-semibold ${form.branding ? (isDark ? 'text-white' : 'text-white') : (isDark ? 'text-zinc-300' : 'text-zinc-700')}`}>
-                      Fully branded chat panel
-                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? (isDark ? 'bg-white/20' : 'bg-white/20') : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>+100€ one-time</span>
+                      Custom chat panel
+                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? (isDark ? 'bg-white/20' : 'bg-white/20') : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>100€ one-time</span>
                     </div>
                     <div className={`text-[10px] mt-0.5 ${form.branding ? 'opacity-70 text-white' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                      Custom colors, logo & design matched to your brand
+                      Colors & design match your brand
                     </div>
                   </div>
                 </button>
@@ -528,8 +527,6 @@ function AnimatedChatLoop({ theme }) {
     }
   }, [visibleMessages, typingIdx]);
 
-  const msgAreaHeight = CHAT_MSG_HEIGHT_DEFAULT;
-
   return (
     /* Outer wrapper — fixed size so layout never shifts */
     <div style={{ width: 320, position: 'relative', height: 420 }}>
@@ -578,7 +575,10 @@ function AnimatedChatLoop({ theme }) {
                 border: `1px solid ${theme.border}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
                 width: 320,
-              }} className="rounded-[18px] overflow-hidden flex flex-col">
+                height: 420,
+                display: 'flex',
+                flexDirection: 'column',
+              }} className="rounded-[18px] overflow-hidden">
 
                 {/* Header */}
                 <div style={{ background: theme.headerBg, borderBottom: `1px solid ${theme.border}` }}
@@ -599,9 +599,8 @@ function AnimatedChatLoop({ theme }) {
                 {/* Messages */}
                 <div
                   ref={scrollRef}
-                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1"
+                  className="flex flex-col gap-2.5 p-3 overflow-y-auto flex-1 min-h-0"
                   style={{
-                    height: 200,
                     background: isLight ? '#ececee' : 'transparent',
                     scrollbarWidth: 'thin',
                     scrollbarColor: `${theme.scrollThumb} ${theme.scrollTrack}`,
@@ -1102,26 +1101,6 @@ const PLANS = [
     support: 'Priority support',
     highlight: false,
   },
-  {
-    id: 'Own',
-    name: 'Own',
-    label: 'Custom',
-    tagline: 'Fully tailored to your brand',
-    price: 'Custom',
-    period: '',
-    volume: 'Unlimited scale',
-    messages: 'Custom message volume',
-    features: [
-      'Everything in XL',
-      'AI evolves weekly with new data',
-      'Auto-detected and alert hot leads',
-      'Lead capture integration',
-      'Custom integrations & workflows',
-      'Dedicated account manager',
-    ],
-    support: 'Dedicated support',
-    highlight: false,
-  },
 ];
 
 function PricingSlide({ activeTheme, onGetStarted }) {
@@ -1171,61 +1150,64 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   return (
     <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6`}>
       <ParticleField count={isDark ? 10 : 0} />
-      <div className="max-w-lg mx-auto w-full relative z-10">
+      <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Simple pricing</h2>
           <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
         </motion.div>
 
-        {/* Single card */}
-        <motion.div
-          className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
-        >
-          {/* Size badge */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <span className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
-              <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
-              {plan.highlight && (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
-                  Most popular
-                </span>
-              )}
+        {/* Cards row: main plan card + branding addon card */}
+        <div className="flex gap-4 items-stretch">
+          {/* Main plan card */}
+          <motion.div
+            className={`flex-1 rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+          >
+            {/* Size badge */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <span className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
+                <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
+                {plan.highlight && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
+                    Most popular
+                  </span>
+                )}
+              </div>
+              <div className="text-right">
+                <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+                <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.period}</div>
+              </div>
             </div>
-            <div className="text-right">
-              <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
-              <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.period}</div>
-            </div>
-          </div>
 
-          <p className={`text-sm mb-1 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
-          <p className={`text-xs mb-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
-          <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            {/* Fixed-height text rows so all plans align */}
+            <p className={`text-sm h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
+            <p className={`text-xs h-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
+            <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
 
-          <ul className="mb-8" style={{ minHeight: 150 }}>
-            {plan.features.map(f => (
-              <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                {f}
-              </li>
-            ))}
-          </ul>
-
-          <button onClick={() => onGetStarted(plan.id)}
-            className={`w-full py-3 rounded-xl text-sm font-semibold transition-all mb-6 ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
-            Get Started
-          </button>
-
-          {/* Slider */}
-          <div>
-            <div className="flex justify-between mb-3">
-              {PLANS.map((p, i) => (
-                <button key={p.id} onClick={() => setPlanIdx(i)}
-                  className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                  <span className="text-xs font-semibold">{p.id}</span>
-                </button>
+            <ul className="mb-8" style={{ minHeight: 168 }}>
+              {plan.features.map(f => (
+                <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                  <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  {f}
+                </li>
               ))}
+            </ul>
+
+            <button onClick={() => onGetStarted(plan.id)}
+              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all mb-6 ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+              Get Started
+            </button>
+
+            {/* Slider */}
+            <div>
+              <div className="flex justify-between mb-3">
+                {PLANS.map((p, i) => (
+                  <button key={p.id} onClick={() => setPlanIdx(i)}
+                    className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                    <span className="text-xs font-semibold">{p.id}</span>
+                  </button>
+                ))}
             </div>
             {/* Track */}
             <div
@@ -1263,6 +1245,32 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             </p>
           </div>
         </motion.div>
+
+          {/* Branding addon card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.3 }} transition={{ delay: 0.15, duration: 0.5 }}
+            className={`w-44 rounded-2xl p-5 border flex flex-col justify-between transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
+          >
+            <div>
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-4 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={isDark ? 'text-white' : 'text-zinc-950'}>
+                  <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
+                  <path d="m12 2 3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6L12 19.5l-6.8 3.5 1.3-7.6L1 9.9l7.6-1.1L12 2z"/>
+                </svg>
+              </div>
+              <h3 className={`text-sm font-semibold mb-2 leading-snug ${isDark ? 'text-white' : 'text-zinc-950'}`}>Custom chat panel</h3>
+              <p className={`text-[11px] leading-relaxed mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Colors & design match your brand</p>
+            </div>
+            <div>
+              <div className={`text-xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>100€ <span className={`text-xs font-normal ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>one-time</span></div>
+              <button onClick={() => onGetStarted(plan.id)}
+                className={`w-full py-2 rounded-xl text-xs font-semibold transition-all ${isDark ? 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'}`}>
+                Add on
+              </button>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Powered by Anthropic */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
