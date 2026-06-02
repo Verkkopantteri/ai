@@ -885,11 +885,72 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         </motion.div>
       </div>
 
-      <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2">
-        <div className={`w-px h-10 bg-gradient-to-b ${isDark ? 'from-white/30' : 'from-zinc-400/50'} to-transparent`} />
-      </motion.div>
+
     </motion.section>
+  );
+}
+
+/* ─── SHOWCASE SLIDE ──────────────────────────────────────────── */
+const SHOWCASE_IMAGES = ['/r1.avif', '/r2.avif', '/r3.avif', '/r4.avif'];
+
+function ShowcaseSlide({ activeTheme }) {
+  const isDark = activeTheme === 'dark';
+  const [current, setCurrent] = useState(0);
+  const [phase, setPhase] = useState<'visible' | 'blurout'>('visible');
+
+  useEffect(() => {
+    const visibleTimer = setTimeout(() => {
+      setPhase('blurout');
+    }, 2800);
+    return () => clearTimeout(visibleTimer);
+  }, [current]);
+
+  useEffect(() => {
+    if (phase !== 'blurout') return;
+    const blurTimer = setTimeout(() => {
+      setCurrent(c => (c + 1) % SHOWCASE_IMAGES.length);
+      setPhase('visible');
+    }, 700);
+    return () => clearTimeout(blurTimer);
+  }, [phase]);
+
+  return (
+    <section className={`relative w-full overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'}`}
+      style={{ height: '70vh' }}>
+      <AnimatePresence mode="sync">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, filter: 'blur(20px)', scale: 1.04 }}
+          animate={phase === 'visible'
+            ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
+            : { opacity: 0, filter: 'blur(20px)', scale: 1.04 }}
+          transition={phase === 'visible'
+            ? { duration: 0.7, ease: 'easeOut' }
+            : { duration: 0.7, ease: 'easeIn' }}
+          className="absolute inset-0"
+        >
+          <img
+            src={SHOWCASE_IMAGES[current]}
+            alt={`Showcase ${current + 1}`}
+            className="w-full h-full object-cover"
+          />
+          {/* Subtle vignette overlay */}
+          <div className={`absolute inset-0 ${isDark
+            ? 'bg-gradient-to-t from-zinc-950/60 via-transparent to-zinc-950/20'
+            : 'bg-gradient-to-t from-white/40 via-transparent to-white/10'}`} />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {SHOWCASE_IMAGES.map((_, i) => (
+          <button key={i} onClick={() => { setCurrent(i); setPhase('visible'); }}
+            className={`rounded-full transition-all duration-300 ${i === current
+              ? isDark ? 'w-5 h-1.5 bg-white' : 'w-5 h-1.5 bg-zinc-800'
+              : isDark ? 'w-1.5 h-1.5 bg-white/30' : 'w-1.5 h-1.5 bg-zinc-400/50'}`} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1789,6 +1850,7 @@ export function LandingPage() {
       {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={false} onGetStarted={() => openLead()} />
       <HeroSlide activeTheme={activeTheme} setActiveTheme={() => {}} onGetStarted={() => openLead()} />
+      <ShowcaseSlide activeTheme={activeTheme} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
