@@ -907,34 +907,33 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
         {/* LEFT */}
         <motion.div style={{ y }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-left flex-shrink-0 max-w-lg">
+          className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
-          <h1 className={`text-7xl md:text-8xl font-light mb-5 leading-none ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+          <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-light mb-8 ${isDark ? 'text-white/80' : 'text-zinc-500'}`}>
+          <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             Answers visitors instantly with AI.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-8">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
             <a href="#features"
-              className={`inline-flex items-center gap-2 py-4 text-base font-light transition-colors ${isDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 hover:text-zinc-950'}`}>
+              className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
               See TIA in Action
-              <ArrowRight className="size-4" />
             </a>
           </div>
 
           {/* Quote / review */}
           <div className="mb-6">
-            <div className="flex gap-0.5 mb-1.5">
+            <div className="flex gap-0.5 mb-1.5 justify-center lg:justify-start">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
@@ -945,10 +944,10 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <p className={`text-xs mt-1 ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Early user</p>
           </div>
 
-          {/* Trust bar — merged with languages */}
+          {/* Trust bar */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.6 }}
-            className="flex items-center gap-0 flex-wrap">
+            className="flex items-center gap-0 flex-wrap justify-center lg:justify-start">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
               <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
                 {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
