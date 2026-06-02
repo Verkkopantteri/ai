@@ -941,15 +941,7 @@ function ShowcaseSlide({ activeTheme }) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Dot indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {SHOWCASE_IMAGES.map((_, i) => (
-          <button key={i} onClick={() => { setCurrent(i); setPhase('visible'); }}
-            className={`rounded-full transition-all duration-300 ${i === current
-              ? isDark ? 'w-5 h-1.5 bg-white' : 'w-5 h-1.5 bg-zinc-800'
-              : isDark ? 'w-1.5 h-1.5 bg-white/30' : 'w-1.5 h-1.5 bg-zinc-400/50'}`} />
-        ))}
-      </div>
+
     </section>
   );
 }
