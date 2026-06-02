@@ -816,20 +816,12 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   }, []);
 
   // White button center x≈14, black button center x≈64 in SVG coords
-  // light (white active) → hint toward black: left-to-right arc
-  // dark  (black active) → hint toward white: right-to-left arc
+  // Shorter, smaller arc — no arrowhead, just a plain line
   const arcPath = isDark
-    ? 'M 64 76 C 64 46, 14 46, 14 76'   // dark active: right→left (black→white)
-    : 'M 14 76 C 14 46, 64 46, 64 76';  // light active: left→right (white→black)
-
-  // Arrow tip: symmetric V centered on destination point
-  // destination x for light = 64, for dark = 14; tip y = 76, wings ±6 up
-  const arrowTip = isDark
-    ? 'M 8 70 L 14 76 L 20 70'    // pointing down into white button
-    : 'M 58 70 L 64 76 L 70 70';  // pointing down into black button
+    ? 'M 58 58 C 58 44, 20 44, 20 58'   // dark active: right→left (black→white), shorter
+    : 'M 20 58 C 20 44, 58 44, 58 58';  // light active: left→right (white→black), shorter
 
   const strokeColor = isDark ? 'rgba(255,255,255,0.75)' : 'rgba(9,9,11,0.65)';
-  const arrowColor  = isDark ? 'rgba(255,255,255,0.85)' : 'rgba(9,9,11,0.75)';
 
   return (
     <div style={{
@@ -844,14 +836,14 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
         {visible && (
           <motion.svg
             key={key}
-            style={{ position: 'absolute', top: -76, left: -4, overflow: 'visible' }}
-            width="100" height="80" viewBox="0 0 100 80"
+            style={{ position: 'absolute', top: -58, left: -4, overflow: 'visible' }}
+            width="80" height="62" viewBox="0 0 80 62"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Arc path */}
+            {/* Arc path — no arrowhead */}
             <motion.path
               d={arcPath}
               fill="none"
@@ -861,14 +853,6 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
               transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
-            />
-            {/* Arrow tip at destination */}
-            <motion.path
-              d={arrowTip}
-              fill="none" stroke={arrowColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0, 1, 0] }}
-              transition={{ duration: 1.4, times: [0, 0.68, 0.82, 1] }}
             />
           </motion.svg>
         )}
