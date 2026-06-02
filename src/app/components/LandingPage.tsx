@@ -799,10 +799,10 @@ function AnimatedChatLoop({ theme }) {
 
 /* ─── REF LOGOS CYCLER ────────────────────────────────────────── */
 const REF_LOGOS = [
-  { name: 'Ref 1', src: '/r1.avif' },
   { name: 'Ref 2', src: '/r2.avif' },
   { name: 'Ref 3', src: '/r3.avif' },
   { name: 'Ref 4', src: '/r4.avif' },
+  { name: 'Ref 1', src: '/r1.avif' },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -826,17 +826,17 @@ function RefLogosCycler({ isDark }) {
   const colorFilter = isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)';
 
   return (
-    <div className="mt-3 h-20 flex items-center justify-center">
+    <div className="h-24 flex items-center justify-center">
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
           src={REF_LOGOS[current].src}
           alt={REF_LOGOS[current].name}
           className="w-auto object-contain"
-          style={{ height: 64, maxWidth: 200 }}
+          style={{ height: 80, maxWidth: 240 }}
           initial={{ opacity: 0, filter: `blur(14px) ${colorFilter}` }}
           animate={phase === 'visible'
-            ? { opacity: 0.3, filter: `blur(0px) ${colorFilter}` }
+            ? { opacity: 1, filter: `blur(0px) ${colorFilter}` }
             : { opacity: 0, filter: `blur(14px) ${colorFilter}` }}
           transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
@@ -912,20 +912,20 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             ))}
           </motion.div>
 
-          {/* Quote / review */}
-          <div className="mb-4 inline-block">
+          {/* Quote / review + logo on same line */}
+          <div className="mb-2">
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex gap-0.5 justify-center">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
-              ))}
+            <div className="flex items-center gap-4 justify-center lg:justify-start">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
+                ))}
+              </div>
+              <RefLogosCycler isDark={isDark} />
             </div>
           </div>
-
-          {/* Blur-cycling ref logos */}
-          <RefLogosCycler isDark={isDark} />
 
         </motion.div>
 
