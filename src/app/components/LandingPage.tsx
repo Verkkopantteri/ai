@@ -978,8 +978,9 @@ function TiaInActionSlide({ activeTheme }) {
   const [chatTheme, setChatTheme] = useState('light');
   const isDark = chatTheme === 'dark';
   const theme = CHAT_THEMES[chatTheme];
+  const wrapRef = useRef(null);
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end end'] });
+  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start 0.85', 'end end'] });
 
   // Brightness: overexposed → normal
   const brightness = useTransform(scrollYProgress, [0, 0.7], [1.5, 1]);
@@ -993,18 +994,14 @@ function TiaInActionSlide({ activeTheme }) {
   const x = useTransform(scrollYProgress, [0, 0.6], [30, 0]);
 
   return (
-    <motion.section
-      ref={ref}
-      style={{ filter, clipPath, x }}
-      className="h-screen flex items-center justify-center relative overflow-hidden"
-    >
-      {/* Background — animates between white and dark based on chatTheme */}
+    // Outer wrapper: not clipped — background lives here so scroll wipe never cuts it off
+    <div ref={wrapRef} className="relative h-screen overflow-hidden">
+      {/* Background — never clipped, transitions smoothly on theme change */}
       <motion.div
         className="absolute inset-0"
         animate={{ backgroundColor: isDark ? '#09090b' : '#ffffff' }}
         transition={{ duration: 0.7, ease: 'easeInOut' }}
       />
-      {/* Dark background image overlay — only in dark mode */}
       <AnimatePresence>
         {isDark && (
           <motion.div
@@ -1018,7 +1015,6 @@ function TiaInActionSlide({ activeTheme }) {
           />
         )}
       </AnimatePresence>
-      {/* Dark overlay tint */}
       <AnimatePresence>
         {isDark && (
           <motion.div
@@ -1031,6 +1027,13 @@ function TiaInActionSlide({ activeTheme }) {
           />
         )}
       </AnimatePresence>
+
+      {/* Content layer — scroll-driven clip/filter/x effects apply only to content */}
+      <motion.section
+        ref={ref}
+        style={{ filter, clipPath, x }}
+        className="h-full flex items-center justify-center relative"
+      >
       <ParticleField count={isDark ? 18 : 0} />
 
       <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
@@ -1144,13 +1147,14 @@ function TiaInActionSlide({ activeTheme }) {
 
               {/* Animated chat overlay */}
               <div className="absolute bottom-5 right-5">
-                <AnimatedChatLoop theme={theme} key={chatTheme} />
+                <AnimatedChatLoop theme={theme} />
               </div>
             </motion.div>
           </motion.div>
         </div>
       </div>
-    </motion.section>
+      </motion.section>
+    </div>
   );
 }
 
