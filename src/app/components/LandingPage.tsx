@@ -891,28 +891,9 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 }
 
 /* ─── SHOWCASE SLIDE ──────────────────────────────────────────── */
-function ShowcaseSlide({ activeTheme }) {
-  const isDark = activeTheme === 'dark';
-  return (
-    <section className="relative w-full overflow-hidden" style={{ background: 'transparent' }}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="flex items-center justify-center px-6 py-12"
-      >
-        <img
-          src="/1780407716038_image.png"
-          alt="TIA Showcase"
-          className="w-full max-w-5xl h-auto object-contain"
-        />
-      </motion.div>
-    </section>
-  );
-}
+const SHOWCASE_IMAGES = ['/r1.avif', '/r2.avif', '/r3.avif', '/r4.avif'];
 
-function ShowcaseSlide_UNUSED({ activeTheme }) {
+function ShowcaseSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const [current, setCurrent] = useState(0);
   const [phase, setPhase] = useState<'visible' | 'blurout'>('visible');
@@ -953,14 +934,11 @@ function ShowcaseSlide_UNUSED({ activeTheme }) {
             alt={`Showcase ${current + 1}`}
             className="w-full h-full object-cover"
           />
-          {/* Subtle vignette overlay */}
           <div className={`absolute inset-0 ${isDark
             ? 'bg-gradient-to-t from-zinc-950/60 via-transparent to-zinc-950/20'
             : 'bg-gradient-to-t from-white/40 via-transparent to-white/10'}`} />
         </motion.div>
       </AnimatePresence>
-
-
     </section>
   );
 }
