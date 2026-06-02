@@ -536,11 +536,9 @@ function AnimatedChatLoop({ theme }) {
 
   const ctaRef = useRef(null);
 
-  // Scroll CTA into view when it appears
+  // Scroll chat to bottom when CTA appears
   useEffect(() => {
-    if (showCTA && ctaRef.current) {
-      ctaRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    if (showCTA) scrollToBottom();
   }, [showCTA]);
 
   const scrollToBottom = useCallback(() => {
