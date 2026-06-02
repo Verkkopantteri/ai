@@ -1525,13 +1525,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
   return (
     <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6 relative overflow-hidden`}>
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ct.jpeg)' }}
-      />
-      {/* Overlay */}
-      <div className={`absolute inset-0 ${isDark ? 'bg-zinc-950/80' : 'bg-white/80'}`} />
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1659,7 +1652,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ex.jpeg)' }}
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ct.jpeg)' }}
       />
       {/* Dark overlay so text is always readable */}
       <div className="absolute inset-0 bg-black/55" />
