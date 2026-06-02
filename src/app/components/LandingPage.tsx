@@ -818,8 +818,8 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   // Button centers: white=x14, dark=x50 (w-7=28px buttons, gap-2=8px)
   // Symmetric cubic bezier arc from active button to inactive button, peak y=20
   const arcPath = isDark
-    ? 'M 50 40 C 50 18, 14 18, 14 40'
-    : 'M 14 40 C 14 18, 50 18, 50 40';
+    ? 'M 50 40 C 50 29, 14 29, 14 40'
+    : 'M 14 40 C 14 29, 50 29, 50 40';
 
   const gradId = isDark ? 'arc-grad-dark' : 'arc-grad-light';
   const baseColor = isDark ? '255,255,255' : '9,9,11';
@@ -1485,7 +1485,7 @@ function FeaturesSlide({ activeTheme }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>And analytics</p>
+          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Turning data into smarter decisions</p>
         </motion.div>
 
         {/* Two-column layout */}
