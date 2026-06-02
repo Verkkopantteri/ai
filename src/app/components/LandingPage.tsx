@@ -799,10 +799,10 @@ function AnimatedChatLoop({ theme }) {
 
 /* ─── REF LOGOS CYCLER ────────────────────────────────────────── */
 const REF_LOGOS = [
-  { name: 'Ref 2', src: '/r2.avif' },
-  { name: 'Ref 3', src: '/r3.avif' },
-  { name: 'Ref 4', src: '/r4.avif' },
-  { name: 'Ref 1', src: '/r1.avif' },
+  { name: 'Ref 2', src: '/r2.avif', invert: true },
+  { name: 'Ref 3', src: '/r3.avif', invert: false },
+  { name: 'Ref 4', src: '/r4.avif', invert: true },
+  { name: 'Ref 1', src: '/r1.avif', invert: false },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -824,7 +824,7 @@ function RefLogosCycler({ isDark }) {
   }, [phase]);
 
   return (
-    <div className="h-24 flex items-center justify-center">
+    <div className="mt-3 h-24 flex items-center justify-center">
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
@@ -832,10 +832,10 @@ function RefLogosCycler({ isDark }) {
           alt={REF_LOGOS[current].name}
           className="w-auto object-contain"
           style={{ height: 80, maxWidth: 240 }}
-          initial={{ opacity: 0, filter: 'blur(14px)' }}
+          initial={{ opacity: 0, filter: REF_LOGOS[current].invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           animate={phase === 'visible'
-            ? { opacity: 1, filter: 'blur(0px)' }
-            : { opacity: 0, filter: 'blur(14px)' }}
+            ? { opacity: 1, filter: REF_LOGOS[current].invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
+            : { opacity: 0, filter: REF_LOGOS[current].invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
       </AnimatePresence>
@@ -910,19 +910,17 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             ))}
           </motion.div>
 
-          {/* Quote / review + logo on same line */}
-          <div className="mb-2">
+          {/* Quote / review + logo centered under text */}
+          <div className="mb-2 flex flex-col items-center text-center">
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex flex-col items-center gap-0">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
-                ))}
-              </div>
-              <RefLogosCycler isDark={isDark} />
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
+              ))}
             </div>
+            <RefLogosCycler isDark={isDark} />
           </div>
 
         </motion.div>
