@@ -1652,7 +1652,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
-        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ct.jpeg)' }}
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ed.jpeg)' }}
       />
       <div className="relative z-10 text-center px-6">
         <h2 className="text-7xl md:text-8xl font-light mb-6 leading-tight text-zinc-950">
