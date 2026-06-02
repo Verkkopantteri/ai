@@ -123,15 +123,15 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                           }`}>
                             {active && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
                           </div>
-                          <div>
+                          <div className="flex items-center gap-2 flex-wrap">
                             <p className={`text-xs font-semibold ${active ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                               {opt.title}
                               {opt.subtitle && <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>}
                             </p>
                             {opt.badge && (
-                              <p className={`text-[11px] mt-0.5 ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                              <span className={`text-xs font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                                 {opt.badge}
-                              </p>
+                              </span>
                             )}
                           </div>
                         </button>
@@ -1841,7 +1841,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                           <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>
                         </p>
                         {opt.badge && (
-                          <span className={`text-[11px] font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</span>
+                          <span className={`text-xs font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</span>
                         )}
                       </div>
                     </button>
