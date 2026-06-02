@@ -854,15 +854,14 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 
           {/* Quote / review */}
           <div className="mb-6">
-            <div className="flex gap-0.5 mb-1.5 justify-center lg:justify-start">
+            <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+              "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+            </p>
+            <div className="flex gap-0.5 justify-center lg:justify-start">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
             </div>
-            <p className={`text-sm font-light italic leading-relaxed ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-              "Best hire we never made."
-            </p>
-            <p className={`text-xs mt-1 ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</p>
           </div>
 
           {/* Trust bar */}
