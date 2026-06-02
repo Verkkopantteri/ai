@@ -873,12 +873,8 @@ function AnimatedStarReview({ isDark }) {
   }, [inView]);
 
   return (
-    <div ref={ref} className="flex flex-col items-center text-center gap-1.5 mt-1">
-      <p className={`text-sm font-light italic leading-relaxed ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-        "Best hire we never made."{' '}
-        <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
-      </p>
-      <div className="flex gap-0.5">
+    <div ref={ref} className="flex flex-col items-center text-center gap-2 mt-2 w-full" style={{ maxWidth: 320 }}>
+      <div className="flex gap-0.5 mb-1">
         {[...Array(5)].map((_, i) => (
           <motion.div
             key={i}
@@ -886,10 +882,14 @@ function AnimatedStarReview({ isDark }) {
             animate={starsVisible > i ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
             transition={{ type: 'spring', stiffness: 400, damping: 18 }}
           >
-            <Star className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
+            <Star className={`size-4 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
           </motion.div>
         ))}
       </div>
+      <p className={`text-base font-semibold italic leading-snug ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+        "Best hire we never made."
+      </p>
+      <span className={`text-sm font-light ${isDark ? 'text-white/50' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
     </div>
   );
 }
@@ -935,7 +935,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
-            Answers visitors instantly with AI.
+            Answers visitors instantly with AI Chat Bot.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
@@ -977,9 +977,9 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         {/* RIGHT — chat stack + testimonial below */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4">
+          className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4" style={{ width: 380 }}>
           <ChatStack activeTheme={activeTheme} />
-          {/* Testimonial + animated stars under the white chat */}
+          {/* Testimonial + animated stars — centered under the chat stack */}
           <AnimatedStarReview isDark={isDark} />
         </motion.div>
       </div>
