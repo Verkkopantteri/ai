@@ -830,7 +830,7 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   const gradId = `arc-grad-${key}`;
 
   return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10, overflow: 'visible' }}>
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'visible' }}>
       <AnimatePresence>
         {visible && (
           <motion.svg
@@ -1054,12 +1054,14 @@ function TiaInActionSlide({ activeTheme }) {
             <div className="flex items-center gap-2 justify-center lg:justify-start relative">
               <ThemeArcHint chatTheme={chatTheme} lightRef={lightBtnRef} darkRef={darkBtnRef} />
               <button ref={lightBtnRef} onClick={() => setChatTheme('light')}
+                style={{ position: 'relative', zIndex: 1 }}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'light'
                     ? 'border-zinc-400 scale-110 shadow-md'
                     : 'border-zinc-200 hover:border-zinc-300'
                 } bg-white`} />
               <button ref={darkBtnRef} onClick={() => setChatTheme('dark')}
+                style={{ position: 'relative', zIndex: 1 }}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'dark'
                     ? 'border-zinc-500 scale-110 shadow-lg shadow-white/10'
