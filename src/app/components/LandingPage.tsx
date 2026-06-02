@@ -815,11 +815,13 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
     return () => clearTimeout(t0);
   }, []);
 
-  // Button centers: white=x14, dark=x50 (w-7=28px buttons, gap-2=8px)
-  // Symmetric cubic bezier arc from active button to inactive button, peak y=20
+  // Simple gentle arc floating above the buttons.
+  // SVG sits above the button row; arc goes left-to-right (or reverse) with a shallow peak.
+  // Starts and ends at x=14 and x=50 (button centers), y=30 (just above buttons).
+  // Control points pulled horizontally outward so the arc enters/exits smoothly from the sides.
   const arcPath = isDark
-    ? 'M 50 40 C 50 29, 14 29, 14 40'
-    : 'M 14 40 C 14 29, 50 29, 50 40';
+    ? 'M 50 30 C 60 10, 4 10, 14 30'
+    : 'M 14 30 C 4 10, 60 10, 50 30';
 
   const gradId = isDark ? 'arc-grad-dark' : 'arc-grad-light';
   const baseColor = isDark ? '255,255,255' : '9,9,11';
@@ -1485,7 +1487,7 @@ function FeaturesSlide({ activeTheme }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Turning data into smarter decisions</p>
+          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Turn data into smarter decisions.</p>
         </motion.div>
 
         {/* Two-column layout */}
