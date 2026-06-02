@@ -841,7 +841,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             Answers visitors instantly with AI.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-4">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
@@ -851,6 +851,18 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               See TIA in Action
             </a>
           </div>
+
+          {/* Trust bar */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+            className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-8">
+            {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
+              <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
+                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
+                {item}
+              </span>
+            ))}
+          </motion.div>
 
           {/* Quote / review */}
           <div className="mb-6 inline-block">
@@ -863,18 +875,6 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               ))}
             </div>
           </div>
-
-          {/* Trust bar */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0, duration: 0.6 }}
-            className="flex items-center gap-0 flex-wrap justify-center lg:justify-start">
-            {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-              <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
-                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
-                {item}
-              </span>
-            ))}
-          </motion.div>
         </motion.div>
 
         {/* RIGHT — chat stack */}
@@ -891,9 +891,28 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 }
 
 /* ─── SHOWCASE SLIDE ──────────────────────────────────────────── */
-const SHOWCASE_IMAGES = ['/r1.avif', '/r2.avif', '/r3.avif', '/r4.avif'];
-
 function ShowcaseSlide({ activeTheme }) {
+  const isDark = activeTheme === 'dark';
+  return (
+    <section className="relative w-full overflow-hidden" style={{ background: 'transparent' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="flex items-center justify-center px-6 py-12"
+      >
+        <img
+          src="/1780407716038_image.png"
+          alt="TIA Showcase"
+          className="w-full max-w-5xl h-auto object-contain"
+        />
+      </motion.div>
+    </section>
+  );
+}
+
+function ShowcaseSlide_UNUSED({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const [current, setCurrent] = useState(0);
   const [phase, setPhase] = useState<'visible' | 'blurout'>('visible');
