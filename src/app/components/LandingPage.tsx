@@ -911,7 +911,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            HIRE AI<br />STAY OPEN 24/7
+            Answer Every Lead<br />Instantly
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
