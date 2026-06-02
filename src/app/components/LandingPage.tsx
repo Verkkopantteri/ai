@@ -980,7 +980,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           transition={{ duration: 1, delay: 0.3 }}
           className="text-center flex-shrink-0 max-w-xl">
 
-          <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+          <h1 className={`text-8xl md:text-9xl font-bold mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
@@ -1923,9 +1923,9 @@ function Footer({ activeTheme }) {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <img src={isDark ? '/logo.png' : '/logo-black.png'} alt="TIA AI" className="size-6 object-contain" />
-              <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-zinc-950'}`}>TIA AI</span>
+              <span className={`font-semibold text-base ${isDark ? 'text-white' : 'text-zinc-950'}`}>TIA AI</span>
             </div>
-            <p className="text-sm font-light leading-relaxed">Your website's smartest employee.</p>
+            <p className="text-base font-light leading-relaxed">Your website's smartest employee.</p>
           </div>
           {[
             { title: 'Product', links: ['Features', 'Pricing', 'Case studies'] },
@@ -1933,18 +1933,18 @@ function Footer({ activeTheme }) {
             { title: 'Legal', links: ['Terms', 'Privacy', 'Refund policy'] },
           ].map(col => (
             <div key={col.title}>
-              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{col.title}</h4>
+              <h4 className={`text-base font-semibold mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{col.title}</h4>
               <ul className="space-y-1.5">
                 {col.links.map(link => (
-                  <li key={link}><a href="#" className={`text-sm transition-colors ${isDark ? 'hover:text-white' : 'hover:text-zinc-950'}`}>{link}</a></li>
+                  <li key={link}><a href="#" className={`text-base transition-colors ${isDark ? 'hover:text-white' : 'hover:text-zinc-950'}`}>{link}</a></li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
         <div className={`border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-3 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <p className="text-xs">© 2025 TIA AI. All rights reserved.</p>
-          <p className={`text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Powered by Anthropic's Claude API.</p>
+          <p className="text-sm">© 2025 TIA AI. All rights reserved.</p>
+          <p className={`text-sm ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Powered by Anthropic's Claude API.</p>
         </div>
       </div>
     </footer>
