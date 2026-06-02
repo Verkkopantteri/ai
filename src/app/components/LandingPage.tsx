@@ -931,7 +931,7 @@ function AnimatedStarReview({ isDark }) {
             animate={starsVisible > i ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
             transition={{ type: 'spring', stiffness: 400, damping: 18 }}
           >
-            <Star className='size-4' style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+            <Star className=\"size-4\" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
           </motion.div>
         ))}
       </div>
@@ -991,7 +991,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <div className="flex flex-col items-center gap-1 mb-6">
             <div className="flex gap-0.5 mb-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className='size-3.5' style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+                <Star key={i} className="size-3.5" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
               ))}
             </div>
             <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
@@ -1170,7 +1170,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             <div className="flex flex-col items-center md:items-start gap-0.5">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className='size-4' style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+                  <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
                 ))}
               </div>
               <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
@@ -1727,7 +1727,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Simple pricing</h2>
+          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Hire <span style={{ color: '#63AFC7' }}>Your AI Agent</span></h2>
           <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
         </motion.div>
 
