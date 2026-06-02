@@ -1633,15 +1633,15 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 function CTASlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  // Starts small at bottom of viewport, grows to full as it scrolls into view
-  const scale = useTransform(scrollYProgress, [0, 0.7], [0.78, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  // Mirrors HeroSlide but inverted: slides up into place as you scroll down
+  const y = useTransform(scrollYProgress, [0, 0.6], [60, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.94, 1]);
 
   return (
     <motion.section
       ref={ref}
-      style={{ scale, opacity }}
+      style={{ y, scale }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
       {/* Background image */}
