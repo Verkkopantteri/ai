@@ -815,23 +815,21 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
     return () => clearTimeout(t0);
   }, []);
 
-  // SVG is positioned left: -4 relative to container
-  // White button center: x≈10 in container → x≈14 in SVG
-  // Black button center: x≈10+28+8+14=60 in container → x≈64 in SVG
-  // Arc curves upward, bottom of SVG (y=76) aligns with button tops
+  // White button center x≈14, black button center x≈64 in SVG coords
+  // light (white active) → hint toward black: left-to-right arc
+  // dark  (black active) → hint toward white: right-to-left arc
   const arcPath = isDark
-    ? 'M 14 76 C 14 48, 64 48, 64 76'   // dark: black→white (left→right)
-    : 'M 64 76 C 64 48, 14 48, 14 76';  // light: white→black (right→left)
+    ? 'M 64 76 C 64 46, 14 46, 14 76'   // dark active: right→left (black→white)
+    : 'M 14 76 C 14 46, 64 46, 64 76';  // light active: left→right (white→black)
 
+  // Arrow tip: symmetric V centered on destination point
+  // destination x for light = 64, for dark = 14; tip y = 76, wings ±6 up
   const arrowTip = isDark
-    ? 'M 59 72 L 64 76 L 69 72'   // arrow at white button (right end)
-    : 'M 9 72 L 14 76 L 19 72';   // arrow at black button (left end)
+    ? 'M 8 70 L 14 76 L 20 70'    // pointing down into white button
+    : 'M 58 70 L 64 76 L 70 70';  // pointing down into black button
 
-  const gradId = `arcGrad-${isDark ? 'dark' : 'light'}`;
-  const dotColor = isDark ? '#09090b' : '#ffffff';
-  const gradFrom = isDark ? 'rgba(255,255,255,0.8)' : 'rgba(9,9,11,0.8)';
-  const gradTo   = isDark ? '#09090b'                : '#ffffff';
-  const arrowColor = isDark ? 'rgba(9,9,11,0.9)' : 'rgba(255,255,255,0.9)';
+  const strokeColor = isDark ? 'rgba(255,255,255,0.75)' : 'rgba(9,9,11,0.65)';
+  const arrowColor  = isDark ? 'rgba(255,255,255,0.85)' : 'rgba(9,9,11,0.75)';
 
   return (
     <div style={{
@@ -857,36 +855,21 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
             <motion.path
               d={arcPath}
               fill="none"
-              stroke={`url(#${gradId})`}
+              stroke={strokeColor}
               strokeWidth="1.5"
               strokeLinecap="round"
-              strokeDasharray="1 0"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 1.6, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
+              transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
             />
-            {/* Travelling dot */}
-            <motion.circle r="3" fill={dotColor} opacity="0.9"
-              initial={{ offsetDistance: '0%', opacity: 0 }}
-              animate={{ opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 1.6, ease: 'easeInOut', times: [0, 0.05, 0.85, 1] }}
-            >
-              <animateMotion dur="1.6s" fill="freeze" path={arcPath} />
-            </motion.circle>
-            {/* Small arrow tip at end */}
+            {/* Arrow tip at destination */}
             <motion.path
               d={arrowTip}
               fill="none" stroke={arrowColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0, 1, 0] }}
-              transition={{ duration: 1.6, times: [0, 0.7, 0.85, 1] }}
+              transition={{ duration: 1.4, times: [0, 0.68, 0.82, 1] }}
             />
-            <defs>
-              <linearGradient id={gradId} x1={isDark ? '0%' : '100%'} y1="0%" x2={isDark ? '100%' : '0%'} y2="0%">
-                <stop offset="0%" stopColor={gradFrom} />
-                <stop offset="100%" stopColor={gradTo} />
-              </linearGradient>
-            </defs>
           </motion.svg>
         )}
       </AnimatePresence>
