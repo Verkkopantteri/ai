@@ -1089,6 +1089,187 @@ function TiaInActionSlide({ activeTheme }) {
   );
 }
 
+/* ─── PAPER SLIDESHOW ─────────────────────────────────────────── */
+const SLIDES = [
+  { src: '/pg-1.avif', label: 'Page 1' },
+  { src: '/pg-2.avif', label: 'Page 2' },
+  { src: '/pg-3.avif', label: 'Page 3' },
+  { src: '/pg-4.avif', label: 'Page 4' },
+];
+
+function PaperStack({ isDark }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Auto-advance
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDirection(1);
+      setActiveIdx(i => (i + 1) % SLIDES.length);
+    }, 3200);
+    return () => clearInterval(t);
+  }, []);
+
+  const goTo = (idx) => {
+    if (idx === activeIdx || isAnimating) return;
+    setDirection(idx > activeIdx ? 1 : -1);
+    setActiveIdx(idx);
+  };
+
+  const prev = () => {
+    setDirection(-1);
+    setActiveIdx(i => (i - 1 + SLIDES.length) % SLIDES.length);
+  };
+
+  const next = () => {
+    setDirection(1);
+    setActiveIdx(i => (i + 1) % SLIDES.length);
+  };
+
+  // Stack offsets for the background cards (not the active one)
+  const getStackStyle = (offset) => ({
+    position: 'absolute',
+    inset: 0,
+    transform: `translateY(${offset * 8}px) translateX(${offset * 5}px) scale(${1 - offset * 0.03})`,
+    zIndex: 10 - offset,
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-5 select-none">
+      {/* Stack container */}
+      <div style={{ position: 'relative', width: 300, height: 400 }}>
+        {/* Background stacked cards (peek effect) */}
+        {[3, 2, 1].map((offset) => {
+          const stackIdx = (activeIdx + offset) % SLIDES.length;
+          return (
+            <div key={stackIdx} style={getStackStyle(offset)}>
+              <div
+                className="w-full h-full rounded-2xl overflow-hidden"
+                style={{
+                  boxShadow: isDark
+                    ? `0 ${8 + offset * 4}px ${24 + offset * 8}px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.04)`
+                    : `0 ${8 + offset * 4}px ${24 + offset * 8}px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.8)`,
+                  border: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.08)',
+                  background: isDark ? '#27272a' : '#f4f4f5',
+                  filter: `brightness(${1 - offset * 0.12})`,
+                }}
+              >
+                <img
+                  src={SLIDES[stackIdx].src}
+                  alt={SLIDES[stackIdx].label}
+                  className="w-full h-full object-cover"
+                  style={{ opacity: 1 - offset * 0.15 }}
+                />
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Active (front) card */}
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={activeIdx}
+            initial={{ opacity: 0, x: direction * 40, scale: 0.97, rotateY: direction * 8 }}
+            animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
+            exit={{ opacity: 0, x: -direction * 40, scale: 0.96, rotateY: -direction * 8 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+            style={{ position: 'absolute', inset: 0, zIndex: 20 }}
+            onAnimationStart={() => setIsAnimating(true)}
+            onAnimationComplete={() => setIsAnimating(false)}
+          >
+            <div
+              className="w-full h-full rounded-2xl overflow-hidden cursor-pointer"
+              style={{
+                boxShadow: isDark
+                  ? '0 24px 60px rgba(0,0,0,0.75), 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)'
+                  : '0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+              }}
+              onClick={next}
+            >
+              {/* Glossy reflection overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none z-10"
+                style={{
+                  background: isDark
+                    ? 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%)'
+                    : 'linear-gradient(135deg, rgba(255,255,255,0.55) 0%, transparent 55%)',
+                  borderRadius: 'inherit',
+                }}
+              />
+              {/* Floor reflection */}
+              <div
+                className="absolute -bottom-px left-4 right-4 pointer-events-none"
+                style={{
+                  height: 40,
+                  background: isDark
+                    ? 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)'
+                    : 'linear-gradient(to top, rgba(255,255,255,0.35), transparent)',
+                  filter: 'blur(6px)',
+                  transform: 'scaleY(-1) translateY(-4px)',
+                  borderRadius: '0 0 16px 16px',
+                  opacity: 0.7,
+                }}
+              />
+              <img
+                src={SLIDES[activeIdx].src}
+                alt={SLIDES[activeIdx].label}
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation arrows */}
+        <button
+          onClick={prev}
+          className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+            isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700' : 'bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 shadow-md'
+          }`}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <polyline points="8,1 3,6 8,11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          onClick={next}
+          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+            isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700' : 'bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 shadow-md'
+          }`}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <polyline points="4,1 9,6 4,11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex items-center gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            className="transition-all duration-300 rounded-full"
+            style={{
+              width: i === activeIdx ? 20 : 6,
+              height: 6,
+              background: i === activeIdx
+                ? (isDark ? '#fff' : '#09090b')
+                : (isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'),
+            }}
+          />
+        ))}
+      </div>
+
+      <p className={`text-xs font-light tracking-widest uppercase ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+        {SLIDES[activeIdx].label} · {activeIdx + 1} / {SLIDES.length}
+      </p>
+    </div>
+  );
+}
+
 /* ─── FEATURES ────────────────────────────────────────────────── */
 function FeaturesSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
@@ -1102,26 +1283,42 @@ function FeaturesSlide({ activeTheme }) {
   ];
 
   return (
-    <section id="features" className={`h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-12 px-6`}>
+    <section id="features" className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6`}>
       <div className="max-w-6xl mx-auto w-full">
+        {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.4 }} className="text-center mb-12">
+          viewport={{ once: false, amount: 0.4 }} className="mb-14">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
           <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>And analytics</p>
         </motion.div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {features.map((f, i) => (
-            <motion.div key={f.title}
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }} transition={{ delay: i * 0.08, duration: 0.5 }}
-              className={`group p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
-              <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
-                <f.icon className="size-5 text-white" strokeWidth={1.5} />
-              </div>
-              <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{f.title}</h3>
-              <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{f.desc}</p>
-            </motion.div>
-          ))}
+
+        {/* Two-column layout */}
+        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+
+          {/* LEFT — Paper slideshow */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
+            className="flex-shrink-0"
+          >
+            <PaperStack isDark={isDark} />
+          </motion.div>
+
+          {/* RIGHT — Feature cards */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {features.map((f, i) => (
+              <motion.div key={f.title}
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }} transition={{ delay: i * 0.08, duration: 0.5 }}
+                className={`group p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
+                <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
+                  <f.icon className="size-5 text-white" strokeWidth={1.5} />
+                </div>
+                <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{f.title}</h3>
+                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
