@@ -925,7 +925,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex justify-center mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-12 w-auto object-contain opacity-70" />
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-20 w-auto object-contain" />
           </motion.div>
 
           {/* Quote / review + logo centered under text */}
@@ -1703,54 +1703,51 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             </ul>
 
             <button onClick={() => onGetStarted(plan.id)}
-              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all mb-6 ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
 
-            {/* Slider */}
-            <div>
-              <div className="flex justify-between mb-3">
-                {PLANS.map((p, i) => (
-                  <button key={p.id} onClick={() => setPlanIdx(i)}
-                    className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                    <span className="text-xs font-semibold">{p.name}</span>
-                  </button>
-                ))}
-            </div>
-            {/* Track */}
-            <div
-              ref={trackRef}
-              className="relative h-4 rounded-full cursor-pointer select-none"
-              style={{ background: trackBg }}
-              onClick={e => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const pct = (e.clientX - rect.left) / rect.width;
-                setPlanIdx(Math.round(pct * (PLANS.length - 1)));
-              }}
-            >
-              {/* Fill */}
-              <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
-                style={{ width: `${fillPct}%`, background: fillColor }} />
-              {/* Thumb */}
-              <motion.div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
-                style={{
-                  left: `${fillPct}%`,
-                  background: fillColor,
-                  borderColor: isDark ? '#3f3f46' : '#e4e4e7',
-                  border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
-                  boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
-                  transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                }}
-                whileHover={{ scale: 1.25 }}
-                whileTap={{ scale: 1.15 }}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-              />
-            </div>
-
-          </div>
         </motion.div>
+
+        {/* Slider — outside card */}
+        <div className="mt-6">
+          <div className="flex justify-between mb-3">
+            {PLANS.map((p, i) => (
+              <button key={p.id} onClick={() => setPlanIdx(i)}
+                className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                <span className="text-xs font-semibold">{p.name}</span>
+              </button>
+            ))}
+          </div>
+          <div
+            ref={trackRef}
+            className="relative h-4 rounded-full cursor-pointer select-none"
+            style={{ background: trackBg }}
+            onClick={e => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const pct = (e.clientX - rect.left) / rect.width;
+              setPlanIdx(Math.round(pct * (PLANS.length - 1)));
+            }}
+          >
+            <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
+              style={{ width: `${fillPct}%`, background: fillColor }} />
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
+              style={{
+                left: `${fillPct}%`,
+                background: fillColor,
+                borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+                border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
+                boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
+                transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}
+              whileHover={{ scale: 1.25 }}
+              whileTap={{ scale: 1.15 }}
+              onMouseDown={handleMouseDown}
+              onTouchStart={handleTouchStart}
+            />
+          </div>
+        </div>
 
         {/* Powered by Anthropic — right after card */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
