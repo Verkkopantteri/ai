@@ -795,36 +795,13 @@ function AnimatedChatLoop({ theme }) {
 }
 
 /* ─── THEME ARC HINT ──────────────────────────────────────────── */
-function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lightRef: React.RefObject<HTMLButtonElement>, darkRef: React.RefObject<HTMLButtonElement> }) {
+// SVG on relatiivinen container-div:n sisällä — ei screen-koordinaatteja, toimii zoomilla.
+// Napit: w-7 h-7 (28px), gap-2 (8px). Pallot ovat flex-rivillä.
+// Valopallon keskipiste: x=14, tumman: x=50, molemmat y=14.
+function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   const [visible, setVisible] = useState(false);
   const [key, setKey] = useState(0);
-  const [coords, setCoords] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
   const isDark = chatTheme === 'dark';
-
-  // Measure after paint so refs are guaranteed to have DOM nodes
-  useEffect(() => {
-    const measure = () => {
-      const a = lightRef.current?.getBoundingClientRect();
-      const b = darkRef.current?.getBoundingClientRect();
-      if (a && b && (a.width > 0) && (b.width > 0)) {
-        setCoords({
-          x1: a.left + a.width / 2,
-          y1: a.top + a.height / 2,
-          x2: b.left + b.width / 2,
-          y2: b.top + b.height / 2,
-        });
-      }
-    };
-    // rAF ensures layout is done before we measure
-    const raf = requestAnimationFrame(measure);
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure);
-    };
-  }, [lightRef, darkRef]);
 
   useEffect(() => {
     const show = () => {
@@ -832,62 +809,61 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
       setKey(k => k + 1);
       setTimeout(() => setVisible(false), 2200);
     };
-    const t0 = setTimeout(() => {
-      show();
-    }, 2500);
+    const t0 = setTimeout(show, 2500);
     const interval = setInterval(show, 6000);
     return () => { clearTimeout(t0); clearInterval(interval); };
   }, []);
 
-  if (!coords) return null;
-
-  const { x1, y1, x2, y2 } = coords;
-  // Arc goes from active button → inactive button
-  const sx = isDark ? x2 : x1;
-  const sy = isDark ? y2 : y1;
-  const ex = isDark ? x1 : x2;
-  const ey = isDark ? y1 : y2;
-
+  // Pallot: 28px halkaisija, 8px gap. Keskipisteet:
+  const lx = 14; const ly = 14; // valopallo
+  const dx = 50; const dy = 14; // tummapallo
+  // Aktiivisesta → inaktiiviseen
+  const sx = isDark ? dx : lx;
+  const sy = isDark ? dy : ly;
+  const ex = isDark ? lx : dx;
+  const ey = isDark ? ly : dy;
   const mx = (sx + ex) / 2;
-  const peakY = Math.max(sy, ey) + 10; // pieni kaari juuri nappien alla
+  const peakY = 32; // hieman nappien alapuolella
 
   const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
-
   const baseColor = isDark ? '255,255,255' : '9,9,11';
   const gradId = `arc-grad-${key}`;
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.svg
-          key={key}
-          style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 50, overflow: 'visible' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <defs>
-            {/* userSpaceOnUse + pikselikoordinaatit — toimii oikein screen-space SVG:ssä */}
-            <linearGradient id={gradId} x1={sx} y1={sy} x2={ex} y2={ey} gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor={`rgba(${baseColor},0.8)`} />
-              <stop offset="60%" stopColor={`rgba(${baseColor},0.4)`} />
-              <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
-            </linearGradient>
-          </defs>
-          <motion.path
-            d={pathD}
-            fill="none"
-            stroke={`url(#${gradId})`}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
-          />
-        </motion.svg>
-      )}
-    </AnimatePresence>
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10, overflow: 'visible' }}>
+      <AnimatePresence>
+        {visible && (
+          <motion.svg
+            key={key}
+            width={64} height={40}
+            viewBox="0 0 64 40"
+            style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible', pointerEvents: 'none' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <defs>
+              <linearGradient id={gradId} x1={sx} y1={sy} x2={ex} y2={ey} gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor={`rgba(${baseColor},0.85)`} />
+                <stop offset="55%" stopColor={`rgba(${baseColor},0.4)`} />
+                <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
+              </linearGradient>
+            </defs>
+            <motion.path
+              d={pathD}
+              fill="none"
+              stroke={`url(#${gradId})`}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
+              transition={{ duration: 1.2, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
+            />
+          </motion.svg>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
