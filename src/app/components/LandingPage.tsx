@@ -9,29 +9,26 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'S', label: 'TIA BOT S', desc: '49€/mo · ~3–4 chats/day' },
-  { id: 'M', label: 'TIA BOT M', desc: '99€/mo · ~8–15 chats/day' },
-  { id: 'L', label: 'TIA BOT L', desc: '199€/mo · ~20–40 chats/day' },
-  { id: 'XL', label: 'TIA BOT XL', desc: '499€/mo · ~80–150 chats/day' },
+  { id: 'M', label: 'S', desc: '99€/mo · 1,000 messages / month' },
+  { id: 'L', label: 'M', desc: '199€/mo · 2,500 messages / month' },
+  { id: 'XL', label: 'L', desc: '499€/mo · 10,000 messages / month' },
 ];
 
-const SERVICE_PRICES = { S: 49, M: 99, L: 199, XL: 499 };
+const SERVICE_PRICES = { M: 99, L: 199, XL: 499 };
 
-function LeadFormModal({ isDark, onClose, initialService = '', initialBranding = false }) {
+function LeadFormModal({ isDark, onClose, initialService = '' }) {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     service: initialService,
     company: '',
     website: '',
     email: '',
-    branding: initialBranding,
-    analytics: 'basic', // 'basic' | 'advanced'
+    analytics: 'basic',
   });
 
   const basePrice = SERVICE_PRICES[form.service] || 0;
-  const brandingPrice = form.branding ? 20 : 0;
   const analyticsPrice = form.analytics === 'advanced' ? 50 : 0;
-  const total = basePrice + brandingPrice + analyticsPrice;
+  const total = basePrice + analyticsPrice;
 
   const handleSubmit = () => {
     if (!form.service || !form.company || !form.website || !form.email) return;
@@ -83,13 +80,13 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
           {!submitted ? (
             <>
               <h3 className={`text-2xl font-light mb-1 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Get Started</h3>
-              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No commitment · cancel anytime</p>
+              <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>No commitment · Cancel anytime</p>
               <div className="flex flex-col gap-4">
 
                 {/* Service selector */}
                 <div>
                   <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which plan interests you?</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {SERVICES.map(s => (
                       <button key={s.id} onClick={() => setForm(f => ({ ...f, service: s.id }))}
                         className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
@@ -103,19 +100,6 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
                     ))}
                   </div>
                 </div>
-
-                {/* Custom Chat Window addon */}
-                <ToggleAddon active={form.branding} onClick={() => setForm(f => ({ ...f, branding: !f.branding }))}>
-                  <div>
-                    <div className={`text-xs font-semibold ${form.branding ? 'text-white' : (isDark ? 'text-zinc-300' : 'text-zinc-700')}`}>
-                      Custom Chat Window
-                      <span className={`ml-2 text-[10px] font-normal px-1.5 py-0.5 rounded ${form.branding ? 'bg-white/20 text-white' : (isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500')}`}>+20€/month</span>
-                    </div>
-                    <div className={`text-[10px] mt-0.5 ${form.branding ? 'opacity-70 text-white' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                      Colors & design match your brand
-                    </div>
-                  </div>
-                </ToggleAddon>
 
                 {/* Analytics Dashboard */}
                 <div>
@@ -146,12 +130,6 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
                       <span>{basePrice}€/mo</span>
                     </div>
                   )}
-                  {form.branding && (
-                    <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                      <span>Custom Chat Window</span>
-                      <span>+20€/mo</span>
-                    </div>
-                  )}
                   {form.analytics === 'advanced' && (
                     <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                       <span>Advanced Analytics</span>
@@ -166,7 +144,7 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
 
                 {/* Text fields */}
                 {[
-                  { key: 'company', label: 'Company Name', placeholder: 'Acme Inc.' },
+                  { key: 'company', label: 'Company Name', placeholder: 'TIA.AI Inc' },
                   { key: 'website', label: 'Website URL', placeholder: 'https://yourcompany.com' },
                   { key: 'email', label: 'Email Address', placeholder: 'you@yourcompany.com' },
                 ].map(({ key, label, placeholder }) => (
@@ -181,9 +159,10 @@ function LeadFormModal({ isDark, onClose, initialService = '', initialBranding =
                     />
                   </div>
                 ))}
+                <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>We'll get back to you shortly.</p>
                 <button
                   onClick={handleSubmit}
-                  className={`mt-1 w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
+                  className={`w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
                 >
                   Send Message
                 </button>
@@ -948,15 +927,6 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           {/* Theme switcher */}
           <div className="flex items-center gap-2 mb-8 justify-center lg:justify-start relative">
             <ThemeArcHint />
-            <button onClick={() => setActiveTheme('dark')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeTheme === 'dark'
-                  ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
-                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-              }`}>
-              <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
-              Obsidian Black
-            </button>
             <button onClick={() => setActiveTheme('light')}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
                 activeTheme === 'light'
@@ -965,6 +935,15 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               }`}>
               <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
               Pearl White
+            </button>
+            <button onClick={() => setActiveTheme('dark')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                activeTheme === 'dark'
+                  ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
+                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+              }`}>
+              <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
+              Obsidian Black
             </button>
           </div>
 
@@ -1422,15 +1401,15 @@ function FeaturesSlide({ activeTheme }) {
 /* ─── PRICING ─────────────────────────────────────────────────── */
 const PLANS = [
   {
-    id: 'S',
-    name: 'TIA BOT S',
-    label: 'Lite',
+    id: 'M',
+    name: 'S',
+    label: 'Core',
     tagline: 'For small size business',
-    price: '49€',
-    priceNum: 49,
+    price: '99€',
+    priceNum: 99,
     period: '/month',
-    volume: '~3–4 chats per day',
-    messages: '500 messages / month',
+    volume: '',
+    messages: 'Limit 1,000 messages / month',
     features: [
       'Trained on your content',
       'AI evolves monthly with new data',
@@ -1442,37 +1421,17 @@ const PLANS = [
     highlight: false,
   },
   {
-    id: 'M',
-    name: 'TIA BOT M',
-    label: 'Core',
-    tagline: 'For medium size business',
-    price: '99€',
-    priceNum: 99,
-    period: '/month',
-    volume: '~8–15 chats per day',
-    messages: '1,000 messages / month',
-    features: [
-      'Trained on your content',
-      'AI evolves monthly with new data',
-      'Analytics dashboard',
-      'Email support',
-      '48h setup',
-    ],
-    support: 'Email support',
-    highlight: true,
-  },
-  {
     id: 'L',
-    name: 'TIA BOT L',
+    name: 'M',
     label: 'Pro',
     tagline: 'For medium size business',
     price: '199€',
     priceNum: 199,
     period: '/month',
-    volume: '~20–40 chats per day',
-    messages: '2,500 messages / month',
+    volume: '',
+    messages: 'Limit 2,500 messages / month',
     features: [
-      'Advanced training & updates',
+      'Trained on your content',
       'AI evolves weekly with new data',
       'Analytics dashboard',
       'Auto-detected and alert hot leads',
@@ -1480,20 +1439,20 @@ const PLANS = [
       'Priority support',
     ],
     support: 'Priority support',
-    highlight: false,
+    highlight: true,
   },
   {
     id: 'XL',
-    name: 'TIA BOT XL',
+    name: 'L',
     label: 'Enterprise',
     tagline: 'For large size business',
     price: '499€',
     priceNum: 499,
     period: '/month',
-    volume: '~80–150 chats per day',
-    messages: '10,000 messages / month',
+    volume: '',
+    messages: 'Limit 10,000 messages / month',
     features: [
-      'Advanced training & updates',
+      'Trained on your content',
       'AI evolves weekly with new data',
       'Analytics dashboard',
       'Auto-detected and alert hot leads',
@@ -1507,7 +1466,7 @@ const PLANS = [
 
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
-  const [planIdx, setPlanIdx] = useState(1); // default M = index 1
+  const [planIdx, setPlanIdx] = useState(0); // default S = index 0
   const plan = PLANS[planIdx];
   const trackRef = useRef(null);
   const isDragging = useRef(false);
@@ -1582,7 +1541,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
             {/* Fixed-height text rows so all plans align */}
             <p className={`text-sm h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
-            <p className={`text-xs h-5 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{plan.volume}</p>
             <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
 
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
@@ -1728,25 +1686,23 @@ function Footer({ activeTheme }) {
 
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
-  const [activeTheme, setActiveTheme] = useState('dark');
+  const [activeTheme, setActiveTheme] = useState('light');
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
-  const [leadBranding, setLeadBranding] = useState(false);
 
-  const openLead = (service = '', branding = false) => {
+  const openLead = (service = '') => {
     setLeadService(service);
-    setLeadBranding(branding);
     setLeadOpen(true);
   };
 
   return (
     <div className={`transition-colors duration-700 ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
-      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} initialBranding={leadBranding} />}
+      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={activeTheme === 'dark'} onGetStarted={() => openLead()} />
       <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
-      <PricingSlide activeTheme={activeTheme} onGetStarted={(id, branding = false) => openLead(id, branding)} />
+      <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
       <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <Footer activeTheme={activeTheme} />
     </div>
