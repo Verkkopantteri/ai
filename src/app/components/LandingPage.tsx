@@ -931,7 +931,7 @@ function AnimatedStarReview({ isDark }) {
             animate={starsVisible > i ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
             transition={{ type: 'spring', stiffness: 400, damping: 18 }}
           >
-            <Star className={`size-4 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+            <Star className=\"size-4\" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
           </motion.div>
         ))}
       </div>
@@ -991,7 +991,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <div className="flex flex-col items-center gap-1 mb-6">
             <div className="flex gap-0.5 mb-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+                <Star key={i} className="size-3.5" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
               ))}
             </div>
             <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
@@ -1054,7 +1054,7 @@ function ShowcaseSlide({ activeTheme }) { return null; }
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
 function TiaInActionSlide({ activeTheme, onGetStarted }) {
-  const [chatTheme, setChatTheme] = useState('dark');
+  const [chatTheme, setChatTheme] = useState('light');
   const isDark = chatTheme === 'dark';
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
@@ -1106,11 +1106,11 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
 
               <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
                 animate={{ color: isDark ? '#ffffff' : '#09090b' }} transition={{ duration: 0.7 }}>
-                Next-gen live chat support —<br /><span style={{ color: '#ff4d33' }}>powered by the world's<br />smartest AI Agent.</span>
+                Next-gen live chat support —<br /><span style={{ color: '#63AFC7' }}>powered by the world's<br />smartest AI Agent.</span>
               </motion.h2>
 
               <motion.p className="text-base font-light mb-6 leading-relaxed max-w-xl"
-                animate={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#71717a' }} transition={{ duration: 0.7 }}>
+                animate={{ color: isDark ? 'rgba(255,255,255,0.8)' : '#3f3f46' }} transition={{ duration: 0.7 }}>
                 With TIA, customers get real-time support through live chat. The AI Agent resolves complex issues instantly while continuously improving from real conversation data. TIA learns your business and guides visitors toward the highest value outcomes.
               </motion.p>
 
@@ -1136,13 +1136,18 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
                 ))}
               </div>
 
-              {/* GDPR + Compatible + icons */}
-              <div className="flex items-center gap-3 flex-wrap justify-center lg:justify-start">
-                <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-                <span className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Compatible</span>
-                <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-                <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
-                <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+              {/* Theme switcher */}
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <motion.button onClick={() => setChatTheme('light')}
+                  animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
+                  transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                  style={{ borderWidth: 2, borderStyle: 'solid' }}
+                  className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
+                <motion.button onClick={() => setChatTheme('dark')}
+                  animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
+                  transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                  style={{ borderWidth: 2, borderStyle: 'solid' }}
+                  className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
               </div>
             </motion.div>
 
@@ -1155,17 +1160,53 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             </motion.div>
           </div>
 
-          {/* Floating quote — bottom left free area */}
-          <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col items-start gap-0.5 mt-4 mb-2">
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-4 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
-              ))}
+          {/* BOTTOM STRIP — compact, always visible */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }} transition={{ duration: 0.7, delay: 0.2 }}
+            className={`rounded-xl border px-6 py-3.5 flex flex-col md:flex-row items-center gap-4 md:gap-6 flex-wrap ${isDark ? 'border-zinc-800 bg-zinc-900/50' : 'border-zinc-200 bg-white/70'}`}
+            style={{ backdropFilter: 'blur(8px)' }}>
+
+            {/* Quote + stars */}
+            <div className="flex flex-col items-center md:items-start gap-0.5">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+                ))}
+              </div>
+              <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
+              <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </div>
-            <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
-            <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+
+            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+
+            {/* GDPR texts + GDPR icon */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {['GDPR-ready', 'Encrypted storage', 'Data deletion on request'].map(item => (
+                <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                  <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
+                  {item}
+                </span>
+              ))}
+              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+            </div>
+
+            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+
+            {/* Compatible label + icons */}
+            <div className="flex items-center gap-3">
+              <span className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Compatible</span>
+              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+            </div>
+
+            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+
+            {/* Logo cycler */}
+            <div className="flex items-center justify-center">
+              <RefLogosCycler isDark={isDark} />
+            </div>
+
           </motion.div>
 
         </div>
@@ -1498,7 +1539,7 @@ function FeaturesSlide({ activeTheme }) {
         ref={ref}
         id="features"
         style={{ rotateX, scale, opacity, y }}
-        className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6 relative overflow-hidden`}
+        className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-20 px-6 relative overflow-hidden`}
       >
       <video src="/dots.mp4" autoPlay loop muted playsInline
         className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${isDark ? 'opacity-40' : 'opacity-10'}`} />
@@ -1507,7 +1548,7 @@ function FeaturesSlide({ activeTheme }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
           <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Turn data into smarter decisions.</p>
+          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-600'}`}>Turn data into smarter decisions.</p>
         </motion.div>
 
         {/* Two-column layout */}
@@ -1531,12 +1572,12 @@ function FeaturesSlide({ activeTheme }) {
                 viewport={{ once: false, amount: 0.2 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
                 whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-                className={`group p-6 rounded-2xl border transition-colors duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
+                className={`group p-6 rounded-2xl border transition-colors duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-200 hover:border-zinc-300 hover:shadow-xl shadow-sm'}`}>
                 <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
                   <f.icon className="size-5 text-white" strokeWidth={1.5} />
                 </div>
                 <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{f.title}</h3>
-                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{f.desc}</p>
+                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-600'}`}>{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1808,7 +1849,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
               {plan.features.map(f => (
                 <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                  <Check className="size-4 shrink-0" style={{ color: '#ff4d33' }} />
+                  <Check className="size-4 shrink-0" style={{ color: '#63AFC7' }} />
                   {f}
                 </li>
               ))}
@@ -1827,7 +1868,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           className="flex items-center justify-center gap-5 mt-5 flex-wrap">
           {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
             <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-              <Check className="size-3 shrink-0" style={{ color: '#ff4d33' }} />
+              <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
               {item}
             </span>
           ))}
@@ -1917,7 +1958,7 @@ function Footer({ activeTheme }) {
 
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
-  const activeTheme = 'dark';
+  const activeTheme = 'light';
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
 
@@ -1927,9 +1968,9 @@ export function LandingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-zinc-950">
-      {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
-      <Header isDark={true} onGetStarted={() => openLead()} />
+    <div className="overflow-x-hidden bg-white">
+      {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      <Header isDark={false} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
