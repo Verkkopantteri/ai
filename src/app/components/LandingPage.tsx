@@ -802,7 +802,7 @@ const REF_LOGOS = [
   { name: 'Ref 2', src: '/r2.avif', invert: true },
   { name: 'Ref 3', src: '/r3.avif', invert: false },
   { name: 'Ref 4', src: '/r4.avif', invert: true },
-  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.25, height: 48 },
+  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.30, height: 64 },
 ];
 
 function RefLogosCycler({ isDark }) {
