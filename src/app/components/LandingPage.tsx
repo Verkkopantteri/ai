@@ -975,8 +975,9 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
 function TiaInActionSlide({ activeTheme }) {
-  const isDark = activeTheme === 'dark';
-  const theme = CHAT_THEMES[activeTheme];
+  const isDark = false; // page always stays light
+  const [chatTheme, setChatTheme] = useState('light');
+  const theme = CHAT_THEMES[chatTheme];
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end end'] });
 
@@ -1011,27 +1012,21 @@ function TiaInActionSlide({ activeTheme }) {
               Watch how TIA handles a real customer conversation on your website.
             </p>
 
-            {/* Theme switcher moved here */}
+            {/* Theme switcher — dots only */}
             <div className="flex items-center gap-2 justify-center lg:justify-start relative">
               <ThemeArcHint />
-              <button onClick={() => setActiveTheme('light')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                  activeTheme === 'light'
-                    ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
-                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-                }`}>
-                <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
-                Pearl White
-              </button>
-              <button onClick={() => setActiveTheme('dark')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                  activeTheme === 'dark'
-                    ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
-                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-                }`}>
-                <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
-                Obsidian Black
-              </button>
+              <button onClick={() => setChatTheme('light')}
+                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                  chatTheme === 'light'
+                    ? 'border-zinc-400 scale-110 shadow-md'
+                    : 'border-zinc-200 hover:border-zinc-300'
+                } bg-white`} />
+              <button onClick={() => setChatTheme('dark')}
+                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                  chatTheme === 'dark'
+                    ? 'border-zinc-600 scale-110 shadow-md'
+                    : 'border-zinc-300 hover:border-zinc-500'
+                } bg-zinc-900`} />
             </div>
 
           </motion.div>
@@ -1781,7 +1776,7 @@ function Footer({ activeTheme }) {
 
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
-  const [activeTheme, setActiveTheme] = useState('light');
+  const activeTheme = 'light';
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
 
@@ -1791,10 +1786,10 @@ export function LandingPage() {
   };
 
   return (
-    <div className={`transition-colors duration-700 overflow-x-hidden ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
-      {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} />}
-      <Header isDark={activeTheme === 'dark'} onGetStarted={() => openLead()} />
-      <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => openLead()} />
+    <div className="overflow-x-hidden bg-white">
+      {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      <Header isDark={false} onGetStarted={() => openLead()} />
+      <HeroSlide activeTheme={activeTheme} setActiveTheme={() => {}} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
