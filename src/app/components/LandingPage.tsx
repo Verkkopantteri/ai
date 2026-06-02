@@ -921,6 +921,13 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             ))}
           </motion.div>
 
+          {/* GDPR badge */}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="flex justify-center mb-6">
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-12 w-auto object-contain opacity-70" />
+          </motion.div>
+
           {/* Quote / review + logo centered under text */}
           <div className="mb-2 flex flex-col items-center text-center">
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
@@ -1532,6 +1539,7 @@ const PLANS = [
     period: '/month',
     volume: '',
     messages: 'Limit 1,000 messages / month',
+    additionalUsage: '€0.02 / message',
     features: [
       'Trained on your content',
       'AI evolves monthly with new data',
@@ -1552,6 +1560,7 @@ const PLANS = [
     period: '/month',
     volume: '',
     messages: 'Limit 2,500 messages / month',
+    additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
       'AI evolves weekly with new data',
@@ -1573,6 +1582,7 @@ const PLANS = [
     period: '/month',
     volume: '',
     messages: 'Limit 10,000 messages / month',
+    additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
       'AI evolves weekly with new data',
@@ -1680,7 +1690,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
             {/* Fixed-height text rows so all plans align */}
             <p className={`text-sm h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
-            <p className={`text-xs mb-6 font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            <p className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            <p className={`text-xs mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Additional usage: {plan.additionalUsage}</p>
 
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
               {plan.features.map(f => (
@@ -1749,6 +1760,24 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             Powered by{' '}
             <span className={`font-semibold ${isDark ? 'text-white' : 'text-zinc-950'}`}>Anthropic's Claude</span>
             {' '}— world's smartest AI.
+          </p>
+        </motion.div>
+
+        {/* GDPR */}
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }} transition={{ delay: 0.3 }}
+          className={`rounded-2xl py-5 px-6 border mt-4 ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
+          <div className="flex flex-wrap gap-x-6 gap-y-1.5 justify-center mb-3">
+            {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
+              <span key={item} className={`flex items-center gap-1.5 text-xs font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
+                {item}
+              </span>
+            ))}
+          </div>
+          <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+            Built with GDPR compliance in mind.{' '}
+            <span className={`${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>— The AI Team</span>
           </p>
         </motion.div>
       </div>
