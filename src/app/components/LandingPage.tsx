@@ -939,7 +939,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               ))}
             </div>
             <p className={`text-sm font-light italic leading-relaxed ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-              "Finally a fair price, and a nice spike in leads."
+              "Best hire we never made."
             </p>
             <p className={`text-xs mt-1 ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</p>
           </div>
