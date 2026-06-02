@@ -213,7 +213,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   disabled={!form.service || !form.botSetup || !form.company || !form.website || !form.email}
                   className={`w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
                 >
-                  Send Message
+                  Send Request
                 </button>
               </div>
             </>
