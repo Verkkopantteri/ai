@@ -24,11 +24,15 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
     website: '',
     email: '',
     analytics: 'basic',
+    addonTemplateBot: false,
+    addonCustomBrand: false,
   });
 
   const basePrice = SERVICE_PRICES[form.service] || 0;
   const analyticsPrice = form.analytics === 'advanced' ? 50 : 0;
-  const total = basePrice + analyticsPrice;
+  const discountMultiplier = form.addonTemplateBot ? 0.80 : 1.0;
+  const discountedBase = Math.round(basePrice * discountMultiplier);
+  const total = discountedBase + analyticsPrice;
 
   const handleSubmit = () => {
     if (!form.service || !form.company || !form.website || !form.email) return;
@@ -122,12 +126,48 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   </div>
                 </div>
 
+                {/* Add-ons */}
+                <div>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Available Add-ons</label>
+                  <div className="flex flex-col gap-2">
+                    <ToggleAddon active={form.addonTemplateBot} onClick={() => setForm(f => ({ ...f, addonTemplateBot: !f.addonTemplateBot }))}>
+                      <div>
+                        <p className={`text-xs font-semibold ${form.addonTemplateBot ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                          Use TIA's Template Bot (Black or White)
+                        </p>
+                        <p className={`text-[11px] mt-0.5 ${form.addonTemplateBot ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                          Permanently -20% off your plan
+                        </p>
+                      </div>
+                    </ToggleAddon>
+                    <ToggleAddon active={form.addonCustomBrand} onClick={() => setForm(f => ({ ...f, addonCustomBrand: !f.addonCustomBrand }))}>
+                      <div>
+                        <p className={`text-xs font-semibold ${form.addonCustomBrand ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                          Custom Branded & Styled Bot
+                        </p>
+                        <p className={`text-[11px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                          Fully tailored to your brand identity
+                        </p>
+                      </div>
+                    </ToggleAddon>
+                  </div>
+                </div>
+
                 {/* Total */}
                 <div className={`rounded-xl px-4 py-4 border ${isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
                   {form.service && (
                     <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                       <span>{SERVICES.find(s => s.id === form.service)?.label}</span>
-                      <span>{basePrice}€/mo</span>
+                      <span className="flex items-center gap-1.5">
+                        {form.addonTemplateBot && <span className="line-through opacity-50">{basePrice}€/mo</span>}
+                        {discountedBase}€/mo
+                      </span>
+                    </div>
+                  )}
+                  {form.addonTemplateBot && form.service && (
+                    <div className={`flex justify-between text-xs mb-2 text-emerald-500`}>
+                      <span>Template Bot discount (-20%)</span>
+                      <span>-{basePrice - discountedBase}€/mo</span>
                     </div>
                   )}
                   {form.analytics === 'advanced' && (
@@ -935,7 +975,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
-            Capture and qualify leads with an AI chatbot that knows your business.
+            AI Chatbot trained on your business knowledge.
           </p>
 
           {/* Testimonial under tagline */}
@@ -1640,10 +1680,18 @@ const PLANS = [
   },
 ];
 
+const ADDONS = [
+  { id: 'template_bot', label: "Use TIA's Template Bot (Black or White)", desc: 'Permanently -20% off your plan', discount: 0.20 },
+  { id: 'custom_brand', label: 'Custom Branded & Styled Bot', desc: 'Fully tailored to your brand identity', discount: 0 },
+];
+
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const [planIdx, setPlanIdx] = useState(0);
+  const [addonTemplateBot, setAddonTemplateBot] = useState(false);
+  const [addonCustomBrand, setAddonCustomBrand] = useState(false);
   const plan = PLANS[planIdx];
+  const discountedPrice = addonTemplateBot ? Math.round(plan.priceNum * 0.80) : plan.priceNum;
   const trackRef = useRef(null);
   const isDragging = useRef(false);
   const sectionRef = useRef(null);
@@ -1727,7 +1775,14 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                 )}
               </div>
               <div className="text-right">
-                <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+                {addonTemplateBot ? (
+                  <div className="flex flex-col items-end">
+                    <div className={`text-sm line-through ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{plan.price}</div>
+                    <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{discountedPrice}€</div>
+                  </div>
+                ) : (
+                  <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+                )}
                 <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.period}</div>
               </div>
             </div>
@@ -1750,6 +1805,59 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
+
+            {/* Add-ons */}
+            <div className={`mt-5 pt-5 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Available Add-ons</p>
+              <div className="flex flex-col gap-2">
+                {/* Template Bot toggle */}
+                <button
+                  onClick={() => setAddonTemplateBot(v => !v)}
+                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                    addonTemplateBot
+                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+                    addonTemplateBot ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                  }`}>
+                    {addonTemplateBot && <Check className="size-3 text-zinc-950" />}
+                  </div>
+                  <div>
+                    <p className={`text-xs font-semibold ${addonTemplateBot ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      Use TIA's Template Bot (Black or White)
+                    </p>
+                    <p className={`text-[11px] mt-0.5 ${addonTemplateBot ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      Permanently -20% off — {discountedPrice}€/mo instead of {plan.priceNum}€
+                    </p>
+                  </div>
+                </button>
+                {/* Custom Brand toggle */}
+                <button
+                  onClick={() => setAddonCustomBrand(v => !v)}
+                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                    addonCustomBrand
+                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+                    addonCustomBrand ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                  }`}>
+                    {addonCustomBrand && <Check className="size-3 text-zinc-950" />}
+                  </div>
+                  <div>
+                    <p className={`text-xs font-semibold ${addonCustomBrand ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      Custom Branded & Styled Bot
+                    </p>
+                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      Fully tailored to your brand identity
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
 
         </motion.div>
 
