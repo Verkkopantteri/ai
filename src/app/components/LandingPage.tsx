@@ -819,27 +819,26 @@ function RefLogosCycler({ isDark }) {
     const t = setTimeout(() => {
       setCurrent(c => (c + 1) % REF_LOGOS.length);
       setPhase('visible');
-    }, 600);
+    }, 700);
     return () => clearTimeout(t);
   }, [phase]);
 
+  const colorFilter = isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)';
+
   return (
-    <div className="mt-3 h-10 flex items-center justify-center">
-      <AnimatePresence mode="sync">
+    <div className="mt-3 h-20 flex items-center justify-center">
+      <AnimatePresence mode="wait">
         <motion.img
           key={current}
           src={REF_LOGOS[current].src}
           alt={REF_LOGOS[current].name}
-          className="h-8 w-auto object-contain"
-          initial={{ opacity: 0, filter: 'blur(12px)' }}
+          className="w-auto object-contain"
+          style={{ height: 64, maxWidth: 200 }}
+          initial={{ opacity: 0, filter: `blur(14px) ${colorFilter}` }}
           animate={phase === 'visible'
-            ? { opacity: 1, filter: 'blur(0px)' }
-            : { opacity: 0, filter: 'blur(12px)' }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
-          style={{
-            filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
-            opacity: isDark ? 0.5 : 0.3,
-          }}
+            ? { opacity: 0.3, filter: `blur(0px) ${colorFilter}` }
+            : { opacity: 0, filter: `blur(14px) ${colorFilter}` }}
+          transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
       </AnimatePresence>
     </div>
