@@ -934,8 +934,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-semibold mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
-            Answers visitors instantly with AI Chat Bot.
+          <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
+            Capture and qualify leads with an AI chatbot that knows your business.
           </p>
 
           {/* Testimonial under tagline */}
