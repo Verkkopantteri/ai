@@ -904,8 +904,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               Get Started
             </button>
             <a href="#features"
-              className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
-              See TIA in Action
+              className="px-8 py-4 rounded-full text-base font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
+              See Example
             </a>
           </div>
 
@@ -921,17 +921,24 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             ))}
           </motion.div>
 
-          {/* GDPR badge + Shopify + WordPress */}
+          {/* GDPR badge */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="flex items-center justify-center gap-3 mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 48, width: 'auto' }} />
-            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
-            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
+            className="flex justify-center mb-6">
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-16 w-auto object-contain" />
           </motion.div>
 
-          {/* Quote / review + logo centered under text */}
-          <div className="mb-2 flex flex-col items-center text-center">
+          <RefLogosCycler isDark={isDark} />
+
+        </motion.div>
+
+        {/* RIGHT — testimonial + chat stack */}
+        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4">
+
+          {/* Quote / review above chat images */}
+          <div className="flex flex-col items-center text-center">
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
@@ -940,15 +947,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
             </div>
-            <RefLogosCycler isDark={isDark} />
           </div>
 
-        </motion.div>
-
-        {/* RIGHT — chat stack */}
-        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="flex-shrink-0 hidden lg:block">
           <ChatStack activeTheme={activeTheme} />
         </motion.div>
       </div>
@@ -1751,25 +1751,34 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           </div>
         </div>
 
-        {/* GDPR text items */}
+        {/* GDPR + integrations icons */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.15 }}
-          className="flex items-center justify-center gap-5 mt-5 flex-wrap">
+          className="flex items-center justify-center gap-5 mt-5 flex-nowrap overflow-x-auto">
           {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
             <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
               <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
               {item}
             </span>
           ))}
-        </motion.div>
-
-        {/* GDPR cert */}
-        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }} transition={{ delay: 0.2 }}
-          className="flex items-center justify-center mt-3">
-          <img src="/gdpr_certification.avif" alt="GDPR Certified"
-            className="object-contain"
-            style={{ height: 36, width: 'auto' }} />
+          {/* GDPR cert + Shopify + WordPress icons */}
+          <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+            <img src="/gdpr_certification.avif" alt="GDPR Certified"
+              className="object-contain"
+              style={{ height: 40, width: 'auto' }} />
+            {/* Shopify + WordPress stacked */}
+            <div className="relative flex-shrink-0" style={{ width: 52, height: 52 }}>
+              {/* Shopify — bottom */}
+              <img src="/icon_shopify.avif" alt="Shopify"
+                className="absolute object-contain rounded-lg"
+                style={{ width: 40, height: 40, top: 0, left: 0, zIndex: 1 }} />
+              {/* WordPress — 25% overlap on top */}
+              <img src="/icon_wordpress.avif" alt="WordPress"
+                className="absolute object-contain rounded-lg"
+                style={{ width: 40, height: 40, top: '25%', left: '25%', zIndex: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }} />
+            </div>
+          </div>
         </motion.div>
 
         {/* Powered by Anthropic */}
