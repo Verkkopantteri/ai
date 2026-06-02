@@ -815,13 +815,16 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
     return () => clearTimeout(t0);
   }, []);
 
-  // White button center x≈14, black button center x≈64 in SVG coords
-  // Shorter, smaller arc — no arrowhead, just a plain line
+  // Button centers: white=x14, dark=x50 (w-7=28px buttons, gap-2=8px)
+  // Symmetric cubic bezier arc from active button to inactive button, peak y=20
   const arcPath = isDark
-    ? 'M 58 58 C 58 44, 20 44, 20 58'   // dark active: right→left (black→white), shorter
-    : 'M 20 58 C 20 44, 58 44, 58 58';  // light active: left→right (white→black), shorter
+    ? 'M 50 40 C 50 18, 14 18, 14 40'
+    : 'M 14 40 C 14 18, 50 18, 50 40';
 
-  const strokeColor = isDark ? 'rgba(255,255,255,0.75)' : 'rgba(9,9,11,0.65)';
+  const gradId = isDark ? 'arc-grad-dark' : 'arc-grad-light';
+  const baseColor = isDark ? '255,255,255' : '9,9,11';
+  const x1 = isDark ? '100%' : '0%';
+  const x2 = isDark ? '0%'   : '100%';
 
   return (
     <div style={{
@@ -836,18 +839,25 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
         {visible && (
           <motion.svg
             key={key}
-            style={{ position: 'absolute', top: -58, left: -4, overflow: 'visible' }}
-            width="80" height="62" viewBox="0 0 80 62"
+            style={{ position: 'absolute', top: -40, left: 0, overflow: 'visible' }}
+            width="64" height="44" viewBox="0 0 64 44"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Arc path — no arrowhead */}
+            <defs>
+              <linearGradient id={gradId} x1={x1} y1="0%" x2={x2} y2="0%">
+                <stop offset="0%" stopColor={`rgba(${baseColor},0.8)`} />
+                <stop offset="60%" stopColor={`rgba(${baseColor},0.55)`} />
+                <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
+              </linearGradient>
+            </defs>
+            {/* Symmetric arc with gradient fade toward destination */}
             <motion.path
               d={arcPath}
               fill="none"
-              stroke={strokeColor}
+              stroke={`url(#${gradId})`}
               strokeWidth="1.5"
               strokeLinecap="round"
               initial={{ pathLength: 0, opacity: 0 }}
