@@ -1013,7 +1013,7 @@ function TiaInActionSlide({ activeTheme }) {
             viewport={{ once: false, amount: 0.5 }} transition={{ duration: 0.7 }}
             className="flex-shrink-0 lg:w-72 text-center lg:text-left">
             <h2 className={`text-6xl md:text-7xl font-light leading-tight mb-4 ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-              TIA in<br /><span className="text-emerald-400">action</span>
+              TIA in<br /><span style={{ color: '#63AFC7' }}>action</span>
             </h2>
             <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
               Watch how TIA handles a real customer conversation on your website.
@@ -1561,7 +1561,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
               {plan.features.map(f => (
                 <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                  <Check className={`size-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <Check className="size-4 shrink-0" style={{ color: '#63AFC7' }} />
                   {f}
                 </li>
               ))}
