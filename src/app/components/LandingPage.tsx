@@ -1090,50 +1090,50 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 18 : 0} />
 
-      {/* Content layer */}
-      <motion.section ref={ref} style={{ filter, clipPath, x }}
-        className="relative flex flex-col items-center justify-start pt-28 pb-16 px-6 min-h-screen">
+      {/* Content layer — exact 100vh, everything visible at once */}
+      <motion.section ref={ref} style={{ filter, clipPath, x, minHeight: '100vh' }}
+        className="relative flex flex-col px-6 pt-20 pb-4">
 
-        <div className="max-w-6xl mx-auto w-full relative z-10">
+        <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col flex-1">
 
-          {/* Top row: title left, browser right */}
-          <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-20 mb-12">
+          {/* Main row: text left, chat right — takes all available space */}
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 flex-1 py-4">
 
-            {/* LEFT — title + subtitle + theme switcher */}
+            {/* LEFT — wider, more text space */}
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false, amount: 0.4 }} transition={{ duration: 0.7 }}
-              className="flex-shrink-0 lg:w-[520px] text-center lg:text-left pt-4">
+              className="flex-1 text-center lg:text-left">
 
-              <motion.h2 className="text-6xl md:text-7xl lg:text-8xl font-light leading-[1.05] mb-6"
+              <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
                 animate={{ color: isDark ? '#ffffff' : '#09090b' }} transition={{ duration: 0.7 }}>
                 Next-generation<br />live chat support—<br /><span style={{ color: '#63AFC7' }}>powered by the<br />world's smartest AI.</span>
               </motion.h2>
 
-              <motion.p className="text-lg font-light mb-8 leading-relaxed max-w-lg"
+              <motion.p className="text-base font-light mb-6 leading-relaxed max-w-xl"
                 animate={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#71717a' }} transition={{ duration: 0.7 }}>
                 With TIA, customers get real-time support through live chat. The AI Agent resolves complex issues instantly while continuously improving from real conversation data. TIA learns your business and guides visitors toward the highest value outcomes.
               </motion.p>
 
               {/* CTA buttons */}
-              <div className="flex items-center gap-3 justify-center lg:justify-start mb-8">
+              <div className="flex items-center gap-3 justify-center lg:justify-start mb-5">
                 <button onClick={onGetStarted}
-                  className={`px-7 py-3.5 rounded-full text-sm font-semibold transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+                  className={`px-7 py-3 rounded-full text-sm font-semibold transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
                   Get Started
                 </button>
                 <a href="#features"
-                  className={`px-7 py-3.5 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-zinc-700 text-white hover:bg-zinc-800' : 'border-zinc-300 text-zinc-700 hover:bg-zinc-50'}`}>
+                  className={`px-7 py-3 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-zinc-700 text-white hover:bg-zinc-800' : 'border-zinc-300 text-zinc-700 hover:bg-zinc-50'}`}>
                   See features
                 </a>
               </div>
 
               {/* Bullet points */}
-              <div className="flex flex-col gap-2.5 justify-center lg:justify-start">
+              <div className="flex flex-col gap-2 justify-center lg:justify-start mb-5">
                 {[
                   'Setup in 48 hours — no code required',
                   'Resolves complex issues instantly',
                   '100+ languages supported',
                 ].map(item => (
-                  <span key={item} className={`flex items-center gap-2.5 text-sm font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                  <span key={item} className={`flex items-center gap-2.5 text-xs font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                     <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#63AFC7' }} />
                     {item}
                   </span>
@@ -1141,66 +1141,64 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               </div>
 
               {/* Theme switcher */}
-              <div className="flex items-center gap-2 justify-center lg:justify-start mt-8">
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
                 <motion.button onClick={() => setChatTheme('light')}
                   animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
                   transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
                   style={{ borderWidth: 2, borderStyle: 'solid' }}
-                  className={`w-7 h-7 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
+                  className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
                 <motion.button onClick={() => setChatTheme('dark')}
                   animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
                   transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
                   style={{ borderWidth: 2, borderStyle: 'solid' }}
-                  className={`w-7 h-7 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
+                  className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
               </div>
             </motion.div>
 
-            {/* RIGHT — chat only, no browser wrapper */}
+            {/* RIGHT — chat vertically centered */}
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-              className="flex-1 flex items-start justify-center lg:justify-end pt-4">
+              className="flex-shrink-0 flex items-center justify-center">
               <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
             </motion.div>
           </div>
 
-          {/* BOTTOM STRIP — quote, stars, icons, GDPR, portfolio */}
+          {/* BOTTOM STRIP — compact, always visible */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }} transition={{ duration: 0.7, delay: 0.2 }}
-            className={`rounded-2xl border px-8 py-6 flex flex-col md:flex-row items-center gap-6 md:gap-10 flex-wrap ${isDark ? 'border-zinc-800 bg-zinc-900/50' : 'border-zinc-200 bg-white/70'}`}
+            className={`rounded-xl border px-6 py-3.5 flex flex-col md:flex-row items-center gap-4 md:gap-8 flex-wrap ${isDark ? 'border-zinc-800 bg-zinc-900/50' : 'border-zinc-200 bg-white/70'}`}
             style={{ backdropFilter: 'blur(8px)' }}>
 
             {/* Quote + stars */}
-            <div className="flex flex-col items-center md:items-start gap-1 min-w-[160px]">
-              <div className="flex gap-0.5 mb-0.5">
+            <div className="flex flex-col items-center md:items-start gap-0.5">
+              <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`size-3.5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+                  <Star key={i} className={`size-3 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
                 ))}
               </div>
-              <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
-              <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+              <p className={`text-xs font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
+              <span className={`text-[11px] ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </div>
 
-            {/* Divider */}
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
             {/* GDPR icons */}
-            <div className="flex items-center gap-4 flex-wrap justify-center">
+            <div className="flex items-center gap-3 flex-wrap justify-center">
               {['GDPR-ready', 'Encrypted storage', 'Data deletion on request'].map(item => (
-                <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                  <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
+                <span key={item} className={`flex items-center gap-1 text-[11px] font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                  <Check className="size-2.5 shrink-0" style={{ color: '#63AFC7' }} />
                   {item}
                 </span>
               ))}
-              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 32, width: 'auto' }} />
-              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg flex-shrink-0" style={{ height: 32, width: 'auto' }} />
-              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg flex-shrink-0" style={{ height: 32, width: 'auto' }} />
+              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 26, width: 'auto' }} />
+              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 26, width: 'auto' }} />
+              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 26, width: 'auto' }} />
             </div>
 
-            {/* Divider */}
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
-            {/* Portfolio — animated logo cycler */}
-            <div className="flex items-center justify-center min-w-[140px]">
+            {/* Logo cycler */}
+            <div className="flex items-center justify-center">
               <RefLogosCycler isDark={isDark} />
             </div>
 
