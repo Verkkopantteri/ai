@@ -1102,20 +1102,46 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             {/* LEFT — title + subtitle + theme switcher */}
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false, amount: 0.4 }} transition={{ duration: 0.7 }}
-              className="flex-shrink-0 lg:w-80 text-center lg:text-left pt-4">
+              className="flex-shrink-0 lg:w-[520px] text-center lg:text-left pt-4">
 
-              <motion.h2 className="text-5xl md:text-6xl font-light leading-tight mb-5"
+              <motion.h2 className="text-6xl md:text-7xl lg:text-8xl font-light leading-[1.05] mb-6"
                 animate={{ color: isDark ? '#ffffff' : '#09090b' }} transition={{ duration: 0.7 }}>
-                Next-generation<br />live chat support<br /><span style={{ color: '#63AFC7' }}>powered by the<br />world's smartest AI.</span>
+                Next-generation<br />live chat support—<br /><span style={{ color: '#63AFC7' }}>powered by the<br />world's smartest AI.</span>
               </motion.h2>
 
-              <motion.p className="text-base font-light mb-8 leading-relaxed"
+              <motion.p className="text-lg font-light mb-8 leading-relaxed max-w-lg"
                 animate={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#71717a' }} transition={{ duration: 0.7 }}>
                 With TIA, customers get real-time support through live chat. The AI Agent resolves complex issues instantly while continuously improving from real conversation data. TIA learns your business and guides visitors toward the highest value outcomes.
               </motion.p>
 
+              {/* CTA buttons */}
+              <div className="flex items-center gap-3 justify-center lg:justify-start mb-8">
+                <button onClick={onGetStarted}
+                  className={`px-7 py-3.5 rounded-full text-sm font-semibold transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+                  Get Started
+                </button>
+                <a href="#features"
+                  className={`px-7 py-3.5 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-zinc-700 text-white hover:bg-zinc-800' : 'border-zinc-300 text-zinc-700 hover:bg-zinc-50'}`}>
+                  See features
+                </a>
+              </div>
+
+              {/* Bullet points */}
+              <div className="flex flex-col gap-2.5 justify-center lg:justify-start">
+                {[
+                  'Setup in 48 hours — no code required',
+                  'Resolves complex issues instantly',
+                  '100+ languages supported',
+                ].map(item => (
+                  <span key={item} className={`flex items-center gap-2.5 text-sm font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                    <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#63AFC7' }} />
+                    {item}
+                  </span>
+                ))}
+              </div>
+
               {/* Theme switcher */}
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <div className="flex items-center gap-2 justify-center lg:justify-start mt-8">
                 <motion.button onClick={() => setChatTheme('light')}
                   animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
                   transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
@@ -1129,63 +1155,11 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               </div>
             </motion.div>
 
-            {/* RIGHT — browser mockup */}
+            {/* RIGHT — chat only, no browser wrapper */}
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-              className="flex-1 rounded-2xl overflow-hidden border shadow-2xl"
-              style={{
-                borderColor: isDark ? '#27272a' : '#e4e4e7',
-                boxShadow: isDark ? '0 32px 80px rgba(0,0,0,0.7)' : '0 32px 80px rgba(0,0,0,0.12)',
-                transition: 'border-color 0.7s ease, box-shadow 0.7s ease',
-              }}>
-              {/* Browser chrome */}
-              <div className="flex items-center gap-3 px-5 py-3 border-b transition-colors duration-700"
-                style={{ background: isDark ? '#18181b' : '#f4f4f5', borderColor: isDark ? '#27272a' : '#e4e4e7' }}>
-                <div className="flex gap-1.5">
-                  {['#FF5F57', '#FEBC2E', '#28C840'].map(c => <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />)}
-                </div>
-                <div className="flex-1 mx-4 rounded-md px-4 py-1.5 text-xs border transition-colors duration-700"
-                  style={{ background: isDark ? '#27272a' : '#ffffff', color: isDark ? '#52525b' : '#a1a1aa', borderColor: isDark ? '#3f3f46' : '#e4e4e7' }}>
-                  yourcompany.com/products
-                </div>
-              </div>
-              {/* Fake website */}
-              <motion.div className="relative overflow-hidden"
-                animate={{ backgroundColor: isDark ? '#111113' : '#ffffff' }}
-                transition={{ duration: 0.7 }} style={{ height: 460 }}>
-                <div className="p-8 pb-0">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className={`w-24 h-5 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                    <div className="flex gap-4">{[60, 50, 70].map((w, i) => <div key={i} className={`h-3 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} style={{ width: w }} />)}</div>
-                    <div className={`w-20 h-7 rounded-lg transition-colors duration-700 ${isDark ? 'bg-zinc-700' : 'bg-zinc-900'}`} />
-                  </div>
-                  <div className="mb-6">
-                    <div className={`w-2/3 h-7 rounded mb-3 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                    <div className={`w-1/2 h-7 rounded mb-5 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                    <div className={`w-full h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                    <div className={`w-5/6 h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                    <div className={`w-4/6 h-3 rounded mb-6 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                    <div className="flex gap-3">
-                      <div className={`w-28 h-9 rounded-lg transition-colors duration-700 ${isDark ? 'bg-zinc-100' : 'bg-zinc-900'}`} />
-                      <div className={`w-28 h-9 rounded-lg border transition-colors duration-700 ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-100 border-zinc-200'}`} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 mt-8 opacity-60">
-                    {[0, 1, 2].map(i => (
-                      <div key={i} className={`p-4 border rounded-xl transition-colors duration-700 ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
-                        <div className={`w-8 h-8 rounded-lg mb-3 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                        <div className={`w-3/4 h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                        <div className={`w-full h-2 rounded mb-1 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                        <div className={`w-5/6 h-2 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Animated chat overlay */}
-                <div className="absolute bottom-5 right-5">
-                  <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
-                </div>
-              </motion.div>
+              className="flex-1 flex items-start justify-center lg:justify-end pt-4">
+              <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
             </motion.div>
           </div>
 
