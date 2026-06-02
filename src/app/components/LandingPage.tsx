@@ -799,12 +799,10 @@ function AnimatedChatLoop({ theme }) {
 
 /* ─── REF LOGOS CYCLER ────────────────────────────────────────── */
 const REF_LOGOS = [
-  { name: 'Verkkopantteri', src: '/ref1.png' },
-  { name: 'Yritys 2',       src: '/ref2.png' },
-  { name: 'Yritys 3',       src: '/ref3.png' },
-  { name: 'Yritys 4',       src: '/ref4.png' },
-  { name: 'Yritys 5',       src: '/ref5.png' },
-  { name: 'Yritys 6',       src: '/ref6.png' },
+  { name: 'Ref 1', src: '/r1.avif' },
+  { name: 'Ref 2', src: '/r2.avif' },
+  { name: 'Ref 3', src: '/r3.avif' },
+  { name: 'Ref 4', src: '/r4.avif' },
 ];
 
 function RefLogosCycler({ isDark }) {
