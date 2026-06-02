@@ -885,15 +885,23 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* Background image — dark only */}
+      {/* Background image — dark mode */}
       {isDark && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg)' }}
         />
       )}
+      {/* Background image — light mode */}
+      {!isDark && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wx.jpeg)' }}
+        />
+      )}
       {/* Overlay */}
       {isDark && <div className="absolute inset-0 bg-zinc-950/50" />}
+      {!isDark && <div className="absolute inset-0 bg-white/30" />}
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -1563,7 +1571,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                 {PLANS.map((p, i) => (
                   <button key={p.id} onClick={() => setPlanIdx(i)}
                     className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                    <span className="text-xs font-semibold">{p.id}</span>
+                    <span className="text-xs font-semibold">{p.name}</span>
                   </button>
                 ))}
             </div>
@@ -1599,7 +1607,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               />
             </div>
             <p className={`text-center text-xs mt-3 font-medium ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-              ← Drag to change plan →
+              S &nbsp;·&nbsp; M &nbsp;·&nbsp; L
             </p>
           </div>
         </motion.div>
@@ -1622,14 +1630,21 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 /* ─── CTA ─────────────────────────────────────────────────────── */
 function CTASlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.82, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+
   return (
-    <section className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-900' : 'bg-zinc-100'}`}>
+    <motion.section
+      ref={ref}
+      style={{ scale, opacity }}
+      className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-900' : 'bg-zinc-100'}`}
+    >
       <video src="/dots.mp4" autoPlay loop muted playsInline
         className={`absolute inset-0 w-full h-full object-cover ${isDark ? 'opacity-40' : 'opacity-10'}`} />
       <ParticleField count={isDark ? 20 : 0} />
-      <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.4 }}
-        className="relative z-10 text-center px-6">
+      <div className="relative z-10 text-center px-6">
         <h2 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
           Ready to<br />transform?
         </h2>
@@ -1641,8 +1656,8 @@ function CTASlide({ activeTheme, onGetStarted }) {
           Let's talk
         </button>
         <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No commitment</p>
-      </motion.div>
-    </section>
+      </div>
+    </motion.section>
   );
 }
 
