@@ -534,6 +534,15 @@ function AnimatedChatLoop({ theme }) {
   const isLight = theme.name === 'Pearl White';
   const isLastMessage = (i) => i === CONVERSATION.length - 1;
 
+  const ctaRef = useRef(null);
+
+  // Scroll CTA into view when it appears
+  useEffect(() => {
+    if (showCTA && ctaRef.current) {
+      ctaRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [showCTA]);
+
   const scrollToBottom = useCallback(() => {
     if (rafRef.current) return; // already scheduled
     rafRef.current = requestAnimationFrame(() => {
@@ -741,6 +750,7 @@ function AnimatedChatLoop({ theme }) {
                 <AnimatePresence>
                   {showCTA && (
                     <motion.div
+                      ref={ctaRef}
                       key="cta"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
