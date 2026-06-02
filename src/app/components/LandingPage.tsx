@@ -849,8 +849,7 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
   const ey = isDark ? y1 : y2;
 
   const mx = (sx + ex) / 2;
-  const dist = Math.abs(ex - sx);
-  const peakY = Math.max(sy, ey) + Math.max(dist * 0.5, 14); // kaari nappien alapuolelle
+  const peakY = Math.max(sy, ey) + 10; // pieni kaari juuri nappien alla
 
   const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
 
