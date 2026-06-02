@@ -68,7 +68,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
 
                 {/* Service selector */}
                 <div>
-                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which plan interests you? <span className="text-red-400">*</span></label>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which Plan Interests You? <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-3 gap-2">
                     {SERVICES.map(s => (
                       <button key={s.id} onClick={() => setForm(f => ({ ...f, service: s.id }))}
@@ -1697,10 +1697,9 @@ const ADDONS = [
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const [planIdx, setPlanIdx] = useState(0);
-  const [addonTemplateBot, setAddonTemplateBot] = useState(false);
-  const [addonCustomBrand, setAddonCustomBrand] = useState(false);
+  const [addonBotSetup, setAddonBotSetup] = useState(''); // 'tia' | 'custom' | ''
   const plan = PLANS[planIdx];
-  const discountedPrice = addonTemplateBot ? Math.round(plan.priceNum * 0.80) : plan.priceNum;
+  const discountedPrice = addonBotSetup === 'tia' ? Math.round(plan.priceNum * 0.80) : plan.priceNum;
   const trackRef = useRef(null);
   const isDragging = useRef(false);
   const sectionRef = useRef(null);
@@ -1772,57 +1771,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           transition={{ type: 'spring', stiffness: 220, damping: 26, delay: 0.1 }}
           className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
         >
-            {/* Add-ons — TOP */}
-            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Available Add-ons</p>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => setAddonTemplateBot(v => !v)}
-                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                    addonTemplateBot
-                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-                    addonTemplateBot ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
-                  }`}>
-                    {addonTemplateBot && <Check className="size-3 text-zinc-950" />}
-                  </div>
-                  <div>
-                    <p className={`text-xs font-semibold ${addonTemplateBot ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                      Use TIA's Bot Template (Black or White)
-                    </p>
-                    <p className={`text-[11px] mt-0.5 ${addonTemplateBot ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      Permanently -20% off
-                    </p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setAddonCustomBrand(v => !v)}
-                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                    addonCustomBrand
-                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-                    addonCustomBrand ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
-                  }`}>
-                    {addonCustomBrand && <Check className="size-3 text-zinc-950" />}
-                  </div>
-                  <div>
-                    <p className={`text-xs font-semibold ${addonCustomBrand ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                      Custom Branded Bot
-                    </p>
-                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      Fully tailored to your brand identity
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </div>
-
             {/* Plan selector — inside card */}
             <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
               <div className="flex justify-between mb-3">
@@ -1863,6 +1811,45 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               </div>
             </div>
 
+            {/* Bot Setup — single choice */}
+            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Bot Setup</p>
+              <div className="flex flex-col gap-2">
+                {[
+                  { id: 'tia', title: 'TIA theme', subtitle: 'white or black', badge: '−20% forever', badgeColor: 'text-emerald-400' },
+                  { id: 'custom', title: 'Custom theme', subtitle: 'your identity', badge: null, badgeColor: '' },
+                ].map(opt => {
+                  const active = addonBotSetup === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => setAddonBotSetup(v => v === opt.id ? '' : opt.id)}
+                      className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                        active
+                          ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                          : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                      }`}
+                    >
+                      <div className={`mt-0.5 w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border transition-all ${
+                        active ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                      }`}>
+                        {active && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
+                      </div>
+                      <div>
+                        <p className={`text-xs font-semibold ${active ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                          {opt.title}
+                          <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>
+                        </p>
+                        {opt.badge && (
+                          <p className={`text-[11px] mt-0.5 ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Size badge */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3 flex-wrap">
@@ -1875,7 +1862,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                 )}
               </div>
               <div className="text-right">
-                {addonTemplateBot ? (
+                {addonBotSetup === 'tia' ? (
                   <div className="flex flex-col items-end">
                     <div className={`text-sm line-through ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{plan.price}</div>
                     <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{discountedPrice}€</div>
