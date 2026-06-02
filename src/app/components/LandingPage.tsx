@@ -925,7 +925,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex justify-center mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-28 w-auto object-contain" />
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-16 w-auto object-contain" />
           </motion.div>
 
           {/* Quote / review + logo centered under text */}
@@ -1763,17 +1763,17 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           <div className="flex items-center gap-3 flex-shrink-0 ml-2">
             <img src="/gdpr_certification.avif" alt="GDPR Certified"
               className="object-contain"
-              style={{ height: 56, width: 'auto' }} />
+              style={{ height: 40, width: 'auto' }} />
             {/* Shopify + WordPress stacked */}
-            <div className="relative flex-shrink-0" style={{ width: 56, height: 56 }}>
+            <div className="relative flex-shrink-0" style={{ width: 52, height: 52 }}>
               {/* Shopify — bottom */}
-              <img src="/icon_shopify" alt="Shopify"
+              <img src="/icon_shopify.avif" alt="Shopify"
                 className="absolute object-contain rounded-lg"
-                style={{ width: 56, height: 56, top: 0, left: 0, zIndex: 1 }} />
+                style={{ width: 40, height: 40, top: 0, left: 0, zIndex: 1 }} />
               {/* WordPress — 25% overlap on top */}
-              <img src="/icon_wordpress" alt="WordPress"
+              <img src="/icon_wordpress.avif" alt="WordPress"
                 className="absolute object-contain rounded-lg"
-                style={{ width: 56, height: 56, top: '25%', left: '25%', zIndex: 2,
+                style={{ width: 40, height: 40, top: '25%', left: '25%', zIndex: 2,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }} />
             </div>
           </div>
