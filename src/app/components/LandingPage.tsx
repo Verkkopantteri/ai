@@ -1649,23 +1649,17 @@ function CTASlide({ activeTheme, onGetStarted }) {
       style={{ y, scale }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
-        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ed.jpeg)' }}
+      {/* Background video */}
+      <video
+        src="https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4"
+        autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="relative z-10 text-center px-6">
-        <h2 className="text-7xl md:text-8xl font-light mb-6 leading-tight text-zinc-950">
-          Ready to<br />transform?
-        </h2>
-        <p className="text-xl font-light mb-10 max-w-xl mx-auto text-zinc-700">
-          Get an AI chatbot on your website within 48 hours.
-        </p>
         <button onClick={onGetStarted}
-          className="group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold hover:shadow-2xl transition-all bg-zinc-950 text-white hover:shadow-zinc-900/30">
-          Let's talk
+          className="group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-2xl hover:shadow-black/20">
+          Start Transform
         </button>
-        <p className="mt-5 text-sm text-zinc-500">No commitment</p>
       </div>
     </motion.section>
   );
