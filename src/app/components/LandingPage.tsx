@@ -1727,7 +1727,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3`}>Hire <span style={{ color: '#63AFC7' }}>Your AI Agent</span></h2>
+          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Hire <span style={{ color: '#63AFC7' }}>Your AI Agent</span></h2>
           <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
         </motion.div>
 
@@ -1821,7 +1821,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             {/* Size badge */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className='text-6xl font-bold tracking-tight' style={{ color: '#63AFC7' }}>{plan.name}</span>
+                <span className='text-6xl font-bold tracking-tight' style={{ color: '#00BC7D' }}>{plan.name}</span>
                 <span className={`text-2xl font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
                 {plan.highlight && (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
