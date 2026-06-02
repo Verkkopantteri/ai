@@ -998,18 +998,18 @@ function TiaInActionSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const theme = CHAT_THEMES[activeTheme];
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end end'] });
 
   // Brightness: overexposed → normal
-  const brightness = useTransform(scrollYProgress, [0, 0.65], [1.7, 1]);
+  const brightness = useTransform(scrollYProgress, [0, 0.7], [1.5, 1]);
   const filter = useTransform(brightness, (b) => `brightness(${b})`);
 
   // Clip-path horizontal scan wipe: reveal from left edge across
-  const clipProgress = useTransform(scrollYProgress, [0, 0.55], [0, 100]);
-  const clipPath = useTransform(clipProgress, (p) => `inset(0 ${100 - p}% 0 0)`);
+  const clipProgress = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const clipPath = useTransform(clipProgress, (p) => `inset(0 ${Math.max(0, 100 - p)}% 0 0)`);
 
   // Subtle x drift into place
-  const x = useTransform(scrollYProgress, [0, 0.6], [40, 0]);
+  const x = useTransform(scrollYProgress, [0, 0.6], [30, 0]);
 
   return (
     <motion.section
@@ -1372,13 +1372,13 @@ function PaperStack({ isDark }) {
 function FeaturesSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.9', 'center center'] });
 
   // 3D tilt: tilted away at bottom of viewport, flattens to 0 as it scrolls in
-  const rotateX = useTransform(scrollYProgress, [0, 0.6], [18, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.6], [0.88, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
-  const y = useTransform(scrollYProgress, [0, 0.6], [80, 0]);
+  const rotateX = useTransform(scrollYProgress, [0, 1], [14, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.92, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
 
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
@@ -1517,13 +1517,13 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   const trackRef = useRef(null);
   const isDragging = useRef(false);
   const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end end'] });
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start 0.9', 'center center'] });
 
   // Implosion from blur + slight scale — content materialises from nothing
-  const scale = useTransform(scrollYProgress, [0, 0.55], [0.82, 1]);
-  const blurVal = useTransform(scrollYProgress, [0, 0.5], [14, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.88, 1]);
+  const blurVal = useTransform(scrollYProgress, [0, 0.6], [10, 0]);
   const sectionFilter = useTransform(blurVal, (b) => `blur(${b}px)`);
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
 
   const trackBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
   const fillColor = isDark ? '#ffffff' : '#09090b';
