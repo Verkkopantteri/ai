@@ -1127,14 +1127,10 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               </div>
 
               {/* Bullet points */}
-              <div className="flex flex-col gap-2 justify-center lg:justify-start mb-5">
-                {[
-                  'Setup in minutes',
-                  '100+ Languages',
-                  'Cancel anytime',
-                ].map(item => (
-                  <span key={item} className={`flex items-center gap-2.5 text-xs font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                    <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#63AFC7' }} />
+              <div className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-5">
+                {['Setup in minutes', '100+ Languages', 'Cancel anytime'].map((item, i) => (
+                  <span key={item} className={`flex items-center text-xs font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                    {i > 0 && <span className={`mx-2 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                     {item}
                   </span>
                 ))}
@@ -1158,7 +1154,8 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             {/* RIGHT — chat vertically centered */}
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-              className="flex-shrink-0 flex items-center justify-center">
+              className="flex-shrink-0 flex items-center justify-center"
+              style={{ marginLeft: '-50px' }}>
               <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
             </motion.div>
           </div>
@@ -1186,8 +1183,8 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             <div className="flex items-center gap-3">
               <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
               <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
             </div>
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
