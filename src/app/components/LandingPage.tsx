@@ -857,7 +857,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex gap-0.5 justify-center lg:justify-start">
+            <div className="flex gap-0.5 justify-start">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
