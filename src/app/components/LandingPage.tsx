@@ -795,13 +795,31 @@ function AnimatedChatLoop({ theme }) {
 }
 
 /* ─── THEME ARC HINT ──────────────────────────────────────────── */
-function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
+function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lightRef: React.RefObject<HTMLButtonElement>, darkRef: React.RefObject<HTMLButtonElement> }) {
   const [visible, setVisible] = useState(false);
   const [key, setKey] = useState(0);
+  const [coords, setCoords] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
   const isDark = chatTheme === 'dark';
 
   useEffect(() => {
-    // First show after 2.5s, then repeat every 6s
+    const measure = () => {
+      const a = lightRef.current?.getBoundingClientRect();
+      const b = darkRef.current?.getBoundingClientRect();
+      if (a && b) {
+        setCoords({
+          x1: a.left + a.width / 2,
+          y1: a.top + a.height / 2,
+          x2: b.left + b.width / 2,
+          y2: b.top + b.height / 2,
+        });
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [lightRef, darkRef]);
+
+  useEffect(() => {
     const show = () => {
       setVisible(true);
       setKey(k => k + 1);
@@ -815,61 +833,61 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
     return () => clearTimeout(t0);
   }, []);
 
-  // Simple gentle arc floating above the buttons.
-  // SVG sits above the button row; arc goes left-to-right (or reverse) with a shallow peak.
-  // Starts and ends at x=14 and x=50 (button centers), y=30 (just above buttons).
-  // Control points pulled horizontally outward so the arc enters/exits smoothly from the sides.
-  const arcPath = isDark
-    ? 'M 50 30 C 60 10, 4 10, 14 30'
-    : 'M 14 30 C 4 10, 60 10, 50 30';
+  if (!coords) return null;
 
-  const gradId = isDark ? 'arc-grad-dark' : 'arc-grad-light';
+  // Screen-space coordinates of both button centers
+  const { x1, y1, x2, y2 } = coords;
+  // Arc goes from active button → inactive button
+  const sx = isDark ? x2 : x1;
+  const sy = isDark ? y2 : y1;
+  const ex = isDark ? x1 : x2;
+  const ey = isDark ? y1 : y2;
+
+  const mx = (sx + ex) / 2;
+  const dist = Math.abs(ex - sx);
+  const peakY = Math.min(sy, ey) - dist * 0.25; // shallow arc above
+
+  // SVG covers full screen (fixed), path uses screen coords directly
+  const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
+
   const baseColor = isDark ? '255,255,255' : '9,9,11';
-  const x1 = isDark ? '100%' : '0%';
-  const x2 = isDark ? '0%'   : '100%';
+  const gradId = `arc-grad-${key}`;
+
+  // Gradient runs from start (opaque) to end (transparent)
+  const gx1 = sx / window.innerWidth * 100;
+  const gx2 = ex / window.innerWidth * 100;
 
   return (
-    <div style={{
-      position: 'absolute',
-      left: 0, top: 0,
-      width: '100%',
-      pointerEvents: 'none',
-      overflow: 'visible',
-      zIndex: 50,
-    }}>
-      <AnimatePresence>
-        {visible && (
-          <motion.svg
-            key={key}
-            style={{ position: 'absolute', top: -40, left: 0, overflow: 'visible' }}
-            width="64" height="44" viewBox="0 0 64 44"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <defs>
-              <linearGradient id={gradId} x1={x1} y1="0%" x2={x2} y2="0%">
-                <stop offset="0%" stopColor={`rgba(${baseColor},0.8)`} />
-                <stop offset="60%" stopColor={`rgba(${baseColor},0.55)`} />
-                <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
-              </linearGradient>
-            </defs>
-            {/* Symmetric arc with gradient fade toward destination */}
-            <motion.path
-              d={arcPath}
-              fill="none"
-              stroke={`url(#${gradId})`}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
-            />
-          </motion.svg>
-        )}
-      </AnimatePresence>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.svg
+          key={key}
+          style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 50, overflow: 'visible' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <defs>
+            <linearGradient id={gradId} x1={`${gx1}%`} y1="0%" x2={`${gx2}%`} y2="0%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor={`rgba(${baseColor},0.75)`} />
+              <stop offset="55%" stopColor={`rgba(${baseColor},0.45)`} />
+              <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
+            </linearGradient>
+          </defs>
+          <motion.path
+            d={pathD}
+            fill="none"
+            stroke={`url(#${gradId})`}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
+          />
+        </motion.svg>
+      )}
+    </AnimatePresence>
   );
 }
 
