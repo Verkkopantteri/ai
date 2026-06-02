@@ -991,13 +991,13 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <div className="flex flex-col items-center gap-1 mb-6">
             <div className="flex gap-0.5 mb-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+                <Star key={i} className={`size-5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
               ))}
             </div>
-            <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+            <p className={`text-base italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made."
             </p>
-            <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+            <span className={`text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
@@ -1016,7 +1016,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             transition={{ delay: 1.0, duration: 0.6 }}
             className="flex items-center gap-0 flex-wrap justify-center mb-8">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-              <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+              <span key={item} className={`flex items-center text-base font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
                 {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                 {item}
               </span>
@@ -1027,9 +1027,9 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex items-center justify-center gap-3 mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 48, width: 'auto' }} />
-            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
-            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 64, width: 'auto' }} />
+            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 64, width: 'auto' }} />
+            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 64, width: 'auto' }} />
           </motion.div>
 
           <RefLogosCycler isDark={isDark} />
@@ -1923,9 +1923,9 @@ function Footer({ activeTheme }) {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <img src={isDark ? '/logo.png' : '/logo-black.png'} alt="TIA AI" className="size-6 object-contain" />
-              <span className={`font-semibold text-base ${isDark ? 'text-white' : 'text-zinc-950'}`}>TIA AI</span>
+              <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-zinc-950'}`}>TIA AI</span>
             </div>
-            <p className="text-base font-light leading-relaxed">Your website's smartest employee.</p>
+            <p className="text-sm font-light leading-relaxed">Your website's smartest employee.</p>
           </div>
           {[
             { title: 'Product', links: ['Features', 'Pricing', 'Case studies'] },
@@ -1933,18 +1933,18 @@ function Footer({ activeTheme }) {
             { title: 'Legal', links: ['Terms', 'Privacy', 'Refund policy'] },
           ].map(col => (
             <div key={col.title}>
-              <h4 className={`text-base font-semibold mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{col.title}</h4>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{col.title}</h4>
               <ul className="space-y-1.5">
                 {col.links.map(link => (
-                  <li key={link}><a href="#" className={`text-base transition-colors ${isDark ? 'hover:text-white' : 'hover:text-zinc-950'}`}>{link}</a></li>
+                  <li key={link}><a href="#" className={`text-sm transition-colors ${isDark ? 'hover:text-white' : 'hover:text-zinc-950'}`}>{link}</a></li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
         <div className={`border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-3 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <p className="text-sm">© 2025 TIA AI. All rights reserved.</p>
-          <p className={`text-sm ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Powered by Anthropic's Claude API.</p>
+          <p className="text-xs">© 2025 TIA AI. All rights reserved.</p>
+          <p className={`text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Powered by Anthropic's Claude API.</p>
         </div>
       </div>
     </footer>
