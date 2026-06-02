@@ -797,6 +797,57 @@ function AnimatedChatLoop({ theme }) {
 /* ─── THEME DOT PULSE ─────────────────────────────────────────── */
 // (placeholder removed)
 
+/* ─── REF LOGOS CYCLER ────────────────────────────────────────── */
+const REF_LOGOS = [
+  { name: 'Verkkopantteri', src: '/ref1.png' },
+  { name: 'Yritys 2',       src: '/ref2.png' },
+  { name: 'Yritys 3',       src: '/ref3.png' },
+  { name: 'Yritys 4',       src: '/ref4.png' },
+  { name: 'Yritys 5',       src: '/ref5.png' },
+  { name: 'Yritys 6',       src: '/ref6.png' },
+];
+
+function RefLogosCycler({ isDark }) {
+  const [current, setCurrent] = useState(0);
+  const [phase, setPhase] = useState<'visible' | 'blurout'>('visible');
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhase('blurout'), 2800);
+    return () => clearTimeout(t);
+  }, [current]);
+
+  useEffect(() => {
+    if (phase !== 'blurout') return;
+    const t = setTimeout(() => {
+      setCurrent(c => (c + 1) % REF_LOGOS.length);
+      setPhase('visible');
+    }, 600);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  return (
+    <div className="mt-3 h-10 flex items-center justify-center">
+      <AnimatePresence mode="sync">
+        <motion.img
+          key={current}
+          src={REF_LOGOS[current].src}
+          alt={REF_LOGOS[current].name}
+          className="h-8 w-auto object-contain"
+          initial={{ opacity: 0, filter: 'blur(12px)' }}
+          animate={phase === 'visible'
+            ? { opacity: 1, filter: 'blur(0px)' }
+            : { opacity: 0, filter: 'blur(12px)' }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          style={{
+            filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
+            opacity: isDark ? 0.5 : 0.3,
+          }}
+        />
+      </AnimatePresence>
+    </div>
+  );
+}
+
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   const ref = useRef(null);
@@ -865,16 +916,19 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           </motion.div>
 
           {/* Quote / review */}
-          <div className="mb-6 inline-block">
+          <div className="mb-4 inline-block">
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex gap-0.5 justify-center lg:justify-start">
+            <div className="flex gap-0.5 justify-center">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
             </div>
           </div>
+
+          {/* Blur-cycling ref logos */}
+          <RefLogosCycler isDark={isDark} />
 
         </motion.div>
 
@@ -891,50 +945,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   );
 }
 
-/* ─── SHOWCASE SLIDE (ref logos marquee) ─────────────────────── */
-const REF_LOGOS = [
-  { name: 'Verkkopantteri', src: '/ref1.png' },
-  { name: 'Yritys 2',       src: '/ref2.png' },
-  { name: 'Yritys 3',       src: '/ref3.png' },
-  { name: 'Yritys 4',       src: '/ref4.png' },
-  { name: 'Yritys 5',       src: '/ref5.png' },
-  { name: 'Yritys 6',       src: '/ref6.png' },
-];
-
-function ShowcaseSlide({ activeTheme }) {
-  const isDark = activeTheme === 'dark';
-  const items = [...REF_LOGOS, ...REF_LOGOS];
-  return (
-    <section className={`py-10 transition-colors duration-700 overflow-hidden ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      <div
-        style={{
-          maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
-        }}
-      >
-        <motion.div
-          className="flex gap-14 items-center"
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-          style={{ width: 'max-content' }}
-        >
-          {items.map((logo, i) => (
-            <img
-              key={i}
-              src={logo.src}
-              alt={logo.name}
-              className="h-8 w-auto object-contain flex-shrink-0"
-              style={{
-                opacity: isDark ? 0.45 : 0.3,
-                filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
-              }}
-            />
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
+/* ─── SHOWCASE SLIDE (poistettu) ─────────────────────────────── */
+function ShowcaseSlide({ activeTheme }) { return null; }
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
 function TiaInActionSlide({ activeTheme }) {
