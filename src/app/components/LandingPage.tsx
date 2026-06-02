@@ -934,7 +934,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
+          <p className={`text-xl font-semibold mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
             Answers visitors instantly with AI Chat Bot.
           </p>
 
@@ -967,8 +967,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             transition={{ delay: 1.0, duration: 0.6 }}
             className="flex items-center gap-0 flex-wrap justify-center mb-8">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-              <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
-                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
+              <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                 {item}
               </span>
             ))}
