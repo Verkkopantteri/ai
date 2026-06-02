@@ -980,7 +980,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           transition={{ duration: 1, delay: 0.3 }}
           className="text-center flex-shrink-0 max-w-xl">
 
-          <h1 className={`text-8xl md:text-9xl font-bold mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+          <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
@@ -991,13 +991,13 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <div className="flex flex-col items-center gap-1 mb-6">
             <div className="flex gap-0.5 mb-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+                <Star key={i} className={`size-3.5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
               ))}
             </div>
-            <p className={`text-base italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+            <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made."
             </p>
-            <span className={`text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+            <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
@@ -1016,7 +1016,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             transition={{ delay: 1.0, duration: 0.6 }}
             className="flex items-center gap-0 flex-wrap justify-center mb-8">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-              <span key={item} className={`flex items-center text-base font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+              <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
                 {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                 {item}
               </span>
@@ -1027,9 +1027,9 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex items-center justify-center gap-3 mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 64, width: 'auto' }} />
-            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 64, width: 'auto' }} />
-            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 64, width: 'auto' }} />
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
           </motion.div>
 
           <RefLogosCycler isDark={isDark} />
@@ -1173,11 +1173,11 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             <div className="flex flex-col items-center md:items-start gap-0.5">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`size-3 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+                  <Star key={i} className={`size-4 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
                 ))}
               </div>
-              <p className={`text-xs font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
-              <span className={`text-[11px] ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+              <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
+              <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </div>
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
@@ -1185,14 +1185,14 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             {/* GDPR icons */}
             <div className="flex items-center gap-3 flex-wrap justify-center">
               {['GDPR-ready', 'Encrypted storage', 'Data deletion on request'].map(item => (
-                <span key={item} className={`flex items-center gap-1 text-[11px] font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                  <Check className="size-2.5 shrink-0" style={{ color: '#63AFC7' }} />
+                <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                  <Check className="size-3.5 shrink-0" style={{ color: '#63AFC7' }} />
                   {item}
                 </span>
               ))}
-              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 26, width: 'auto' }} />
-              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 26, width: 'auto' }} />
-              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 26, width: 'auto' }} />
+              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
             </div>
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
