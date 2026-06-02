@@ -1763,6 +1763,97 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           transition={{ type: 'spring', stiffness: 220, damping: 26, delay: 0.1 }}
           className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
         >
+            {/* Add-ons — TOP */}
+            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Available Add-ons</p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => setAddonTemplateBot(v => !v)}
+                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                    addonTemplateBot
+                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+                    addonTemplateBot ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                  }`}>
+                    {addonTemplateBot && <Check className="size-3 text-zinc-950" />}
+                  </div>
+                  <div>
+                    <p className={`text-xs font-semibold ${addonTemplateBot ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      Use TIA's Bot Template (Black or White)
+                    </p>
+                    <p className={`text-[11px] mt-0.5 ${addonTemplateBot ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      Permanently -20% off
+                    </p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setAddonCustomBrand(v => !v)}
+                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                    addonCustomBrand
+                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
+                    addonCustomBrand ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                  }`}>
+                    {addonCustomBrand && <Check className="size-3 text-zinc-950" />}
+                  </div>
+                  <div>
+                    <p className={`text-xs font-semibold ${addonCustomBrand ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      Custom Branded Bot
+                    </p>
+                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      Fully tailored to your brand identity
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Plan selector — inside card */}
+            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <div className="flex justify-between mb-3">
+                {PLANS.map((p, i) => (
+                  <button key={p.id} onClick={() => setPlanIdx(i)}
+                    className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                    <span className="text-xs font-semibold">{p.name}</span>
+                  </button>
+                ))}
+              </div>
+              <div
+                ref={trackRef}
+                className="relative h-4 rounded-full cursor-pointer select-none"
+                style={{ background: trackBg }}
+                onClick={e => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = (e.clientX - rect.left) / rect.width;
+                  setPlanIdx(Math.round(pct * (PLANS.length - 1)));
+                }}
+              >
+                <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
+                  style={{ width: `${fillPct}%`, background: fillColor }} />
+                <motion.div
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
+                  style={{
+                    left: `${fillPct}%`,
+                    background: fillColor,
+                    borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+                    border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
+                    boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
+                    transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                  whileHover={{ scale: 1.25 }}
+                  whileTap={{ scale: 1.15 }}
+                  onMouseDown={handleMouseDown}
+                  onTouchStart={handleTouchStart}
+                />
+              </div>
+            </div>
+
             {/* Size badge */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3 flex-wrap">
@@ -1806,100 +1897,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               Get Started
             </button>
 
-            {/* Add-ons */}
-            <div className={`mt-5 pt-5 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Available Add-ons</p>
-              <div className="flex flex-col gap-2">
-                {/* Template Bot toggle */}
-                <button
-                  onClick={() => setAddonTemplateBot(v => !v)}
-                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                    addonTemplateBot
-                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-                    addonTemplateBot ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
-                  }`}>
-                    {addonTemplateBot && <Check className="size-3 text-zinc-950" />}
-                  </div>
-                  <div>
-                    <p className={`text-xs font-semibold ${addonTemplateBot ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                      Use TIA's Template Bot (Black or White)
-                    </p>
-                    <p className={`text-[11px] mt-0.5 ${addonTemplateBot ? 'text-emerald-400' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      Permanently -20% off — {discountedPrice}€/mo instead of {plan.priceNum}€
-                    </p>
-                  </div>
-                </button>
-                {/* Custom Brand toggle */}
-                <button
-                  onClick={() => setAddonCustomBrand(v => !v)}
-                  className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                    addonCustomBrand
-                      ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-                      : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-                    addonCustomBrand ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
-                  }`}>
-                    {addonCustomBrand && <Check className="size-3 text-zinc-950" />}
-                  </div>
-                  <div>
-                    <p className={`text-xs font-semibold ${addonCustomBrand ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                      Custom Branded & Styled Bot
-                    </p>
-                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      Fully tailored to your brand identity
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </div>
-
         </motion.div>
-
-        {/* Slider — outside card */}
-        <div className="mt-6">
-          <div className="flex justify-between mb-3">
-            {PLANS.map((p, i) => (
-              <button key={p.id} onClick={() => setPlanIdx(i)}
-                className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                <span className="text-xs font-semibold">{p.name}</span>
-              </button>
-            ))}
-          </div>
-          <div
-            ref={trackRef}
-            className="relative h-4 rounded-full cursor-pointer select-none"
-            style={{ background: trackBg }}
-            onClick={e => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const pct = (e.clientX - rect.left) / rect.width;
-              setPlanIdx(Math.round(pct * (PLANS.length - 1)));
-            }}
-          >
-            <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
-              style={{ width: `${fillPct}%`, background: fillColor }} />
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
-              style={{
-                left: `${fillPct}%`,
-                background: fillColor,
-                borderColor: isDark ? '#3f3f46' : '#e4e4e7',
-                border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
-                boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
-                transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-              whileHover={{ scale: 1.25 }}
-              whileTap={{ scale: 1.15 }}
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouchStart}
-            />
-          </div>
-        </div>
 
         {/* GDPR text items + icon on same row */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
