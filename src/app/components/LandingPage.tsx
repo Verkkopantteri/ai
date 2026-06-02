@@ -802,7 +802,7 @@ const REF_LOGOS = [
   { name: 'Ref 2', src: '/r2.avif', invert: true },
   { name: 'Ref 3', src: '/r3.avif', invert: false },
   { name: 'Ref 4', src: '/r4.avif', invert: true },
-  { name: 'Ref 1', src: '/r1.avif', invert: false },
+  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.5 },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -823,19 +823,22 @@ function RefLogosCycler({ isDark }) {
     return () => clearTimeout(t);
   }, [phase]);
 
+  const logo = REF_LOGOS[current];
+  const targetOpacity = logo.opacity ?? 1;
+
   return (
     <div className="mt-3 h-24 flex items-center justify-center">
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
-          src={REF_LOGOS[current].src}
-          alt={REF_LOGOS[current].name}
+          src={logo.src}
+          alt={logo.name}
           className="w-auto object-contain"
           style={{ height: 80, maxWidth: 240 }}
-          initial={{ opacity: 0, filter: REF_LOGOS[current].invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
+          initial={{ opacity: 0, filter: logo.invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           animate={phase === 'visible'
-            ? { opacity: 1, filter: REF_LOGOS[current].invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
-            : { opacity: 0, filter: REF_LOGOS[current].invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
+            ? { opacity: targetOpacity, filter: logo.invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
+            : { opacity: 0, filter: logo.invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
       </AnimatePresence>
@@ -878,16 +881,16 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         {/* LEFT */}
         <motion.div style={{ y }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-center lg:text-left flex-shrink-0 max-w-xl">
+          className="text-center flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
+          <p className={`text-xl font-light mb-6 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             Answers visitors instantly with AI.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
@@ -901,7 +904,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           {/* Trust bar */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.6 }}
-            className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-8">
+            className="flex items-center gap-0 flex-wrap justify-center mb-8">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
               <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
                 {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
