@@ -232,10 +232,13 @@ function Header({ isDark, onGetStarted }) {
   ];
   const [termsOpen, setTermsOpen] = useState(false);
   const termsRef = useRef(null);
+  const termsTimeout = useRef(null);
+  const openTerms = () => { clearTimeout(termsTimeout.current); setTermsOpen(true); };
+  const closeTerms = () => { termsTimeout.current = setTimeout(() => setTermsOpen(false), 120); };
   useEffect(() => {
     const h = (e) => { if (termsRef.current && !termsRef.current.contains(e.target)) setTermsOpen(false); };
     document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
+    return () => { document.removeEventListener('mousedown', h); clearTimeout(termsTimeout.current); };
   }, []);
 
   return (
@@ -264,7 +267,7 @@ function Header({ isDark, onGetStarted }) {
               ))}
               <motion.div ref={termsRef} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.38 }}
-                className="relative" onMouseEnter={() => setTermsOpen(true)} onMouseLeave={() => setTermsOpen(false)}>
+                className="relative" onMouseEnter={openTerms} onMouseLeave={closeTerms}>
                 <button className={`flex items-center gap-1 px-3.5 py-2 text-base transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>
                   Terms
                   <motion.span animate={{ rotate: termsOpen ? 90 : 0 }} transition={{ duration: 0.2 }} className="inline-flex">
@@ -1175,21 +1178,43 @@ function LightboxModal({ slide, onClose, onPrev, onNext }) {
   );
 }
 
-function PaperStack({ isDark }) {
+function PaperStack({ isDark, externalLightbox, onExternalClose, externalIdx, externalDirection, onExternalIdxChange }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [isAnimating, setIsAnimating] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
+  // Sync external lightbox control
+  const isLightboxOpen = lightboxOpen || (externalLightbox ?? false);
+  const currentLightboxIdx = lightboxOpen ? activeIdx : (externalIdx ?? activeIdx);
+  const currentDirection = lightboxOpen ? direction : (externalDirection ?? direction);
+
+  const closeLightbox = () => {
+    if (lightboxOpen) setLightboxOpen(false);
+    if (externalLightbox) onExternalClose?.();
+  };
+
+  const prevLightbox = () => {
+    const newIdx = (currentLightboxIdx - 1 + SLIDES.length) % SLIDES.length;
+    if (lightboxOpen) { setDirection(-1); setActiveIdx(newIdx); }
+    else onExternalIdxChange?.(newIdx, -1);
+  };
+
+  const nextLightbox = () => {
+    const newIdx = (currentLightboxIdx + 1) % SLIDES.length;
+    if (lightboxOpen) { setDirection(1); setActiveIdx(newIdx); }
+    else onExternalIdxChange?.(newIdx, 1);
+  };
+
   // Auto-advance — pauses while lightbox is open
   useEffect(() => {
-    if (lightboxOpen) return;
+    if (isLightboxOpen) return;
     const t = setInterval(() => {
       setDirection(1);
       setActiveIdx(i => (i + 1) % SLIDES.length);
     }, 3200);
     return () => clearInterval(t);
-  }, [lightboxOpen]);
+  }, [isLightboxOpen]);
 
   const goTo = (idx) => {
     if (idx === activeIdx || isAnimating) return;
@@ -1266,7 +1291,7 @@ function PaperStack({ isDark }) {
                   : '0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
                 border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
               }}
-              onClick={() => setLightboxOpen(true)}
+              onClick={() => { setActiveIdx(activeIdx); setLightboxOpen(true); }}
             >
               {/* Zoom hint */}
               <div className="absolute top-3 right-3 z-20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 pointer-events-none">
@@ -1356,12 +1381,12 @@ function PaperStack({ isDark }) {
       </p>
 
       {/* Lightbox */}
-      {lightboxOpen && (
+      {isLightboxOpen && (
         <LightboxModal
-          slide={SLIDES[activeIdx]}
-          onClose={() => setLightboxOpen(false)}
-          onPrev={() => { setDirection(-1); setActiveIdx(i => (i - 1 + SLIDES.length) % SLIDES.length); }}
-          onNext={() => { setDirection(1); setActiveIdx(i => (i + 1) % SLIDES.length); }}
+          slide={SLIDES[currentLightboxIdx]}
+          onClose={closeLightbox}
+          onPrev={prevLightbox}
+          onNext={nextLightbox}
         />
       )}
     </div>
@@ -1379,6 +1404,20 @@ function FeaturesSlide({ activeTheme }) {
   const scale = useTransform(scrollYProgress, [0, 1], [0.92, 1]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
+
+  // Auto-open lightbox when section scrolls in, close when scrolled past
+  const [autoLightbox, setAutoLightbox] = useState(false);
+  const [autoLightboxIdx, setAutoLightboxIdx] = useState(0);
+  const [autoDirection, setAutoDirection] = useState(1);
+  const sectionInView = useInView(ref, { amount: 0.5 });
+
+  useEffect(() => {
+    if (sectionInView) {
+      setAutoLightbox(true);
+    } else {
+      setAutoLightbox(false);
+    }
+  }, [sectionInView]);
 
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
@@ -1416,7 +1455,7 @@ function FeaturesSlide({ activeTheme }) {
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
             className="flex-shrink-0"
           >
-            <PaperStack isDark={isDark} />
+            <PaperStack isDark={isDark} externalLightbox={autoLightbox} onExternalClose={() => setAutoLightbox(false)} externalIdx={autoLightboxIdx} externalDirection={autoDirection} onExternalIdxChange={(idx, dir) => { setAutoLightboxIdx(idx); setAutoDirection(dir); }} />
           </motion.div>
 
           {/* RIGHT — Feature cards */}
@@ -1661,9 +1700,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                 onTouchStart={handleTouchStart}
               />
             </div>
-            <p className={`text-center text-xs mt-3 font-medium ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-              S &nbsp;·&nbsp; M &nbsp;·&nbsp; L
-            </p>
+
           </div>
         </motion.div>
 
@@ -1770,7 +1807,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className={`transition-colors duration-700 ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
+    <div className={`transition-colors duration-700 overflow-x-hidden ${activeTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'}`}>
       {leadOpen && <LeadFormModal isDark={activeTheme === 'dark'} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={activeTheme === 'dark'} onGetStarted={() => openLead()} />
       <HeroSlide activeTheme={activeTheme} setActiveTheme={setActiveTheme} onGetStarted={() => openLead()} />
