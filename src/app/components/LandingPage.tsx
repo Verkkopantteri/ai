@@ -925,7 +925,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex justify-center mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-12 w-auto object-contain opacity-70" />
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-12 w-auto object-contain opacity-70"
+              onError={e => { (e.target as HTMLImageElement).src = './gdpr_certification.avif'; }} />
           </motion.div>
 
           {/* Quote / review + logo centered under text */}
@@ -1752,6 +1753,18 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           </div>
         </motion.div>
 
+        {/* GDPR — right after card */}
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }} transition={{ delay: 0.15 }}
+          className="flex items-center justify-center gap-5 mt-4 flex-nowrap overflow-x-auto">
+          {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
+            <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+              <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
+              {item}
+            </span>
+          ))}
+        </motion.div>
+
         {/* Powered by Anthropic */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.2 }}
@@ -1760,24 +1773,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             Powered by{' '}
             <span className={`font-semibold ${isDark ? 'text-white' : 'text-zinc-950'}`}>Anthropic's Claude</span>
             {' '}— world's smartest AI.
-          </p>
-        </motion.div>
-
-        {/* GDPR */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }} transition={{ delay: 0.3 }}
-          className={`rounded-2xl py-5 px-6 border mt-4 ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
-          <div className="flex flex-wrap gap-x-6 gap-y-1.5 justify-center mb-3">
-            {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
-              <span key={item} className={`flex items-center gap-1.5 text-xs font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
-                {item}
-              </span>
-            ))}
-          </div>
-          <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-            Built with GDPR compliance in mind.{' '}
-            <span className={`${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>— The AI Team</span>
           </p>
         </motion.div>
       </div>
