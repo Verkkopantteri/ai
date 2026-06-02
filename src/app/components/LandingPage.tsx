@@ -903,8 +903,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         />
       )}
       {/* Overlay */}
-      {isDark && <div className="absolute inset-0 bg-zinc-950/50" />}
-      {!isDark && <div className="absolute inset-0 bg-white/30" />}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/35" />}
+      {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -914,7 +914,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           className="text-center lg:text-left flex-shrink-0 max-w-xl">
 
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-            Answer Every Lead<br />Instantly
+            Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             TIA AI chatbots for your website — installed in minutes.
@@ -1729,7 +1729,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
           ? 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-bl.mp4'
           : 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4'}
         autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover opacity-85"
       />
       <div className="relative z-10 text-center px-6">
         <button onClick={onGetStarted}
