@@ -1091,10 +1091,10 @@ function TiaInActionSlide({ activeTheme }) {
 
 /* ─── PAPER SLIDESHOW ─────────────────────────────────────────── */
 const SLIDES = [
-  { src: '/pg-1.avif', label: 'Page 1' },
-  { src: '/pg-2.avif', label: 'Page 2' },
-  { src: '/pg-3.avif', label: 'Page 3' },
   { src: '/pg-4.avif', label: 'Page 4' },
+  { src: '/pg-3.avif', label: 'Page 3' },
+  { src: '/pg-2.avif', label: 'Page 2' },
+  { src: '/pg-1.avif', label: 'Page 1' },
 ];
 
 function LightboxModal({ slide, onClose, onPrev, onNext }) {
@@ -1318,7 +1318,7 @@ function PaperStack({ isDark }) {
           </svg>
         </button>
         <button
-          onClick={() => setLightboxOpen(true)}
+          onClick={next}
           className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
             isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700' : 'bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 shadow-md'
           }`}
