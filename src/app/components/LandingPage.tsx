@@ -797,6 +797,44 @@ function AnimatedChatLoop({ theme }) {
 /* ─── THEME DOT PULSE ─────────────────────────────────────────── */
 // (placeholder removed)
 
+/* ─── REFERENCE LOGOS MARQUEE ─────────────────────────────────── */
+const REF_LOGOS = [
+  { name: 'Verkkopantteri', src: '/ref1.png' },
+  { name: 'Yritys 2',       src: '/ref2.png' },
+  { name: 'Yritys 3',       src: '/ref3.png' },
+  { name: 'Yritys 4',       src: '/ref4.png' },
+  { name: 'Yritys 5',       src: '/ref5.png' },
+  { name: 'Yritys 6',       src: '/ref6.png' },
+];
+
+function RefLogosMarquee({ isDark }) {
+  // Duplicate the list so the seamless loop works
+  const items = [...REF_LOGOS, ...REF_LOGOS];
+  return (
+    <div className="w-full max-w-xl overflow-hidden mt-4 mb-2" style={{ maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)' }}>
+      <motion.div
+        className="flex gap-8 items-center"
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        style={{ width: 'max-content' }}
+      >
+        {items.map((logo, i) => (
+          <img
+            key={i}
+            src={logo.src}
+            alt={logo.name}
+            className="h-7 w-auto object-contain flex-shrink-0"
+            style={{
+              opacity: isDark ? 0.45 : 0.35,
+              filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
+            }}
+          />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   const ref = useRef(null);
@@ -869,12 +907,15 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex gap-0.5 justify-center">
+            <div className="flex gap-0.5 justify-center lg:justify-start">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
               ))}
             </div>
           </div>
+
+          {/* Scrolling reference logos */}
+          <RefLogosMarquee isDark={isDark} />
         </motion.div>
 
         {/* RIGHT — chat stack */}
