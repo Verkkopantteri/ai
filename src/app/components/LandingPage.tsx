@@ -1104,7 +1104,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               viewport={{ once: false, amount: 0.4 }} transition={{ duration: 0.7 }}
               className="flex-1 text-center lg:text-left">
 
-              <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
+              <motion.h2 className="text-5xl md:text-7xl font-bold leading-[1.05] mb-4"
                 animate={{ color: isDark ? '#ffffff' : '#09090b' }} transition={{ duration: 0.7 }}>
                 Next-generation<br />live chat support—<br /><span style={{ color: '#63AFC7' }}>powered by the<br />world's smartest AI.</span>
               </motion.h2>
