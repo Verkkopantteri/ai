@@ -1097,10 +1097,85 @@ const SLIDES = [
   { src: '/pg-4.avif', label: 'Page 4' },
 ];
 
+function LightboxModal({ slide, onClose, onPrev, onNext }) {
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNext();
+      if (e.key === 'ArrowLeft') onPrev();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose, onPrev, onNext]);
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-[200] flex items-center justify-center"
+        style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(12px)' }}
+        onClick={onClose}
+      >
+        {/* Close */}
+        <button onClick={onClose}
+          className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all">
+          <X className="size-5" />
+        </button>
+
+        {/* Label */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-medium tracking-widest uppercase bg-white/10 text-white/70 border border-white/15">
+          {slide.label} · {SLIDES.indexOf(slide) + 1} / {SLIDES.length}
+        </div>
+
+        {/* Prev */}
+        <button onClick={(e) => { e.stopPropagation(); onPrev(); }}
+          className="absolute left-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+            <polyline points="8,1 3,6 8,11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* Next */}
+        <button onClick={(e) => { e.stopPropagation(); onNext(); }}
+          className="absolute right-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+            <polyline points="4,1 9,6 4,11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* Image */}
+        <motion.div
+          key={slide.src}
+          initial={{ opacity: 0, scale: 0.93 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 340, damping: 32 }}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            maxWidth: '85vw', maxHeight: '85vh',
+            boxShadow: '0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08)',
+            borderRadius: 16, overflow: 'hidden',
+          }}
+        >
+          <img
+            src={slide.src}
+            alt={slide.label}
+            style={{ maxWidth: '85vw', maxHeight: '85vh', display: 'block', borderRadius: 16 }}
+            draggable={false}
+          />
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function PaperStack({ isDark }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [isAnimating, setIsAnimating] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Auto-advance
   useEffect(() => {
@@ -1179,15 +1254,23 @@ function PaperStack({ isDark }) {
             onAnimationComplete={() => setIsAnimating(false)}
           >
             <div
-              className="w-full h-full rounded-2xl overflow-hidden cursor-pointer"
+              className="w-full h-full rounded-2xl overflow-hidden cursor-zoom-in group/card relative"
               style={{
                 boxShadow: isDark
                   ? '0 24px 60px rgba(0,0,0,0.75), 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)'
                   : '0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
                 border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
               }}
-              onClick={next}
+              onClick={() => setLightboxOpen(true)}
             >
+              {/* Zoom hint */}
+              <div className="absolute top-3 right-3 z-20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                </div>
+              </div>
               {/* Glossy reflection overlay */}
               <div
                 className="absolute inset-0 pointer-events-none z-10"
@@ -1234,7 +1317,7 @@ function PaperStack({ isDark }) {
           </svg>
         </button>
         <button
-          onClick={next}
+          onClick={() => setLightboxOpen(true)}
           className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
             isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700' : 'bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 shadow-md'
           }`}
@@ -1266,6 +1349,16 @@ function PaperStack({ isDark }) {
       <p className={`text-xs font-light tracking-widest uppercase ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
         {SLIDES[activeIdx].label} · {activeIdx + 1} / {SLIDES.length}
       </p>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <LightboxModal
+          slide={SLIDES[activeIdx]}
+          onClose={() => setLightboxOpen(false)}
+          onPrev={() => { setDirection(-1); setActiveIdx(i => (i - 1 + SLIDES.length) % SLIDES.length); }}
+          onNext={() => { setDirection(1); setActiveIdx(i => (i + 1) % SLIDES.length); }}
+        />
+      )}
     </div>
   );
 }
