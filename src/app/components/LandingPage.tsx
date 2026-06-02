@@ -1000,6 +1000,8 @@ function TiaInActionSlide({ activeTheme }) {
 
   return (
     <section className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
+      <video src="/dots.mp4" autoPlay loop muted playsInline
+        className={`absolute inset-0 w-full h-full object-cover ${isDark ? 'opacity-40' : 'opacity-10'}`} />
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -1632,30 +1634,36 @@ function CTASlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  const scale = useTransform(scrollYProgress, [0, 0.6], [0.82, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  // Starts small at bottom of viewport, grows to full as it scrolls into view
+  const scale = useTransform(scrollYProgress, [0, 0.7], [0.78, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
 
   return (
     <motion.section
       ref={ref}
       style={{ scale, opacity }}
-      className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-900' : 'bg-zinc-100'}`}
+      className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      <video src="/dots.mp4" autoPlay loop muted playsInline
-        className={`absolute inset-0 w-full h-full object-cover ${isDark ? 'opacity-40' : 'opacity-10'}`} />
-      <ParticleField count={isDark ? 20 : 0} />
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ex.jpeg)' }}
+      />
+      {/* Dark overlay so text is always readable */}
+      <div className="absolute inset-0 bg-black/55" />
+      <ParticleField count={20} />
       <div className="relative z-10 text-center px-6">
-        <h2 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+        <h2 className="text-7xl md:text-8xl font-light mb-6 leading-tight text-white">
           Ready to<br />transform?
         </h2>
-        <p className={`text-xl font-light mb-10 max-w-xl mx-auto ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+        <p className="text-xl font-light mb-10 max-w-xl mx-auto text-white/70">
           Get an AI chatbot on your website within 48 hours.
         </p>
         <button onClick={onGetStarted}
-          className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold hover:shadow-2xl transition-all ${isDark ? 'bg-white text-zinc-950 hover:shadow-white/10' : 'bg-zinc-950 text-white hover:shadow-black/20'}`}>
+          className="group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold hover:shadow-2xl transition-all bg-white text-zinc-950 hover:shadow-white/10">
           Let's talk
         </button>
-        <p className={`mt-5 text-sm ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>No commitment</p>
+        <p className="mt-5 text-sm text-white/40">No commitment</p>
       </div>
     </motion.section>
   );
