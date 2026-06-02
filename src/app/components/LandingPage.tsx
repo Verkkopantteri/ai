@@ -896,7 +896,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
       {!isDark && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wx.jpeg)' }}
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wy.png)' }}
         />
       )}
       {/* Overlay */}
