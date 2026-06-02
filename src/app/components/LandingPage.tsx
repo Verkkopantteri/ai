@@ -795,9 +795,10 @@ function AnimatedChatLoop({ theme }) {
 }
 
 /* ─── THEME ARC HINT ──────────────────────────────────────────── */
-function ThemeArcHint() {
+function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   const [visible, setVisible] = useState(false);
   const [key, setKey] = useState(0);
+  const isDark = chatTheme === 'dark';
 
   useEffect(() => {
     // First show after 2.5s, then repeat every 6s
@@ -813,6 +814,23 @@ function ThemeArcHint() {
     }, 2500);
     return () => clearTimeout(t0);
   }, []);
+
+  // Light theme: white ball → black ball (right→left, shorter path)
+  // Dark theme:  black ball → white ball (left→right, shorter path)
+  // Buttons: white at x≈55, black at x≈90 (gap of ~36px)
+  const arcPath = isDark
+    ? 'M 55 72 C 55 44, 90 44, 90 72'   // black→white (left to right, shorter)
+    : 'M 90 72 C 90 44, 55 44, 55 72';  // white→black (right to left, shorter)
+
+  const arrowTip = isDark
+    ? 'M 85 68 L 90 72 L 95 68'   // arrow at white button end
+    : 'M 50 68 L 55 72 L 60 68';  // arrow at black button end
+
+  const gradId = `arcGrad-${isDark ? 'dark' : 'light'}`;
+  const dotColor = isDark ? '#09090b' : '#ffffff';
+  const gradFrom = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(9,9,11,0.7)';
+  const gradTo   = isDark ? '#09090b'                : '#ffffff';
+  const arrowColor = isDark ? 'rgba(9,9,11,0.8)' : 'rgba(255,255,255,0.8)';
 
   return (
     <div style={{
@@ -834,11 +852,11 @@ function ThemeArcHint() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Arc path: starts near Obsidian button top, curves up and lands near Pearl White button */}
+            {/* Arc path */}
             <motion.path
-              d="M 55 72 C 55 20, 165 20, 165 72"
+              d={arcPath}
               fill="none"
-              stroke="url(#arcGrad)"
+              stroke={`url(#${gradId})`}
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeDasharray="1 0"
@@ -847,26 +865,25 @@ function ThemeArcHint() {
               transition={{ duration: 1.6, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
             />
             {/* Travelling dot */}
-            <motion.circle r="3" fill="white" opacity="0.9"
+            <motion.circle r="3" fill={dotColor} opacity="0.9"
               initial={{ offsetDistance: '0%', opacity: 0 }}
               animate={{ opacity: [0, 1, 1, 0] }}
               transition={{ duration: 1.6, ease: 'easeInOut', times: [0, 0.05, 0.85, 1] }}
             >
-              <animateMotion dur="1.6s" fill="freeze"
-                path="M 55 72 C 55 20, 165 20, 165 72" />
+              <animateMotion dur="1.6s" fill="freeze" path={arcPath} />
             </motion.circle>
             {/* Small arrow tip at end */}
             <motion.path
-              d="M 160 68 L 165 72 L 170 68"
-              fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+              d={arrowTip}
+              fill="none" stroke={arrowColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0, 1, 0] }}
               transition={{ duration: 1.6, times: [0, 0.7, 0.85, 1] }}
             />
             <defs>
-              <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3f3f46" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0.85)" />
+              <linearGradient id={gradId} x1={isDark ? '0%' : '100%'} y1="0%" x2={isDark ? '100%' : '0%'} y2="0%">
+                <stop offset="0%" stopColor={gradFrom} />
+                <stop offset="100%" stopColor={gradTo} />
               </linearGradient>
             </defs>
           </motion.svg>
@@ -1011,7 +1028,7 @@ function TiaInActionSlide({ activeTheme }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7 }}
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg)' }}
+            style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }}
           />
         )}
       </AnimatePresence>
@@ -1059,7 +1076,7 @@ function TiaInActionSlide({ activeTheme }) {
 
             {/* Theme switcher — dots only */}
             <div className="flex items-center gap-2 justify-center lg:justify-start relative">
-              <ThemeArcHint />
+              <ThemeArcHint chatTheme={chatTheme} />
               <button onClick={() => setChatTheme('light')}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'light'
