@@ -850,7 +850,7 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
 
   const mx = (sx + ex) / 2;
   const dist = Math.abs(ex - sx);
-  const peakY = Math.min(sy, ey) - Math.max(dist * 0.6, 20); // loiva kaari ylös
+  const peakY = Math.max(sy, ey) + Math.max(dist * 0.5, 14); // kaari nappien alapuolelle
 
   const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
 
@@ -885,16 +885,6 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
             transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
-          />
-          {/* Nuolenpää kohdenapissa */}
-          <motion.circle
-            cx={ex}
-            cy={ey}
-            r={3}
-            fill={`rgba(${baseColor},0.7)`}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: [0, 1.4, 1], opacity: [0, 1, 0] }}
-            transition={{ duration: 0.5, delay: 1.1, ease: 'easeOut' }}
           />
         </motion.svg>
       )}
