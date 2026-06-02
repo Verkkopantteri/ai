@@ -797,44 +797,6 @@ function AnimatedChatLoop({ theme }) {
 /* ─── THEME DOT PULSE ─────────────────────────────────────────── */
 // (placeholder removed)
 
-/* ─── REFERENCE LOGOS MARQUEE ─────────────────────────────────── */
-const REF_LOGOS = [
-  { name: 'Verkkopantteri', src: '/ref1.png' },
-  { name: 'Yritys 2',       src: '/ref2.png' },
-  { name: 'Yritys 3',       src: '/ref3.png' },
-  { name: 'Yritys 4',       src: '/ref4.png' },
-  { name: 'Yritys 5',       src: '/ref5.png' },
-  { name: 'Yritys 6',       src: '/ref6.png' },
-];
-
-function RefLogosMarquee({ isDark }) {
-  // Duplicate the list so the seamless loop works
-  const items = [...REF_LOGOS, ...REF_LOGOS];
-  return (
-    <div className="w-full max-w-xl overflow-hidden mt-4 mb-2" style={{ maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)' }}>
-      <motion.div
-        className="flex gap-8 items-center"
-        animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-        style={{ width: 'max-content' }}
-      >
-        {items.map((logo, i) => (
-          <img
-            key={i}
-            src={logo.src}
-            alt={logo.name}
-            className="h-7 w-auto object-contain flex-shrink-0"
-            style={{
-              opacity: isDark ? 0.45 : 0.35,
-              filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
-            }}
-          />
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   const ref = useRef(null);
@@ -914,8 +876,6 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             </div>
           </div>
 
-          {/* Scrolling reference logos */}
-          <RefLogosMarquee isDark={isDark} />
         </motion.div>
 
         {/* RIGHT — chat stack */}
@@ -931,55 +891,47 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   );
 }
 
-/* ─── SHOWCASE SLIDE ──────────────────────────────────────────── */
-const SHOWCASE_IMAGES = ['/r1.avif', '/r2.avif', '/r3.avif', '/r4.avif'];
+/* ─── SHOWCASE SLIDE (ref logos marquee) ─────────────────────── */
+const REF_LOGOS = [
+  { name: 'Verkkopantteri', src: '/ref1.png' },
+  { name: 'Yritys 2',       src: '/ref2.png' },
+  { name: 'Yritys 3',       src: '/ref3.png' },
+  { name: 'Yritys 4',       src: '/ref4.png' },
+  { name: 'Yritys 5',       src: '/ref5.png' },
+  { name: 'Yritys 6',       src: '/ref6.png' },
+];
 
 function ShowcaseSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
-  const [current, setCurrent] = useState(0);
-  const [phase, setPhase] = useState<'visible' | 'blurout'>('visible');
-
-  useEffect(() => {
-    const visibleTimer = setTimeout(() => {
-      setPhase('blurout');
-    }, 2800);
-    return () => clearTimeout(visibleTimer);
-  }, [current]);
-
-  useEffect(() => {
-    if (phase !== 'blurout') return;
-    const blurTimer = setTimeout(() => {
-      setCurrent(c => (c + 1) % SHOWCASE_IMAGES.length);
-      setPhase('visible');
-    }, 700);
-    return () => clearTimeout(blurTimer);
-  }, [phase]);
-
+  const items = [...REF_LOGOS, ...REF_LOGOS];
   return (
-    <section className={`relative w-full overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'}`}
-      style={{ height: '70vh' }}>
-      <AnimatePresence mode="sync">
+    <section className={`py-10 transition-colors duration-700 overflow-hidden ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
+      <div
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+        }}
+      >
         <motion.div
-          key={current}
-          initial={{ opacity: 0, filter: 'blur(20px)', scale: 1.04 }}
-          animate={phase === 'visible'
-            ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
-            : { opacity: 0, filter: 'blur(20px)', scale: 1.04 }}
-          transition={phase === 'visible'
-            ? { duration: 0.7, ease: 'easeOut' }
-            : { duration: 0.7, ease: 'easeIn' }}
-          className="absolute inset-0"
+          className="flex gap-14 items-center"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+          style={{ width: 'max-content' }}
         >
-          <img
-            src={SHOWCASE_IMAGES[current]}
-            alt={`Showcase ${current + 1}`}
-            className="w-full h-full object-cover"
-          />
-          <div className={`absolute inset-0 ${isDark
-            ? 'bg-gradient-to-t from-zinc-950/60 via-transparent to-zinc-950/20'
-            : 'bg-gradient-to-t from-white/40 via-transparent to-white/10'}`} />
+          {items.map((logo, i) => (
+            <img
+              key={i}
+              src={logo.src}
+              alt={logo.name}
+              className="h-8 w-auto object-contain flex-shrink-0"
+              style={{
+                opacity: isDark ? 0.45 : 0.3,
+                filter: isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)',
+              }}
+            />
+          ))}
         </motion.div>
-      </AnimatePresence>
+      </div>
     </section>
   );
 }
