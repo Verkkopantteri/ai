@@ -794,21 +794,8 @@ function AnimatedChatLoop({ theme }) {
   );
 }
 
-/* ─── THEME DOT BOUNCE ────────────────────────────────────────── */
-// Inaktiivinen nappi bouncaa ylös-alas periodicisesti vihjaaten interaktiivisuudesta
-function useIdleBounce() {
-  const [bouncing, setBouncing] = useState(false);
-  useEffect(() => {
-    const trigger = () => {
-      setBouncing(true);
-      setTimeout(() => setBouncing(false), 900);
-    };
-    const t0 = setTimeout(trigger, 2000);
-    const interval = setInterval(trigger, 5000);
-    return () => { clearTimeout(t0); clearInterval(interval); };
-  }, []);
-  return bouncing;
-}
+/* ─── THEME DOT PULSE ─────────────────────────────────────────── */
+// (placeholder removed)
 
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
@@ -914,7 +901,6 @@ function TiaInActionSlide({ activeTheme }) {
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
   const ref = useRef(null);
-  const bouncing = useIdleBounce();
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start 0.85', 'end end'] });
 
   // Brightness: overexposed → normal
@@ -996,22 +982,28 @@ function TiaInActionSlide({ activeTheme }) {
             <div className="flex items-center gap-2 justify-center lg:justify-start">
               <motion.button
                 onClick={() => setChatTheme('light')}
-                animate={chatTheme !== 'light' && bouncing ? { y: [0, -6, 0] } : { y: 0 }}
-                transition={{ duration: 0.7, ease: 'easeInOut' }}
-                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                  chatTheme === 'light'
-                    ? 'border-zinc-400 scale-110 shadow-md'
-                    : 'border-zinc-200 hover:border-zinc-300'
-                } bg-white`} />
+                animate={chatTheme !== 'light'
+                  ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] }
+                  : { borderColor: '#a1a1aa' }}
+                transition={chatTheme !== 'light'
+                  ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }
+                  : { duration: 0.4 }}
+                style={{ borderWidth: 2, borderStyle: 'solid' }}
+                className={`w-7 h-7 rounded-full transition-transform bg-white ${
+                  chatTheme === 'light' ? 'scale-110 shadow-md' : ''
+                }`} />
               <motion.button
                 onClick={() => setChatTheme('dark')}
-                animate={chatTheme !== 'dark' && bouncing ? { y: [0, -6, 0] } : { y: 0 }}
-                transition={{ duration: 0.7, ease: 'easeInOut' }}
-                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                  chatTheme === 'dark'
-                    ? 'border-zinc-500 scale-110 shadow-lg shadow-white/10'
-                    : 'border-zinc-300 hover:border-zinc-500'
-                } bg-zinc-900`} />
+                animate={chatTheme !== 'dark'
+                  ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] }
+                  : { borderColor: '#71717a' }}
+                transition={chatTheme !== 'dark'
+                  ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }
+                  : { duration: 0.4 }}
+                style={{ borderWidth: 2, borderStyle: 'solid' }}
+                className={`w-7 h-7 rounded-full transition-transform bg-zinc-900 ${
+                  chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''
+                }`} />
             </div>
 
           </motion.div>
