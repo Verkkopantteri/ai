@@ -1658,7 +1658,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
       <div className="relative z-10 text-center px-6">
         <button onClick={onGetStarted}
           className="group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-2xl hover:shadow-black/20">
-          Start Transform
+          Start Today
         </button>
       </div>
     </motion.section>
