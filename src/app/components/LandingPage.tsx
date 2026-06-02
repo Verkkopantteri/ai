@@ -1835,13 +1835,13 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                       }`}>
                         {active && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
                       </div>
-                      <div>
+                      <div className="flex items-center gap-2 flex-wrap">
                         <p className={`text-xs font-semibold ${active ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                           {opt.title}
                           <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>
                         </p>
                         {opt.badge && (
-                          <p className={`text-[11px] mt-0.5 ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</p>
+                          <span className={`text-[11px] font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</span>
                         )}
                       </div>
                     </button>
@@ -1853,8 +1853,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             {/* Size badge */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className={`text-2xl font-semibold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
-                <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
+                <span className={`text-6xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
+                <span className={`text-2xl font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
                 {plan.highlight && (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
                     Most popular
