@@ -823,7 +823,7 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
   const ex = isDark ? lx : dx;
   const ey = isDark ? ly : dy;
   const mx = (sx + ex) / 2;
-  const peakY = 32; // hieman nappien alapuolella
+  const peakY = 52; // laskettu alemmas — kaari näkyy paremmin pallojen takaa
 
   const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
   const baseColor = isDark ? '255,255,255' : '9,9,11';
@@ -835,8 +835,8 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
         {visible && (
           <motion.svg
             key={key}
-            width={64} height={40}
-            viewBox="0 0 64 40"
+            width={64} height={60}
+            viewBox="0 0 64 60"
             style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible', pointerEvents: 'none' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
