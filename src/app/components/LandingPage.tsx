@@ -859,7 +859,7 @@ const REF_LOGOS = [
   { name: 'Ref 2', src: '/r2.avif', invert: true },
   { name: 'Ref 3', src: '/r3.avif', invert: false },
   { name: 'Ref 4', src: '/r4.avif', invert: true },
-  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.30, height: 64 },
+  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.30, height: 28 },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -884,14 +884,14 @@ function RefLogosCycler({ isDark }) {
   const targetOpacity = logo.opacity ?? 1;
 
   return (
-    <div className="mt-3 h-24 flex items-center justify-center">
+    <div className="flex items-center justify-center" style={{ height: 48, minWidth: 120 }}>
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
           src={logo.src}
           alt={logo.name}
           className="w-auto object-contain"
-          style={{ height: logo.height ?? 80, maxWidth: 240 }}
+          style={{ height: logo.height ?? 36, maxWidth: 160 }}
           initial={{ opacity: 0, filter: logo.invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           animate={phase === 'visible'
             ? { opacity: targetOpacity, filter: logo.invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
@@ -1225,20 +1225,9 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
             {/* Divider */}
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
-            {/* Portfolio r1 r2 r3 */}
-            <div className="flex flex-col items-center md:items-start gap-1">
-              <span className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Live customers</span>
-              <div className="flex gap-3 items-center">
-                {[
-                  { src: 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/r1.avif', alt: 'R1' },
-                  { src: 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/r2.avif', alt: 'R2' },
-                  { src: 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/r3.avif', alt: 'R3' },
-                ].map(logo => (
-                  <img key={logo.alt} src={logo.src} alt={logo.alt}
-                    className="object-contain"
-                    style={{ height: 28, width: 'auto', opacity: isDark ? 0.7 : 0.85, filter: isDark ? 'brightness(2)' : 'none' }} />
-                ))}
-              </div>
+            {/* Portfolio — animated logo cycler */}
+            <div className="flex items-center justify-center min-w-[140px]">
+              <RefLogosCycler isDark={isDark} />
             </div>
 
           </motion.div>
@@ -2005,7 +1994,6 @@ export function LandingPage() {
     <div className="overflow-x-hidden bg-white">
       {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={false} onGetStarted={() => openLead()} />
-      <HeroSlide activeTheme={activeTheme} setActiveTheme={() => {}} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
