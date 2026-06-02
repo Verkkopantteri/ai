@@ -801,11 +801,12 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
   const [coords, setCoords] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
   const isDark = chatTheme === 'dark';
 
+  // Measure after paint so refs are guaranteed to have DOM nodes
   useEffect(() => {
     const measure = () => {
       const a = lightRef.current?.getBoundingClientRect();
       const b = darkRef.current?.getBoundingClientRect();
-      if (a && b) {
+      if (a && b && (a.width > 0) && (b.width > 0)) {
         setCoords({
           x1: a.left + a.width / 2,
           y1: a.top + a.height / 2,
@@ -814,9 +815,15 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
         });
       }
     };
-    measure();
+    // rAF ensures layout is done before we measure
+    const raf = requestAnimationFrame(measure);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    window.addEventListener('scroll', measure, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure);
+    };
   }, [lightRef, darkRef]);
 
   useEffect(() => {
@@ -827,15 +834,13 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
     };
     const t0 = setTimeout(() => {
       show();
-      const interval = setInterval(show, 6000);
-      return () => clearInterval(interval);
     }, 2500);
-    return () => clearTimeout(t0);
+    const interval = setInterval(show, 6000);
+    return () => { clearTimeout(t0); clearInterval(interval); };
   }, []);
 
   if (!coords) return null;
 
-  // Screen-space coordinates of both button centers
   const { x1, y1, x2, y2 } = coords;
   // Arc goes from active button → inactive button
   const sx = isDark ? x2 : x1;
@@ -845,17 +850,12 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
 
   const mx = (sx + ex) / 2;
   const dist = Math.abs(ex - sx);
-  const peakY = Math.min(sy, ey) - dist * 0.25; // shallow arc above
+  const peakY = Math.min(sy, ey) - Math.max(dist * 0.6, 20); // loiva kaari ylös
 
-  // SVG covers full screen (fixed), path uses screen coords directly
   const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
 
   const baseColor = isDark ? '255,255,255' : '9,9,11';
   const gradId = `arc-grad-${key}`;
-
-  // Gradient runs from start (opaque) to end (transparent)
-  const gx1 = sx / window.innerWidth * 100;
-  const gx2 = ex / window.innerWidth * 100;
 
   return (
     <AnimatePresence>
@@ -869,9 +869,10 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
           transition={{ duration: 0.3 }}
         >
           <defs>
-            <linearGradient id={gradId} x1={`${gx1}%`} y1="0%" x2={`${gx2}%`} y2="0%" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor={`rgba(${baseColor},0.75)`} />
-              <stop offset="55%" stopColor={`rgba(${baseColor},0.45)`} />
+            {/* userSpaceOnUse + pikselikoordinaatit — toimii oikein screen-space SVG:ssä */}
+            <linearGradient id={gradId} x1={sx} y1={sy} x2={ex} y2={ey} gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor={`rgba(${baseColor},0.8)`} />
+              <stop offset="60%" stopColor={`rgba(${baseColor},0.4)`} />
               <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
             </linearGradient>
           </defs>
@@ -884,6 +885,16 @@ function ThemeArcHint({ chatTheme, lightRef, darkRef }: { chatTheme: string, lig
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
             transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
+          />
+          {/* Nuolenpää kohdenapissa */}
+          <motion.circle
+            cx={ex}
+            cy={ey}
+            r={3}
+            fill={`rgba(${baseColor},0.7)`}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: [0, 1.4, 1], opacity: [0, 1, 0] }}
+            transition={{ duration: 0.5, delay: 1.1, ease: 'easeOut' }}
           />
         </motion.svg>
       )}
