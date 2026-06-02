@@ -99,7 +99,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                       {
                         id: 'custom',
                         title: 'Custom Theme',
-                        subtitle: 'Fully personalized.',
+                        subtitle: 'Fully personalized',
                         badge: null,
                         badgeColor: '',
                       },
@@ -1778,7 +1778,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                   <button key={p.id} onClick={() => setPlanIdx(i)}
                     className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
                     <span className="text-xs font-semibold">{p.name}</span>
-                    <span className={`text-[10px] font-bold ${i === planIdx ? (isDark ? 'text-zinc-300' : 'text-zinc-700') : (isDark ? 'text-zinc-700' : 'text-zinc-400')}`}>{p.name === 'S' ? '1k' : p.name === 'M' ? '2.5k' : '10k'} msg</span>
                   </button>
                 ))}
               </div>
@@ -1818,7 +1817,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               <div className="flex flex-col gap-2">
                 {[
                   { id: 'tia', title: 'TIA Theme', subtitle: 'White or Black', badge: '−20% forever', badgeColor: 'text-emerald-400' },
-                  { id: 'custom', title: 'Custom Theme', subtitle: 'Fully personalized.', badge: null, badgeColor: '' },
+                  { id: 'custom', title: 'Custom Theme', subtitle: 'Fully personalized', badge: null, badgeColor: '' },
                 ].map(opt => {
                   const active = addonBotSetup === opt.id;
                   return (
@@ -1852,7 +1851,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             </div>
 
             {/* Size badge */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={`text-2xl font-semibold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
                 <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
@@ -1875,9 +1874,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               </div>
             </div>
 
-            {/* Fixed-height text rows so all plans align */}
-            <p className={`text-sm h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
-            <p className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            {/* Messages count + additional usage */}
+            <p className={`text-xs font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
             <p className={`text-xs mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Additional usage: {plan.additionalUsage}</p>
 
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
