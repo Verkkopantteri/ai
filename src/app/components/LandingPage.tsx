@@ -1398,6 +1398,7 @@ function FeaturesSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.9', 'center center'] });
+  const { scrollYProgress: scrollFull } = useScroll({ target: ref, offset: ['start end', 'end start'] });
 
   // 3D tilt: tilted away at bottom of viewport, flattens to 0 as it scrolls in
   const rotateX = useTransform(scrollYProgress, [0, 1], [14, 0]);
@@ -1405,19 +1406,20 @@ function FeaturesSlide({ activeTheme }) {
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
 
-  // Auto-open lightbox when section scrolls in, close when scrolled past
+  // Auto-open lightbox based on scroll position — open when settled in view, close when scrolled away
   const [autoLightbox, setAutoLightbox] = useState(false);
   const [autoLightboxIdx, setAutoLightboxIdx] = useState(0);
   const [autoDirection, setAutoDirection] = useState(1);
-  const sectionInView = useInView(ref, { amount: 0.5 });
 
   useEffect(() => {
-    if (sectionInView) {
-      setAutoLightbox(true);
-    } else {
-      setAutoLightbox(false);
-    }
-  }, [sectionInView]);
+    return scrollFull.on('change', (v) => {
+      if (v >= 0.35 && v <= 0.82) {
+        setAutoLightbox(true);
+      } else {
+        setAutoLightbox(false);
+      }
+    });
+  }, [scrollFull]);
 
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
