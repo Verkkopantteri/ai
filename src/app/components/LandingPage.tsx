@@ -1177,14 +1177,15 @@ function PaperStack({ isDark }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  // Auto-advance
+  // Auto-advance — pauses while lightbox is open
   useEffect(() => {
+    if (lightboxOpen) return;
     const t = setInterval(() => {
       setDirection(1);
       setActiveIdx(i => (i + 1) % SLIDES.length);
     }, 3200);
     return () => clearInterval(t);
-  }, []);
+  }, [lightboxOpen]);
 
   const goTo = (idx) => {
     if (idx === activeIdx || isAnimating) return;
