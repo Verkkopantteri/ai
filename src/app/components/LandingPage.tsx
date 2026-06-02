@@ -1127,14 +1127,14 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               </div>
 
               {/* Bullet points */}
-              <div className="flex flex-col gap-1.5 justify-center lg:justify-start mb-5">
+              <div className="flex flex-col gap-2 justify-center lg:justify-start mb-5">
                 {[
-                  'Setup in 48h',
-                  'No code',
+                  'Setup in minutes',
                   '100+ Languages',
                   'Cancel anytime',
                 ].map(item => (
-                  <span key={item} className={`text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                  <span key={item} className={`flex items-center gap-2.5 text-xs font-medium tracking-wide uppercase ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                    <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#63AFC7' }} />
                     {item}
                   </span>
                 ))}
@@ -1182,15 +1182,18 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
-            {/* Logo cycler */}
-            <div className="flex items-center justify-center">
-              <RefLogosCycler isDark={isDark} />
+            {/* Icons in a row */}
+            <div className="flex items-center gap-3">
+              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
             </div>
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
-            {/* GDPR texts */}
-            <div className="flex flex-col gap-1 justify-center">
+            {/* GDPR texts in a row */}
+            <div className="flex items-center gap-3 flex-wrap">
               {['GDPR-ready', 'Encrypted storage', 'Data deletion on request'].map(item => (
                 <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                   <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
@@ -1201,12 +1204,9 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
 
             <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
 
-            {/* Icons column */}
-            <div className="flex flex-col items-center gap-2">
-              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
+            {/* Logo cycler */}
+            <div className="flex items-center justify-center">
+              <RefLogosCycler isDark={isDark} />
             </div>
 
           </motion.div>
