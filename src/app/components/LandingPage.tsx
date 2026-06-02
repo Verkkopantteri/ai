@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { MagneticButton } from './MagneticButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -1178,43 +1178,30 @@ function LightboxModal({ slide, onClose, onPrev, onNext }) {
   );
 }
 
-function PaperStack({ isDark, externalLightbox, onExternalClose, externalIdx, externalDirection, onExternalIdxChange }) {
+const PaperStack = React.forwardRef(function PaperStack({ isDark }, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
+  const [direction, setDirection] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  // Sync external lightbox control
-  const isLightboxOpen = lightboxOpen || (externalLightbox ?? false);
-  const currentLightboxIdx = lightboxOpen ? activeIdx : (externalIdx ?? activeIdx);
-  const currentDirection = lightboxOpen ? direction : (externalDirection ?? direction);
+  // Expose closeLightbox to parent via ref
+  React.useImperativeHandle(ref, () => ({
+    closeLightbox: () => setLightboxOpen(false),
+  }));
 
-  const closeLightbox = () => {
-    if (lightboxOpen) setLightboxOpen(false);
-    if (externalLightbox) onExternalClose?.();
-  };
-
-  const prevLightbox = () => {
-    const newIdx = (currentLightboxIdx - 1 + SLIDES.length) % SLIDES.length;
-    if (lightboxOpen) { setDirection(-1); setActiveIdx(newIdx); }
-    else onExternalIdxChange?.(newIdx, -1);
-  };
-
-  const nextLightbox = () => {
-    const newIdx = (currentLightboxIdx + 1) % SLIDES.length;
-    if (lightboxOpen) { setDirection(1); setActiveIdx(newIdx); }
-    else onExternalIdxChange?.(newIdx, 1);
-  };
+  const closeLightbox = () => setLightboxOpen(false);
+  const prevLightbox = () => { setDirection(-1); setActiveIdx(i => (i - 1 + SLIDES.length) % SLIDES.length); };
+  const nextLightbox = () => { setDirection(1); setActiveIdx(i => (i + 1) % SLIDES.length); };
 
   // Auto-advance — pauses while lightbox is open
   useEffect(() => {
-    if (isLightboxOpen) return;
+    if (lightboxOpen) return;
     const t = setInterval(() => {
       setDirection(1);
       setActiveIdx(i => (i + 1) % SLIDES.length);
     }, 3200);
     return () => clearInterval(t);
-  }, [isLightboxOpen]);
+  }, [lightboxOpen]);
 
   const goTo = (idx) => {
     if (idx === activeIdx || isAnimating) return;
@@ -1291,7 +1278,7 @@ function PaperStack({ isDark, externalLightbox, onExternalClose, externalIdx, ex
                   : '0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
                 border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
               }}
-              onClick={() => { setActiveIdx(activeIdx); setLightboxOpen(true); }}
+              onClick={() => setLightboxOpen(true)}
             >
               {/* Zoom hint */}
               <div className="absolute top-3 right-3 z-20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 pointer-events-none">
@@ -1381,9 +1368,9 @@ function PaperStack({ isDark, externalLightbox, onExternalClose, externalIdx, ex
       </p>
 
       {/* Lightbox */}
-      {isLightboxOpen && (
+      {lightboxOpen && (
         <LightboxModal
-          slide={SLIDES[currentLightboxIdx]}
+          slide={SLIDES[activeIdx]}
           onClose={closeLightbox}
           onPrev={prevLightbox}
           onNext={nextLightbox}
@@ -1391,7 +1378,7 @@ function PaperStack({ isDark, externalLightbox, onExternalClose, externalIdx, ex
       )}
     </div>
   );
-}
+});
 
 /* ─── FEATURES ────────────────────────────────────────────────── */
 function FeaturesSlide({ activeTheme }) {
@@ -1400,23 +1387,19 @@ function FeaturesSlide({ activeTheme }) {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.9', 'center center'] });
   const { scrollYProgress: scrollFull } = useScroll({ target: ref, offset: ['start end', 'end start'] });
 
+
   // 3D tilt: tilted away at bottom of viewport, flattens to 0 as it scrolls in
   const rotateX = useTransform(scrollYProgress, [0, 1], [14, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [0.92, 1]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
 
-  // Auto-open lightbox based on scroll position — open when settled in view, close when scrolled away
-  const [autoLightbox, setAutoLightbox] = useState(false);
-  const [autoLightboxIdx, setAutoLightboxIdx] = useState(0);
-  const [autoDirection, setAutoDirection] = useState(1);
-
+  // Close lightbox automatically when scrolled away from section
+  const paperStackRef = useRef<{ closeLightbox: () => void }>(null);
   useEffect(() => {
     return scrollFull.on('change', (v) => {
-      if (v >= 0.35 && v <= 0.82) {
-        setAutoLightbox(true);
-      } else {
-        setAutoLightbox(false);
+      if (v <= 0.05 || v >= 0.95) {
+        paperStackRef.current?.closeLightbox();
       }
     });
   }, [scrollFull]);
@@ -1457,7 +1440,7 @@ function FeaturesSlide({ activeTheme }) {
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
             className="flex-shrink-0"
           >
-            <PaperStack isDark={isDark} externalLightbox={autoLightbox} onExternalClose={() => setAutoLightbox(false)} externalIdx={autoLightboxIdx} externalDirection={autoDirection} onExternalIdxChange={(idx, dir) => { setAutoLightboxIdx(idx); setAutoDirection(dir); }} />
+            <PaperStack isDark={isDark} ref={paperStackRef} />
           </motion.div>
 
           {/* RIGHT — Feature cards */}
