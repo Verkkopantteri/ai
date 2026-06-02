@@ -460,9 +460,9 @@ function MiniChat({ theme }) {
 function ChatStack({ activeTheme }) {
   return (
     <div className="relative" style={{ width: 380, height: 540 }}>
-      <motion.div initial={{ opacity: 0, x: 20, y: -10 }} animate={{ opacity: 1, x: 0, y: 0 }}
+      <motion.div initial={{ opacity: 0, x: 20, y: -10, filter: 'brightness(0.88)' }} animate={{ opacity: 1, x: 0, y: 0, filter: 'brightness(0.88)' }}
         transition={{ duration: 0.9, delay: 0.8 }}
-        style={{ position: 'absolute', top: 0, right: -10, zIndex: 10, transform: 'rotate(5deg) translateX(10px) translateY(-10px)', filter: 'brightness(0.88)', pointerEvents: 'none' }}>
+        style={{ position: 'absolute', top: 0, right: -10, zIndex: 10, transform: 'rotate(5deg) translateX(10px) translateY(-10px)', pointerEvents: 'none' }}>
         <MiniChat theme={activeTheme === 'dark' ? CHAT_THEMES.light : CHAT_THEMES.dark} />
       </motion.div>
       <motion.div initial={{ opacity: 0, x: -10, y: 15 }} animate={{ opacity: 1, x: 0, y: 0 }}
