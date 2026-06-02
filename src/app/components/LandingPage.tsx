@@ -1700,15 +1700,18 @@ function CTASlide({ activeTheme, onGetStarted }) {
       style={{ y, scale, rotateX, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Background video */}
+      {/* Background video — theme dependent */}
       <video
-        src="https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4"
+        key={activeTheme}
+        src={isDark
+          ? 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-bl.mp4'
+          : 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4'}
         autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="relative z-10 text-center px-6">
         <button onClick={onGetStarted}
-          className="group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-2xl hover:shadow-black/20">
+          className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-white/10' : 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-black/20'}`}>
           Start Today
         </button>
       </div>
