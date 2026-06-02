@@ -1129,7 +1129,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               {/* Bullet points */}
               <div className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-5">
                 {['Setup in minutes', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-                  <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                  <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white' : 'text-zinc-950'}`}>
                     {i > 0 && <span className={`mx-2 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                     {item}
                   </span>
@@ -1541,8 +1541,6 @@ function FeaturesSlide({ activeTheme }) {
         style={{ rotateX, scale, opacity, y }}
         className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-20 px-6 relative overflow-hidden`}
       >
-      <video src="/dots.mp4" autoPlay loop muted playsInline
-        className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${isDark ? 'opacity-40' : 'opacity-10'}`} />
       <div className="max-w-6xl mx-auto w-full">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1821,7 +1819,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             {/* Size badge */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className='text-6xl font-bold tracking-tight' style={{ color: '#00BC7D' }}>{plan.name}</span>
+                <span className={`text-6xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
                 <span className={`text-2xl font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
                 {plan.highlight && (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
@@ -1900,16 +1898,13 @@ function CTASlide({ activeTheme, onGetStarted }) {
     >
       {/* Background video — theme dependent */}
       <video
-        key={activeTheme}
-        src={isDark
-          ? 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-bl.mp4'
-          : 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4'}
+        src="/dots.mp4"
         autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover opacity-90"
       />
       <div className="relative z-10 text-center px-6">
         <button onClick={onGetStarted}
-          className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-white/10' : 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-black/20'}`}>
+          className='group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl' style={{ background: '#63AFC7', color: '#fff' }}>
           Start Today
         </button>
       </div>
