@@ -917,7 +917,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-6 max-w-lg ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
-            TIA AI chatbots for your website — installed in minutes.
+            Answers visitors instantly with AI.
           </p>
 
           {/* Quote / review */}
@@ -935,29 +935,6 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             </div>
           </div>
 
-          {/* Theme switcher */}
-          <div className="flex items-center gap-2 mb-8 justify-center lg:justify-start relative">
-            <ThemeArcHint />
-            <button onClick={() => setActiveTheme('light')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeTheme === 'light'
-                  ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
-                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-              }`}>
-              <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
-              Pearl White
-            </button>
-            <button onClick={() => setActiveTheme('dark')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeTheme === 'dark'
-                  ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
-                  : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
-              }`}>
-              <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
-              Obsidian Black
-            </button>
-          </div>
-
           <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
@@ -965,14 +942,27 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             </button>
             <a href="#features"
               className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
-              See how it works
+              See TIA in Action
             </a>
           </div>
+
+          {/* Trust bar */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+            className="mt-6 flex items-center gap-5 justify-center lg:justify-start flex-wrap">
+            {['Setup in 48h', 'No code', 'Cancel anytime'].map((item, i) => (
+              <span key={item} className={`flex items-center gap-1.5 text-sm font-light ${isDark ? 'text-white/45' : 'text-zinc-400'}`}>
+                {i > 0 && <span className={`w-px h-3 ${isDark ? 'bg-white/20' : 'bg-zinc-300'}`} />}
+                <Check className="size-3.5 opacity-60" />
+                {item}
+              </span>
+            ))}
+          </motion.div>
 
           {/* Languages tag */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="mt-8 flex items-center gap-2 justify-center lg:justify-start">
+            className="mt-4 flex items-center gap-2 justify-center lg:justify-start">
             <Globe className={`size-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
             <span className={`text-sm font-light ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
               Supports 100+ Languages
@@ -1030,10 +1020,32 @@ function TiaInActionSlide({ activeTheme }) {
             <h2 className={`text-6xl md:text-7xl font-light leading-tight mb-4 ${isDark ? 'text-white' : 'text-zinc-950'}`}>
               TIA in<br /><span style={{ color: '#63AFC7' }}>action</span>
             </h2>
-            <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
+            <p className={`text-lg font-light mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
               Watch how TIA handles a real customer conversation on your website.
             </p>
 
+            {/* Theme switcher moved here */}
+            <div className="flex items-center gap-2 justify-center lg:justify-start relative">
+              <ThemeArcHint />
+              <button onClick={() => setActiveTheme('light')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                  activeTheme === 'light'
+                    ? 'bg-white text-zinc-950 border-zinc-300 shadow-md'
+                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+                }`}>
+                <span className="w-3 h-3 rounded-full bg-white border border-zinc-300 flex-shrink-0" />
+                Pearl White
+              </button>
+              <button onClick={() => setActiveTheme('dark')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                  activeTheme === 'dark'
+                    ? 'bg-zinc-950 text-white border-zinc-700 shadow-lg'
+                    : isDark ? 'border-white/20 text-white/50 hover:text-white/80' : 'border-zinc-300 text-zinc-500 hover:text-zinc-800'
+                }`}>
+                <span className="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600 flex-shrink-0" />
+                Obsidian Black
+              </button>
+            </div>
 
           </motion.div>
 
