@@ -823,8 +823,6 @@ function RefLogosCycler({ isDark }) {
     return () => clearTimeout(t);
   }, [phase]);
 
-  const colorFilter = isDark ? 'brightness(10) saturate(0)' : 'brightness(0) saturate(0)';
-
   return (
     <div className="h-24 flex items-center justify-center">
       <AnimatePresence mode="wait">
@@ -834,10 +832,10 @@ function RefLogosCycler({ isDark }) {
           alt={REF_LOGOS[current].name}
           className="w-auto object-contain"
           style={{ height: 80, maxWidth: 240 }}
-          initial={{ opacity: 0, filter: `blur(14px) ${colorFilter}` }}
+          initial={{ opacity: 0, filter: 'blur(14px)' }}
           animate={phase === 'visible'
-            ? { opacity: 1, filter: `blur(0px) ${colorFilter}` }
-            : { opacity: 0, filter: `blur(14px) ${colorFilter}` }}
+            ? { opacity: 1, filter: 'blur(0px)' }
+            : { opacity: 0, filter: 'blur(14px)' }}
           transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
       </AnimatePresence>
@@ -917,7 +915,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
               "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
             </p>
-            <div className="flex items-center gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col items-center gap-0">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
