@@ -921,11 +921,13 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             ))}
           </motion.div>
 
-          {/* GDPR badge */}
+          {/* GDPR badge + Shopify + WordPress */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="flex justify-center mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-16 w-auto object-contain" />
+            className="flex items-center justify-center gap-3 mb-6">
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
           </motion.div>
 
           {/* Quote / review + logo centered under text */}
@@ -1749,34 +1751,25 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           </div>
         </div>
 
-        {/* GDPR + integrations icons */}
+        {/* GDPR text items */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.15 }}
-          className="flex items-center justify-center gap-5 mt-5 flex-nowrap overflow-x-auto">
+          className="flex items-center justify-center gap-5 mt-5 flex-wrap">
           {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
             <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
               <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
               {item}
             </span>
           ))}
-          {/* GDPR cert + Shopify + WordPress icons */}
-          <div className="flex items-center gap-3 flex-shrink-0 ml-2">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified"
-              className="object-contain"
-              style={{ height: 40, width: 'auto' }} />
-            {/* Shopify + WordPress stacked */}
-            <div className="relative flex-shrink-0" style={{ width: 52, height: 52 }}>
-              {/* Shopify — bottom */}
-              <img src="/icon_shopify.avif" alt="Shopify"
-                className="absolute object-contain rounded-lg"
-                style={{ width: 40, height: 40, top: 0, left: 0, zIndex: 1 }} />
-              {/* WordPress — 25% overlap on top */}
-              <img src="/icon_wordpress.avif" alt="WordPress"
-                className="absolute object-contain rounded-lg"
-                style={{ width: 40, height: 40, top: '25%', left: '25%', zIndex: 2,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }} />
-            </div>
-          </div>
+        </motion.div>
+
+        {/* GDPR cert */}
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }} transition={{ delay: 0.2 }}
+          className="flex items-center justify-center mt-3">
+          <img src="/gdpr_certification.avif" alt="GDPR Certified"
+            className="object-contain"
+            style={{ height: 36, width: 'auto' }} />
         </motion.div>
 
         {/* Powered by Anthropic */}
