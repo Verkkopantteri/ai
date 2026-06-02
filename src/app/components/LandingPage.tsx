@@ -999,12 +999,24 @@ function TiaInActionSlide({ activeTheme }) {
   const theme = CHAT_THEMES[activeTheme];
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  // Starts overexposed (brightness 1.6), normalises to 1 as section scrolls fully into view
-  const brightness = useTransform(scrollYProgress, [0, 0.7], [1.6, 1]);
+
+  // Brightness: overexposed → normal
+  const brightness = useTransform(scrollYProgress, [0, 0.65], [1.7, 1]);
   const filter = useTransform(brightness, (b) => `brightness(${b})`);
 
+  // Clip-path horizontal scan wipe: reveal from left edge across
+  const clipProgress = useTransform(scrollYProgress, [0, 0.55], [0, 100]);
+  const clipPath = useTransform(clipProgress, (p) => `inset(0 ${100 - p}% 0 0)`);
+
+  // Subtle x drift into place
+  const x = useTransform(scrollYProgress, [0, 0.6], [40, 0]);
+
   return (
-    <motion.section ref={ref} style={{ filter }} className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
+    <motion.section
+      ref={ref}
+      style={{ filter, clipPath, x }}
+      className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}
+    >
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -1359,6 +1371,15 @@ function PaperStack({ isDark }) {
 /* ─── FEATURES ────────────────────────────────────────────────── */
 function FeaturesSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+
+  // 3D tilt: tilted away at bottom of viewport, flattens to 0 as it scrolls in
+  const rotateX = useTransform(scrollYProgress, [0, 0.6], [18, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.88, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.6], [80, 0]);
+
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
     { icon: Brain, title: 'Trained on you', desc: 'Knows your products, FAQs, pricing.' },
@@ -1369,7 +1390,13 @@ function FeaturesSlide({ activeTheme }) {
   ];
 
   return (
-    <section id="features" className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6 relative overflow-hidden`}>
+    <div style={{ perspective: '1200px', overflow: 'hidden' }}>
+      <motion.section
+        ref={ref}
+        id="features"
+        style={{ rotateX, scale, opacity, y }}
+        className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6 relative overflow-hidden`}
+      >
       <video src="/dots.mp4" autoPlay loop muted playsInline
         className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${isDark ? 'opacity-40' : 'opacity-10'}`} />
       <div className="max-w-6xl mx-auto w-full">
@@ -1396,9 +1423,12 @@ function FeaturesSlide({ activeTheme }) {
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {features.map((f, i) => (
               <motion.div key={f.title}
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, amount: 0.3 }} transition={{ delay: i * 0.08, duration: 0.5 }}
-                className={`group p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
+                initial={{ opacity: 0, y: 50, scale: 0.9, rotateZ: i % 2 === 0 ? -1.5 : 1.5 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1, rotateZ: 0 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
+                whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
+                className={`group p-6 rounded-2xl border transition-colors duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
                 <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
                   <f.icon className="size-5 text-white" strokeWidth={1.5} />
                 </div>
@@ -1409,7 +1439,8 @@ function FeaturesSlide({ activeTheme }) {
           </div>
         </div>
       </div>
-    </section>
+      </motion.section>
+    </div>
   );
 }
 
@@ -1481,10 +1512,18 @@ const PLANS = [
 
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
-  const [planIdx, setPlanIdx] = useState(0); // default S = index 0
+  const [planIdx, setPlanIdx] = useState(0);
   const plan = PLANS[planIdx];
   const trackRef = useRef(null);
   const isDragging = useRef(false);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end end'] });
+
+  // Implosion from blur + slight scale — content materialises from nothing
+  const scale = useTransform(scrollYProgress, [0, 0.55], [0.82, 1]);
+  const blurVal = useTransform(scrollYProgress, [0, 0.5], [14, 0]);
+  const sectionFilter = useTransform(blurVal, (b) => `blur(${b}px)`);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   const trackBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
   const fillColor = isDark ? '#ffffff' : '#09090b';
@@ -1524,7 +1563,12 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   };
 
   return (
-    <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6 relative overflow-hidden`}>
+    <motion.section
+      ref={sectionRef}
+      id="pricing"
+      style={{ scale, filter: sectionFilter, opacity }}
+      className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6 relative overflow-hidden`}
+    >
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1535,6 +1579,10 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
         {/* Main plan card */}
         <motion.div
+          initial={{ opacity: 0, y: 60, scale: 0.88 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ type: 'spring', stiffness: 220, damping: 26, delay: 0.1 }}
           className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
         >
             {/* Size badge */}
@@ -1630,7 +1678,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           </p>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -1639,14 +1687,17 @@ function CTASlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  // Mirrors HeroSlide but inverted: slides up into place as you scroll down
-  const y = useTransform(scrollYProgress, [0, 0.6], [60, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.6], [0.94, 1]);
+  // Horizon zoom: tilts up from below like a road stretching to horizon
+  const y = useTransform(scrollYProgress, [0, 0.6], [80, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.88, 1]);
+  const rotateX = useTransform(scrollYProgress, [0, 0.6], [12, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
 
   return (
+    <div style={{ perspective: '1400px', overflow: 'hidden' }}>
     <motion.section
       ref={ref}
-      style={{ y, scale }}
+      style={{ y, scale, rotateX, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
       {/* Background video */}
@@ -1662,6 +1713,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
         </button>
       </div>
     </motion.section>
+    </div>
   );
 }
 
