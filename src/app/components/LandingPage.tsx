@@ -997,11 +997,14 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 function TiaInActionSlide({ activeTheme }) {
   const isDark = activeTheme === 'dark';
   const theme = CHAT_THEMES[activeTheme];
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  // Starts overexposed (brightness 1.6), normalises to 1 as section scrolls fully into view
+  const brightness = useTransform(scrollYProgress, [0, 0.7], [1.6, 1]);
+  const filter = useTransform(brightness, (b) => `brightness(${b})`);
 
   return (
-    <section className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      <video src="/dots.mp4" autoPlay loop muted playsInline
-        className={`absolute inset-0 w-full h-full object-cover ${isDark ? 'opacity-40' : 'opacity-10'}`} />
+    <motion.section ref={ref} style={{ filter }} className={`h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -1074,7 +1077,7 @@ function TiaInActionSlide({ activeTheme }) {
           </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -1366,7 +1369,9 @@ function FeaturesSlide({ activeTheme }) {
   ];
 
   return (
-    <section id="features" className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6`}>
+    <section id="features" className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6 relative overflow-hidden`}>
+      <video src="/dots.mp4" autoPlay loop muted playsInline
+        className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${isDark ? 'opacity-40' : 'opacity-10'}`} />
       <div className="max-w-6xl mx-auto w-full">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1519,7 +1524,14 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   };
 
   return (
-    <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6`}>
+    <section id="pricing" className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-16 px-6 relative overflow-hidden`}>
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-ct.jpeg)' }}
+      />
+      {/* Overlay */}
+      <div className={`absolute inset-0 ${isDark ? 'bg-zinc-950/80' : 'bg-white/80'}`} />
       <ParticleField count={isDark ? 10 : 0} />
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
