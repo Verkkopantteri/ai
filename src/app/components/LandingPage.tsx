@@ -802,7 +802,7 @@ const REF_LOGOS = [
   { name: 'Ref 2', src: '/r2.avif', invert: true },
   { name: 'Ref 3', src: '/r3.avif', invert: false },
   { name: 'Ref 4', src: '/r4.avif', invert: true },
-  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.5 },
+  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.25, height: 48 },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -834,7 +834,7 @@ function RefLogosCycler({ isDark }) {
           src={logo.src}
           alt={logo.name}
           className="w-auto object-contain"
-          style={{ height: 80, maxWidth: 240 }}
+          style={{ height: logo.height ?? 80, maxWidth: 240 }}
           initial={{ opacity: 0, filter: logo.invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           animate={phase === 'visible'
             ? { opacity: targetOpacity, filter: logo.invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
