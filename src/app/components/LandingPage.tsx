@@ -995,6 +995,8 @@ function TiaInActionSlide({ activeTheme }) {
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
   const ref = useRef(null);
+  const lightBtnRef = useRef(null);
+  const darkBtnRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start 0.85', 'end end'] });
 
   // Brightness: overexposed → normal
@@ -1074,14 +1076,14 @@ function TiaInActionSlide({ activeTheme }) {
 
             {/* Theme switcher — dots only */}
             <div className="flex items-center gap-2 justify-center lg:justify-start relative">
-              <ThemeArcHint chatTheme={chatTheme} />
-              <button onClick={() => setChatTheme('light')}
+              <ThemeArcHint chatTheme={chatTheme} lightRef={lightBtnRef} darkRef={darkBtnRef} />
+              <button ref={lightBtnRef} onClick={() => setChatTheme('light')}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'light'
                     ? 'border-zinc-400 scale-110 shadow-md'
                     : 'border-zinc-200 hover:border-zinc-300'
                 } bg-white`} />
-              <button onClick={() => setChatTheme('dark')}
+              <button ref={darkBtnRef} onClick={() => setChatTheme('dark')}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'dark'
                     ? 'border-zinc-500 scale-110 shadow-lg shadow-white/10'
