@@ -522,7 +522,7 @@ function TypedText({ text, color, onDone, onChar }) {
   );
 }
 
-function AnimatedChatLoop({ theme }) {
+function AnimatedChatLoop({ theme, onGetStarted }) {
   // phase: 'bubble' | 'chat'
   const [phase, setPhase] = useState('bubble');
   const [visibleMessages, setVisibleMessages] = useState(0);
@@ -757,7 +757,7 @@ function AnimatedChatLoop({ theme }) {
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
                       className="px-3 pt-2.5 pb-2.5 flex-shrink-0"
                     >
-                      <div className="w-full py-1.5 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                      <div onClick={onGetStarted} className="w-full py-1.5 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
                         Get Started
                       </div>
                     </motion.div>
@@ -934,16 +934,29 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-light mb-6 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
+          <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
             Answers visitors instantly with AI Chat Bot.
           </p>
+
+          {/* Testimonial under tagline */}
+          <div className="flex flex-col items-center gap-1 mb-6">
+            <div className="flex gap-0.5 mb-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`size-3.5 ${isDark ? 'text-amber-400 fill-amber-400' : 'text-amber-500 fill-amber-500'}`} />
+              ))}
+            </div>
+            <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+              "Best hire we never made."
+            </p>
+            <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+          </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
-            <a href="#features"
+            <a href="#tia-in-action"
               className="px-8 py-4 rounded-full text-base font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
               See Example
             </a>
@@ -974,13 +987,11 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 
         </motion.div>
 
-        {/* RIGHT — chat stack + testimonial below */}
+        {/* RIGHT — chat stack */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
           className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4" style={{ width: 380 }}>
           <ChatStack activeTheme={activeTheme} />
-          {/* Testimonial + animated stars — centered under the chat stack */}
-          <AnimatedStarReview isDark={isDark} />
         </motion.div>
       </div>
 
@@ -993,7 +1004,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 function ShowcaseSlide({ activeTheme }) { return null; }
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
-function TiaInActionSlide({ activeTheme }) {
+function TiaInActionSlide({ activeTheme, onGetStarted }) {
   const [chatTheme, setChatTheme] = useState('light');
   const isDark = chatTheme === 'dark';
   const theme = CHAT_THEMES[chatTheme];
@@ -1014,7 +1025,7 @@ function TiaInActionSlide({ activeTheme }) {
 
   return (
     // Outer wrapper: not clipped — background lives here so scroll wipe never cuts it off
-    <div ref={wrapRef} className="relative h-screen overflow-hidden">
+    <div id="tia-in-action" ref={wrapRef} className="relative h-screen overflow-hidden">
       {/* Background — never clipped, transitions smoothly on theme change */}
       <motion.div
         className="absolute inset-0"
@@ -1177,7 +1188,7 @@ function TiaInActionSlide({ activeTheme }) {
 
               {/* Animated chat overlay */}
               <div className="absolute bottom-5 right-5">
-                <AnimatedChatLoop theme={theme} />
+                <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
               </div>
             </motion.div>
           </motion.div>
@@ -1782,7 +1793,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           </div>
         </div>
 
-        {/* GDPR text items */}
+        {/* GDPR text items + icon on same row */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.15 }}
           className="flex items-center justify-center gap-5 mt-5 flex-wrap">
@@ -1792,15 +1803,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               {item}
             </span>
           ))}
-        </motion.div>
-
-        {/* GDPR cert */}
-        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }} transition={{ delay: 0.2 }}
-          className="flex items-center justify-center mt-3">
-          <img src="/gdpr_certification.avif" alt="GDPR Certified"
-            className="object-contain"
-            style={{ height: 36, width: 'auto' }} />
+          <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain flex-shrink-0" style={{ height: 32, width: 'auto' }} />
         </motion.div>
 
         {/* Powered by Anthropic */}
@@ -1911,7 +1914,7 @@ export function LandingPage() {
       <Header isDark={false} onGetStarted={() => openLead()} />
       <HeroSlide activeTheme={activeTheme} setActiveTheme={() => {}} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
-      <TiaInActionSlide activeTheme={activeTheme} />
+      <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
       <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
