@@ -815,22 +815,23 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
     return () => clearTimeout(t0);
   }, []);
 
-  // Light theme: white ball → black ball (right→left, shorter path)
-  // Dark theme:  black ball → white ball (left→right, shorter path)
-  // Buttons: white at x≈55, black at x≈90 (gap of ~36px)
+  // SVG is positioned left: -4 relative to container
+  // White button center: x≈10 in container → x≈14 in SVG
+  // Black button center: x≈10+28+8+14=60 in container → x≈64 in SVG
+  // Arc curves upward, bottom of SVG (y=76) aligns with button tops
   const arcPath = isDark
-    ? 'M 55 72 C 55 44, 90 44, 90 72'   // black→white (left to right, shorter)
-    : 'M 90 72 C 90 44, 55 44, 55 72';  // white→black (right to left, shorter)
+    ? 'M 14 76 C 14 48, 64 48, 64 76'   // dark: black→white (left→right)
+    : 'M 64 76 C 64 48, 14 48, 14 76';  // light: white→black (right→left)
 
   const arrowTip = isDark
-    ? 'M 85 68 L 90 72 L 95 68'   // arrow at white button end
-    : 'M 50 68 L 55 72 L 60 68';  // arrow at black button end
+    ? 'M 59 72 L 64 76 L 69 72'   // arrow at white button (right end)
+    : 'M 9 72 L 14 76 L 19 72';   // arrow at black button (left end)
 
   const gradId = `arcGrad-${isDark ? 'dark' : 'light'}`;
   const dotColor = isDark ? '#09090b' : '#ffffff';
-  const gradFrom = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(9,9,11,0.7)';
+  const gradFrom = isDark ? 'rgba(255,255,255,0.8)' : 'rgba(9,9,11,0.8)';
   const gradTo   = isDark ? '#09090b'                : '#ffffff';
-  const arrowColor = isDark ? 'rgba(9,9,11,0.8)' : 'rgba(255,255,255,0.8)';
+  const arrowColor = isDark ? 'rgba(9,9,11,0.9)' : 'rgba(255,255,255,0.9)';
 
   return (
     <div style={{
@@ -845,8 +846,8 @@ function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
         {visible && (
           <motion.svg
             key={key}
-            style={{ position: 'absolute', top: -70, left: 10, overflow: 'visible' }}
-            width="220" height="80" viewBox="0 0 220 80"
+            style={{ position: 'absolute', top: -76, left: -4, overflow: 'visible' }}
+            width="100" height="80" viewBox="0 0 100 80"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -916,7 +917,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
       {!isDark && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wa.png)' }}
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wa.avif)' }}
         />
       )}
       {/* Overlay */}
