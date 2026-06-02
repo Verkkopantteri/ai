@@ -99,7 +99,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                       {
                         id: 'custom',
                         title: 'Custom Theme',
-                        subtitle: 'Your identity',
+                        subtitle: 'Fully personalized.',
                         badge: null,
                         badgeColor: '',
                       },
@@ -207,7 +207,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                     />
                   </div>
                 ))}
-                <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>We'll get back to you shortly.</p>
+                <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>We'll get back to you shortly</p>
                 <button
                   onClick={handleSubmit}
                   disabled={!form.service || !form.botSetup || !form.company || !form.website || !form.email}
@@ -1626,7 +1626,7 @@ const PLANS = [
     id: 'M',
     name: 'S',
     label: 'Core',
-    tagline: 'For small size business',
+    tagline: '',
     price: '99€',
     priceNum: 99,
     period: '/month',
@@ -1647,7 +1647,7 @@ const PLANS = [
     id: 'L',
     name: 'M',
     label: 'Pro',
-    tagline: 'For medium size business',
+    tagline: '',
     price: '199€',
     priceNum: 199,
     period: '/month',
@@ -1669,7 +1669,7 @@ const PLANS = [
     id: 'XL',
     name: 'L',
     label: 'Enterprise',
-    tagline: 'For large size business',
+    tagline: '',
     price: '499€',
     priceNum: 499,
     period: '/month',
@@ -1778,6 +1778,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                   <button key={p.id} onClick={() => setPlanIdx(i)}
                     className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
                     <span className="text-xs font-semibold">{p.name}</span>
+                    <span className={`text-[10px] font-bold ${i === planIdx ? (isDark ? 'text-zinc-300' : 'text-zinc-700') : (isDark ? 'text-zinc-700' : 'text-zinc-400')}`}>{p.name === 'S' ? '1k' : p.name === 'M' ? '2.5k' : '10k'} msg</span>
                   </button>
                 ))}
               </div>
@@ -1816,8 +1817,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Bot Setup</p>
               <div className="flex flex-col gap-2">
                 {[
-                  { id: 'tia', title: 'TIA theme', subtitle: 'white or black', badge: '−20% forever', badgeColor: 'text-emerald-400' },
-                  { id: 'custom', title: 'Custom theme', subtitle: 'your identity', badge: null, badgeColor: '' },
+                  { id: 'tia', title: 'TIA Theme', subtitle: 'White or Black', badge: '−20% forever', badgeColor: 'text-emerald-400' },
+                  { id: 'custom', title: 'Custom Theme', subtitle: 'Fully personalized.', badge: null, badgeColor: '' },
                 ].map(opt => {
                   const active = addonBotSetup === opt.id;
                   return (
@@ -1908,16 +1909,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain flex-shrink-0" style={{ height: 32, width: 'auto' }} />
         </motion.div>
 
-        {/* Powered by Anthropic */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }} transition={{ delay: 0.2 }}
-          className={`text-center rounded-2xl py-5 px-6 border mt-5 ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
-          <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-            Powered by{' '}
-            <span className={`font-semibold ${isDark ? 'text-white' : 'text-zinc-950'}`}>Anthropic's Claude</span>
-            {' '}— world's smartest AI.
-          </p>
-        </motion.div>
       </div>
     </motion.section>
   );
@@ -1948,7 +1939,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
           ? 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-bl.mp4'
           : 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4'}
         autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-85"
+        className="absolute inset-0 w-full h-full object-cover opacity-90"
       />
       <div className="relative z-10 text-center px-6">
         <button onClick={onGetStarted}
