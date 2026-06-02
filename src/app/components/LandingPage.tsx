@@ -794,77 +794,20 @@ function AnimatedChatLoop({ theme }) {
   );
 }
 
-/* ─── THEME ARC HINT ──────────────────────────────────────────── */
-// SVG on relatiivinen container-div:n sisällä — ei screen-koordinaatteja, toimii zoomilla.
-// Napit: w-7 h-7 (28px), gap-2 (8px). Pallot ovat flex-rivillä.
-// Valopallon keskipiste: x=14, tumman: x=50, molemmat y=14.
-function ThemeArcHint({ chatTheme }: { chatTheme: string }) {
-  const [visible, setVisible] = useState(false);
-  const [key, setKey] = useState(0);
-  const isDark = chatTheme === 'dark';
-
+/* ─── THEME DOT BOUNCE ────────────────────────────────────────── */
+// Inaktiivinen nappi bouncaa ylös-alas periodicisesti vihjaaten interaktiivisuudesta
+function useIdleBounce() {
+  const [bouncing, setBouncing] = useState(false);
   useEffect(() => {
-    const show = () => {
-      setVisible(true);
-      setKey(k => k + 1);
-      setTimeout(() => setVisible(false), 2200);
+    const trigger = () => {
+      setBouncing(true);
+      setTimeout(() => setBouncing(false), 900);
     };
-    const t0 = setTimeout(show, 2500);
-    const interval = setInterval(show, 6000);
+    const t0 = setTimeout(trigger, 2000);
+    const interval = setInterval(trigger, 5000);
     return () => { clearTimeout(t0); clearInterval(interval); };
   }, []);
-
-  // Pallot: 28px halkaisija, 8px gap. Keskipisteet:
-  const lx = 14; const ly = 14; // valopallo
-  const dx = 50; const dy = 14; // tummapallo
-  // Aktiivisesta → inaktiiviseen
-  const sx = isDark ? dx : lx;
-  const sy = isDark ? dy : ly;
-  const ex = isDark ? lx : dx;
-  const ey = isDark ? ly : dy;
-  const mx = (sx + ex) / 2;
-  const peakY = 52; // laskettu alemmas — kaari näkyy paremmin pallojen takaa
-
-  const pathD = `M ${sx} ${sy} Q ${mx} ${peakY}, ${ex} ${ey}`;
-  const baseColor = isDark ? '255,255,255' : '9,9,11';
-  const gradId = `arc-grad-${key}`;
-
-  return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'visible' }}>
-      <AnimatePresence>
-        {visible && (
-          <motion.svg
-            key={key}
-            width={64} height={60}
-            viewBox="0 0 64 60"
-            style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible', pointerEvents: 'none' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <defs>
-              <linearGradient id={gradId} x1={sx} y1={sy} x2={ex} y2={ey} gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor={`rgba(${baseColor},0.85)`} />
-                <stop offset="55%" stopColor={`rgba(${baseColor},0.4)`} />
-                <stop offset="100%" stopColor={`rgba(${baseColor},0)`} />
-              </linearGradient>
-            </defs>
-            <motion.path
-              d={pathD}
-              fill="none"
-              stroke={`url(#${gradId})`}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 1.2, ease: 'easeInOut', times: [0, 0.1, 0.8, 1] }}
-            />
-          </motion.svg>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  return bouncing;
 }
 
 /* ─── HERO ────────────────────────────────────────────────────── */
@@ -971,8 +914,7 @@ function TiaInActionSlide({ activeTheme }) {
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
   const ref = useRef(null);
-  const lightBtnRef = useRef(null);
-  const darkBtnRef = useRef(null);
+  const bouncing = useIdleBounce();
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start 0.85', 'end end'] });
 
   // Brightness: overexposed → normal
@@ -1051,17 +993,20 @@ function TiaInActionSlide({ activeTheme }) {
             </motion.p>
 
             {/* Theme switcher — dots only */}
-            <div className="flex items-center gap-2 justify-center lg:justify-start relative">
-              <ThemeArcHint chatTheme={chatTheme} lightRef={lightBtnRef} darkRef={darkBtnRef} />
-              <button ref={lightBtnRef} onClick={() => setChatTheme('light')}
-                style={{ position: 'relative', zIndex: 1 }}
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <motion.button
+                onClick={() => setChatTheme('light')}
+                animate={chatTheme !== 'light' && bouncing ? { y: [0, -6, 0] } : { y: 0 }}
+                transition={{ duration: 0.7, ease: 'easeInOut' }}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'light'
                     ? 'border-zinc-400 scale-110 shadow-md'
                     : 'border-zinc-200 hover:border-zinc-300'
                 } bg-white`} />
-              <button ref={darkBtnRef} onClick={() => setChatTheme('dark')}
-                style={{ position: 'relative', zIndex: 1 }}
+              <motion.button
+                onClick={() => setChatTheme('dark')}
+                animate={chatTheme !== 'dark' && bouncing ? { y: [0, -6, 0] } : { y: 0 }}
+                transition={{ duration: 0.7, ease: 'easeInOut' }}
                 className={`w-7 h-7 rounded-full border-2 transition-all ${
                   chatTheme === 'dark'
                     ? 'border-zinc-500 scale-110 shadow-lg shadow-white/10'
