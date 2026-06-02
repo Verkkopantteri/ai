@@ -854,6 +854,46 @@ function RefLogosCycler({ isDark }) {
   );
 }
 
+/* ─── ANIMATED STAR REVIEW ────────────────────────────────────── */
+function AnimatedStarReview({ isDark }) {
+  const [starsVisible, setStarsVisible] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: '0px' });
+
+  useEffect(() => {
+    if (!inView) { setStarsVisible(0); return; }
+    setStarsVisible(0);
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setStarsVisible(i);
+      if (i >= 5) clearInterval(interval);
+    }, 1500 / 5);
+    return () => clearInterval(interval);
+  }, [inView]);
+
+  return (
+    <div ref={ref} className="flex flex-col items-center text-center gap-1.5 mt-1">
+      <p className={`text-sm font-light italic leading-relaxed ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+        "Best hire we never made."{' '}
+        <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+      </p>
+      <div className="flex gap-0.5">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.4 }}
+            animate={starsVisible > i ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+          >
+            <Star className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── HERO ────────────────────────────────────────────────────── */
 function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   const ref = useRef(null);
@@ -904,8 +944,8 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
               Get Started
             </button>
             <a href="#features"
-              className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
-              See TIA in Action
+              className="px-8 py-4 rounded-full text-base font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
+              See Example
             </a>
           </div>
 
@@ -930,26 +970,17 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
           </motion.div>
 
-          {/* Quote / review + logo centered under text */}
-          <div className="mb-2 flex flex-col items-center text-center">
-            <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-              "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
-            </p>
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
-              ))}
-            </div>
-            <RefLogosCycler isDark={isDark} />
-          </div>
+          <RefLogosCycler isDark={isDark} />
 
         </motion.div>
 
-        {/* RIGHT — chat stack */}
+        {/* RIGHT — chat stack + testimonial below */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="flex-shrink-0 hidden lg:block">
+          className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4">
           <ChatStack activeTheme={activeTheme} />
+          {/* Testimonial + animated stars under the white chat */}
+          <AnimatedStarReview isDark={isDark} />
         </motion.div>
       </div>
 
