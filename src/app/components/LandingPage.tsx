@@ -658,6 +658,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
           setInputTypingText('');
           setVisibleMessages(v => v + 1);
         }, t);
+      }
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
