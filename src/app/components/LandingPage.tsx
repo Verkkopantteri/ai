@@ -458,7 +458,7 @@ function HeroAISlide({ onGetStarted }) {
         </motion.div>
 
         {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-10 pt-10 border-t border-white/5 pb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -479,6 +479,17 @@ function HeroAISlide({ onGetStarted }) {
             </div>
           </motion.div>
 
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-1">
+            {stats.map((s, i) => (
+              <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+                className="text-center">
+                <div className="text-4xl font-light text-white mb-1">{s.value}</div>
+                <div className="text-sm text-zinc-500">{s.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+
         </div>
 
       </div>
@@ -496,7 +507,7 @@ function StatsStrip() {
   ];
   return (
     <section className="py-16 px-6 bg-zinc-950 border-t border-white/5">
-      <div className="max-w-6xl mx-auto flex justify-end">
+      <div className="max-w-6xl mx-auto flex justify-end pr-0 md:pr-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -2394,7 +2405,6 @@ export function LandingPage() {
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
-      <StatsStrip />
       <HowItWorksSlide />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
