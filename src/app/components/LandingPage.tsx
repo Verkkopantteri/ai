@@ -438,8 +438,8 @@ function HeroAISlide({ onGetStarted }) {
       {/* Stats — absolutely positioned under the brain image */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-        className="absolute hidden md:grid grid-cols-4 gap-3"
-        style={{ right: '18%', bottom: '16%', zIndex: 2, width: '48%' }}
+        className="absolute hidden md:grid grid-cols-4 gap-0"
+        style={{ right: '4%', bottom: '16%', zIndex: 2, width: '48%' }}
       >
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
