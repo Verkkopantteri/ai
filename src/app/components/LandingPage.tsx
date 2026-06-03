@@ -448,13 +448,13 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: '-2%',
-          bottom: 0,
+          right: '-8%',
+          bottom: '-6%',
           height: '92%',
           width: 'auto',
           objectFit: 'contain',
           objectPosition: 'bottom right',
-          opacity: 0.8,
+          opacity: 1,
           maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
           maskComposite: 'intersect',
