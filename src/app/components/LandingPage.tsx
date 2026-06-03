@@ -419,7 +419,7 @@ function HeroAISlide({ onGetStarted }) {
     <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b', minHeight: '100vh' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
-        src="/br-bb.avif"
+        src="/bg-br.avif"
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
@@ -1400,7 +1400,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
       {/* AI head image — right side, bottom-anchored */}
       <img
-        src="/br-bb.avif"
+        src="/bg-br.avif"
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
