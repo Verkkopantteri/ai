@@ -490,7 +490,7 @@ function HeroAISlide({ onGetStarted }) {
         <div className="flex-1" />
 
         {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5">
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 mb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
