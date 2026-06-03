@@ -586,7 +586,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   const [typingIdx, setTypingIdx] = useState(-1); // which bot msg is currently "typing"
   const [showCTA, setShowCTA] = useState(false);
   const [inputTypingText, setInputTypingText] = useState('');
-  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'done'>(null);
+  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'thanks' | 'done'>(null);
   const [extraMessages, setExtraMessages] = useState<{from:string,text:string}[]>([]);
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
@@ -658,12 +658,11 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
           setInputTypingText('');
           setVisibleMessages(v => v + 1);
         }, t);
-      }
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
     // First fade out the panel (keep content intact during exit anim)
-    addTimer(() => setPhase('bubble'), lastDelay + 5500);
+    addTimer(() => setPhase('bubble'), lastDelay + 9000);
     // After exit animation (~650ms), reset content and restart
     addTimer(() => {
       setVisibleMessages(0);
@@ -673,7 +672,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
       setDetailsMode(null);
       setExtraMessages([]);
       runLoop();
-    }, lastDelay + 5500 + 650);
+    }, lastDelay + 9000 + 650);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
@@ -877,9 +876,10 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                                 Get Started
                               </div>
                               <div onClick={() => {
+                                clearAll();
                                 setDetailsMode('email');
                                 setExtraMessages(m => [...m, { from: 'user', text: 'Send my details' }]);
-                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Great! What's your email address?" }]), 900);
+                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Perfect! 😊 I'll pass your details to our team. First — what's your email address?" }]), 900);
                               }} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
                                 Send my details
                               </div>
@@ -897,9 +897,11 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                               onKeyDown={e => {
                                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
                                   const val = (e.target as HTMLInputElement).value;
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
                                   setExtraMessages(m => [...m, { from: 'user', text: val }]);
                                   setDetailsMode('company');
-                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: 'Thanks! And your company name + website?' }]), 800);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Got it! 📧 And what's the name of your company and website URL?" }]), 800);
                                 }
                               }}
                             />
@@ -911,15 +913,45 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                             <input
                               autoFocus
                               type="text"
-                              placeholder="Company & website"
+                              placeholder="Company name & website"
                               style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
                               className="flex-1 rounded-lg px-2 py-1.5 outline-none"
                               onKeyDown={e => {
                                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
                                   const val = (e.target as HTMLInputElement).value;
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
                                   setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                  setDetailsMode('thanks');
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Wonderful! 🎉 Our team will review your site and reach out within 24 hours with a tailored plan." }]), 800);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Have a great rest of your day! 😊 Is there anything else I can help you with?" }]), 2200);
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                          </div>
+                        )}
+                        {detailsMode === 'thanks' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Anything else? (or press Enter)"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none"
+                              onKeyDown={e => {
+                                const val = (e.target as HTMLInputElement).value.trim();
+                                if (e.key === 'Enter') {
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
+                                  if (val) {
+                                    setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Thank you for that! 🙌 Our team will take note. Wishing you a wonderful day ahead!" }]), 700);
+                                  } else {
+                                    setExtraMessages(m => [...m, { from: 'user', text: 'No, thank you!' }]);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "You're welcome! Take care and have a great day! 👋" }]), 700);
+                                  }
                                   setDetailsMode('done');
-                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Perfect! 🎉 You'll receive the offer within 12 hours. After confirming, your AI bot goes live in a few steps." }]), 900);
                                 }
                               }}
                             />
@@ -927,7 +959,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                           </div>
                         )}
                         {detailsMode === 'done' && (
-                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">✓ We'll be in touch within 12h!</p>
+                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">✓ All set — we'll be in touch within 24h!</p>
                         )}
                       </div>
                     </motion.div>
@@ -1094,7 +1126,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         />
       )}
       {/* Overlay */}
-      {isDark && <div className="absolute inset-0 bg-zinc-950/35" />}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/55" />}
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
@@ -1247,16 +1279,16 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
 
               {/* Theme switcher */}
               <div className="flex items-center gap-2 justify-center lg:justify-start mb-5">
-                <motion.button onClick={() => setChatTheme('light')}
-                  animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
-                  transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
-                  style={{ borderWidth: 2, borderStyle: 'solid' }}
-                  className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
                 <motion.button onClick={() => setChatTheme('dark')}
                   animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
                   transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
                   style={{ borderWidth: 2, borderStyle: 'solid' }}
                   className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
+                <motion.button onClick={() => setChatTheme('light')}
+                  animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
+                  transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                  style={{ borderWidth: 2, borderStyle: 'solid' }}
+                  className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
               </div>
 
               {/* Review — moved here from bottom strip */}
@@ -1620,8 +1652,8 @@ function FeaturesSlide({ activeTheme }) {
         style={{ rotateX, scale, opacity, y }}
         className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
-      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
-      <div className="absolute inset-0 bg-zinc-950/20" />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-on.avif)' }} />
+      <div className="absolute inset-0 bg-zinc-950/50" />
       <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1927,7 +1959,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             {/* Messages count + additional usage */}
             <div className="mb-1 flex flex-col gap-0">
               <div className="flex items-baseline gap-0">
-                <span className={`text-xs font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>≈ </span>
+                <span style={{ color: '#00BC7D' }} className="text-xs font-bold">≈ </span>
                 <span className="text-xs font-bold" style={{ color: '#00BC7D' }}>{plan.chatsPerDay}</span>
               </div>
               <p className={`text-xs font-medium mb-1 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.messagesLimit}</p>
@@ -1961,7 +1993,6 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               {item}
             </span>
           ))}
-          <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain flex-shrink-0" style={{ height: 32, width: 'auto' }} />
         </motion.div>
 
       </div>
