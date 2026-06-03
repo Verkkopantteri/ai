@@ -444,7 +444,7 @@ function HeroAISlide({ onGetStarted }) {
     <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
-        src="/bg-ai.avif"
+        src="/br-bb.avif"
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
