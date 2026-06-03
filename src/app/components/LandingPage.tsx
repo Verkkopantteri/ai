@@ -368,7 +368,7 @@ function HowItWorksSlide() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-6 bg-zinc-950 relative overflow-hidden">
+    <section id="how-it-works" className="py-24 px-6 relative overflow-hidden" style={{ background: '#09090b' }}>
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} className="mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-5">
@@ -416,7 +416,7 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b' }}>
+    <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b', minHeight: '100vh' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
         src="/br-bb.avif"
