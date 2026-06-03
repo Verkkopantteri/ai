@@ -472,7 +472,16 @@ function HeroAISlide({ onGetStarted }) {
         </motion.div>
 
         {/* Bottom: Try it free */}
-        <div className="pt-10 border-t border-white/5 pb-6">
+        <div className="pt-10 pb-6 relative">
+          {/* Fading divider line — visible on left, fades out before center */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '45%',
+            height: '1px',
+            background: 'linear-gradient(to right, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.08) 60%, transparent 100%)',
+          }} />
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
           >
