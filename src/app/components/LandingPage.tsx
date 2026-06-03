@@ -279,16 +279,6 @@ function Header({ isDark, onGetStarted }) {
     { label: 'Pricing', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
-  const [termsOpen, setTermsOpen] = useState(false);
-  const termsRef = useRef(null);
-  const termsTimeout = useRef(null);
-  const openTerms = () => { clearTimeout(termsTimeout.current); setTermsOpen(true); };
-  const closeTerms = () => { termsTimeout.current = setTimeout(() => setTermsOpen(false), 120); };
-  useEffect(() => {
-    const h = (e) => { if (termsRef.current && !termsRef.current.contains(e.target)) setTermsOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => { document.removeEventListener('mousedown', h); clearTimeout(termsTimeout.current); };
-  }, []);
 
   return (
     <motion.header
@@ -314,29 +304,6 @@ function Header({ isDark, onGetStarted }) {
                   className="px-3.5 py-2 text-base transition-colors text-zinc-400 hover:text-white"
                 >{item.label}</motion.a>
               ))}
-              <motion.div ref={termsRef} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.38 }}
-                className="relative" onMouseEnter={openTerms} onMouseLeave={closeTerms}>
-                <button className="flex items-center gap-1 px-3.5 py-2 text-base transition-colors text-zinc-400 hover:text-white">
-                  Terms
-                  <motion.span animate={{ rotate: termsOpen ? 90 : 0 }} transition={{ duration: 0.2 }} className="inline-flex">
-                    <ChevronRight className="size-3.5 opacity-70" />
-                  </motion.span>
-                </button>
-                <AnimatePresence>
-                  {termsOpen && (
-                    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-[calc(100%+4px)] left-0 w-44 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1">
-                      {[{ label: 'Terms of Service', href: '#' }, { label: 'Privacy Policy', href: '#' }, { label: 'Refund Policy', href: '#' }].map(item => (
-                        <a key={item.label} href={item.href}
-                          className="block px-4 py-2.5 text-sm text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 transition-colors"
-                          onClick={() => setTermsOpen(false)}>{item.label}</a>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
             </nav>
           </div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="hidden md:flex items-center gap-3">
@@ -591,6 +558,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const rafRef = useRef(null);
+  const userEngagedRef = useRef(false);
   const isLight = theme.name === 'Pearl White';
   const isLastMessage = (i) => i === CONVERSATION.length - 1;
 
@@ -658,14 +626,17 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
           setInputTypingText('');
           setVisibleMessages(v => v + 1);
         }, t);
+        // Also clear any still-running typing interval slightly before the message appears
+        addTimer(() => setInputTypingText(''), t - 50);
       }
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
     // First fade out the panel (keep content intact during exit anim)
-    addTimer(() => setPhase('bubble'), lastDelay + 9000);
+    addTimer(() => { if (!userEngagedRef.current) setPhase('bubble'); }, lastDelay + 9000);
     // After exit animation (~650ms), reset content and restart
     addTimer(() => {
+      if (userEngagedRef.current) return;
       setVisibleMessages(0);
       setTypingIdx(-1);
       setShowCTA(false);
@@ -877,6 +848,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                                 Get Started
                               </div>
                               <div onClick={() => {
+                                userEngagedRef.current = true;
                                 clearAll();
                                 setDetailsMode('email');
                                 setExtraMessages(m => [...m, { from: 'user', text: 'Send my details' }]);
@@ -1653,8 +1625,8 @@ function FeaturesSlide({ activeTheme }) {
         style={{ rotateX, scale, opacity, y }}
         className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-on.avif)' }} />
-      <div className="absolute inset-0 bg-zinc-950/50" />
+      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+      <div className="absolute inset-0 bg-zinc-950/20" />
       <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -2019,9 +1991,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
       style={{ y, scale, rotateX, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-br.avif)' }} />
-      <div className="absolute inset-0 bg-zinc-950/40" />
+      <div className="absolute inset-0 bg-zinc-950" />
       <div className="relative z-10 text-center px-6">
         <motion.h2
           initial={{ opacity: 0, y: 24 }}
