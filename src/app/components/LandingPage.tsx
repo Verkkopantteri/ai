@@ -431,56 +431,13 @@ function HowItWorksSlide() {
   );
 }
 
-/* ─── HERO AI SLIDE (modified HowItWorks copy) ─────────────────── */
+/* ─── HERO SECTION ────────────────────────────────────────────── */
 function HeroAISlide({ onGetStarted }) {
-  const steps = [
-    {
-      icon: Globe,
-      title: 'We train TIA on your business',
-      desc: 'Share your website URL, product pages, FAQs, and pricing. TIA learns your entire knowledge base in minutes — no manual input required.',
-      detail: 'Supports any URL, PDF, or document',
-      extra: null,
-    },
-    {
-      icon: Zap,
-      title: 'We install it on your site',
-      desc: 'One line of code added to your website. Works with WordPress, Shopify, Wix, and any custom-built site. We handle the entire setup.',
-      detail: 'Setup completed in under 48 hours',
-      extra: 'install',
-    },
-    {
-      icon: Target,
-      title: 'TIA starts converting visitors',
-      desc: 'From the moment it goes live, TIA greets visitors, answers questions, qualifies leads, and captures contact details — 24/7, in any language.',
-      detail: 'Average 40% increase in lead capture',
-      extra: 'trust',
-    },
-    {
-      icon: RefreshCw,
-      title: 'TIA gets smarter every week',
-      desc: 'The AI learns from every conversation. You review insights on your analytics dashboard and TIA continuously improves its responses.',
-      detail: 'Weekly AI evolution cycle',
-      extra: 'trust',
-    },
-  ];
-
-  const TrustBlock = () => (
-    <div className="mt-5 pt-5 border-t border-zinc-800">
-      <div className="flex gap-0.5 mb-1.5">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className="size-3.5" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
-        ))}
-      </div>
-      <p className="text-sm italic text-white/70 mb-1">"Best hire we never made."</p>
-      <span className="text-xs text-white/40">— Verkkopantteri.fi</span>
-    </div>
-  );
-
   return (
     <section className="py-24 px-6 bg-zinc-950">
       <div className="max-w-6xl mx-auto">
 
-        {/* Header */}
+        {/* Top-left: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} className="mb-10">
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-white leading-tight">
             Live chat support by the<br />world's smartest AI Agent
@@ -500,78 +457,25 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {steps.map((step, i) => (
-            <motion.div key={step.title}
-              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="group relative p-7 rounded-2xl border border-zinc-800 bg-zinc-900/40 hover:border-zinc-600 transition-colors overflow-hidden">
-
-              {/* "We install it" card extras */}
-              {step.extra === 'install' && (
-                <>
-                  {/* Platform icons — top-right corner, bottom 15% clipped */}
-                  <div className="absolute top-4 right-4 flex gap-1.5 z-20 pointer-events-none">
-                    {[
-                      { src: '/icon_shopify.avif', alt: 'Shopify' },
-                      { src: '/icon_wordpress.avif', alt: 'WordPress' },
-                      { src: '/wix.avif', alt: 'Wix' },
-                    ].map(({ src, alt }) => (
-                      <div key={alt} style={{ width: 32, height: 32, overflow: 'hidden', borderRadius: 8, clipPath: 'inset(0 0 15% 0 round 8px)' }}>
-                        <img src={src} alt={alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                    ))}
-                  </div>
-                  {/* tia_sys image: anchored to top-right of card, only top 40% visible */}
-                  <div
-                    className="absolute top-0 right-0 pointer-events-none z-0"
-                    style={{
-                      width: '52%',
-                      height: '100%',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <img
-                      src="/tia_sys.avif"
-                      alt=""
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '100%',
-                        height: 'auto',
-                        objectFit: 'cover',
-                        objectPosition: 'top right',
-                        opacity: 0.6,
-                        clipPath: 'inset(0 0 60% 0)',
-                        filter: 'drop-shadow(0 0 20px rgba(180,180,200,0.22)) drop-shadow(0 0 8px rgba(160,160,190,0.15))',
-                      }}
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* Card content — always on top */}
-              <div className="relative z-10">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-zinc-700 transition-colors">
-                    <step.icon className="size-5 text-white" strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-2">{step.title}</h3>
-                    <p className="text-sm font-light leading-relaxed text-zinc-500">{step.desc}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-zinc-800">
-                  <Check className="size-3.5 flex-shrink-0" style={{ color: '#00BC7D' }} />
-                  <span className="text-xs text-zinc-500">{step.detail}</span>
-                </div>
-                {step.extra === 'trust' && <TrustBlock />}
-              </div>
-            </motion.div>
-          ))}
+        {/* Bottom-right: secondary title + quote + stars */}
+        <div className="flex justify-end">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-right max-w-sm"
+          >
+            <h3 className="text-3xl md:text-4xl font-light text-white mb-3 leading-tight">
+              Try it free<br />for 14 days
+            </h3>
+            <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
+            <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
+            <div className="flex gap-0.5 justify-end">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+              ))}
+            </div>
+          </motion.div>
         </div>
+
       </div>
     </section>
   );
