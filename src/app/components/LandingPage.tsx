@@ -1386,14 +1386,14 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
       {isDark && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg)' }}
+          style={{ backgroundImage: 'url(/bg-ai.avif)' }}
         />
       )}
       {/* Background image — light mode */}
       {!isDark && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wa.avif)' }}
+          style={{ backgroundImage: 'url(/bg-ai.avif)' }}
         />
       )}
       {/* Overlay */}
@@ -1906,6 +1906,9 @@ function FeaturesSlide({ activeTheme }) {
     });
   }, [scrollFull]);
 
+  const [chatTheme, setChatTheme] = useState('dark');
+  const theme = CHAT_THEMES[chatTheme];
+
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
     { icon: Brain, title: 'Trained on you', desc: 'Knows your products, FAQs, pricing.' },
@@ -1934,35 +1937,40 @@ function FeaturesSlide({ activeTheme }) {
         </motion.div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-20">
 
-          {/* LEFT — Paper slideshow */}
+          {/* LEFT — Paper slideshow with title */}
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-            className="flex-shrink-0"
+            className="flex-shrink-0 flex flex-col gap-3"
           >
+            <h3 className="text-lg font-semibold text-white tracking-tight">Analytics dashboard</h3>
             <PaperStack isDark={isDark} ref={paperStackRef} />
           </motion.div>
 
-          {/* RIGHT — Feature cards */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {features.map((f, i) => (
-              <motion.div key={f.title}
-                initial={{ opacity: 0, y: 50, scale: 0.9, rotateZ: i % 2 === 0 ? -1.5 : 1.5 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1, rotateZ: 0 }}
-                viewport={{ once: false, amount: 0.2 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
-                whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-                className="group p-6 rounded-2xl border transition-colors duration-300 bg-zinc-900/60 border-zinc-800 hover:border-zinc-600">
-                <div className="size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform bg-zinc-700">
-                  <f.icon className="size-5 text-white" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-base font-semibold mb-1.5 text-white">{f.title}</h3>
-                <p className="text-sm font-light leading-relaxed text-zinc-500">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          {/* RIGHT — TIA Widget with theme buttons */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
+            className="flex flex-col gap-3 items-start"
+          >
+            <h3 className="text-lg font-semibold text-white tracking-tight">TIA Widget</h3>
+            <AnimatedChatLoop theme={theme} onGetStarted={() => {}} />
+            {/* Theme switcher */}
+            <div className="flex items-center gap-2 mt-1">
+              <motion.button onClick={() => setChatTheme('dark')}
+                animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
+                transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                style={{ borderWidth: 2, borderStyle: 'solid' }}
+                className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
+              <motion.button onClick={() => setChatTheme('light')}
+                animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
+                transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                style={{ borderWidth: 2, borderStyle: 'solid' }}
+                className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
+            </div>
+          </motion.div>
         </div>
       </div>
       </motion.section>
@@ -2372,8 +2380,6 @@ export function LandingPage() {
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
       <HowItWorksSlide />
-      <SocialProofBar />
-      <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
