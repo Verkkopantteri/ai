@@ -416,7 +416,7 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b', height: '100vh', overflow: 'hidden' }}>
+    <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
         src="/br-bb.avif"
@@ -460,9 +460,6 @@ function HeroAISlide({ onGetStarted }) {
             </a>
           </div>
         </motion.div>
-
-        {/* Spacer pushes bottom content down */}
-        <div className="flex-1" />
 
         {/* Bottom row: Try it free left, stats right */}
         <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
