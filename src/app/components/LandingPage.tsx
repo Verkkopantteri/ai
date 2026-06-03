@@ -499,20 +499,25 @@ const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
 // inputTyping: text shown animating in the input bar before the message appears
 const CONVERSATION = [
-  // delays are relative to when chat panel opens (after 1400ms bubble phase)
-  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 800 },
-  // bot finishes ~800+900ms typing ≈ 1700ms. User starts typing at delay-1400=2600ms. Safe.
+  { from: 'bot',  text: "Hey! I'm TIA. Tell me what you're looking for, and I'll point you in the right direction.", delay: 800 },
   { from: 'user', text: "How much does installation cost?", delay: 4000, inputTyping: "How much does installation cost?" },
-  // user msg at 4000. Bot typing starts at 4000+900=4900ms. Bot msg at 5800ms.
-  // "Typically..." = ~96 chars × 18ms ≈ 1728ms → bot done ≈ 5800+1728=7528ms
-  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume — how many customer chats do you estimate per day?", delay: 5800 },
-  // user starts typing at 8400-1400=7000ms. Bot done ~7528ms. Tight but ok (400ms gap).
-  // Push user out a bit more to be safe.
+  { from: 'bot',  text: "Plans start at 149/mo and go up to 699/mo depending on chat volume. How many customer chats do you estimate per day?", delay: 5800 },
   { from: 'user', text: "Maybe around 10 max", delay: 9000, inputTyping: "Maybe around 10 max" },
-  // "Got it!..." = ~92 chars × 18ms ≈ 1656ms → bot done ≈ 11300+1656=12956ms
-  { from: 'bot',  text: "Got it! That fits our Pro plan perfectly — up to ~10 chats/day with full lead capture and analytics.", delay: 11300 },
-  // "Would you like..." = ~94 chars × 18ms ≈ 1692ms → bot done ≈ 15200+1692=16892ms
-  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here? 👇", delay: 15200 },
+  { from: 'bot',  text: "That fits our Pro plan perfectly, up to 10 chats/day with full lead capture and analytics.", delay: 11300 },
+  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here?", delay: 15200 },
+];
+
+// Auto-demo extra messages shown after "Send my details" in the loop
+const AUTO_DETAILS_FLOW = [
+  { from: 'user', text: 'Send my details', delay: 0 },
+  { from: 'bot',  text: "I'll pass your details to our team. What is your email address?", delay: 1100 },
+  { from: 'user', text: 'hello@mycompany.com', delay: 3200, inputTyping: 'hello@mycompany.com' },
+  { from: 'bot',  text: "Got it. And your company name and website URL?", delay: 4600 },
+  { from: 'user', text: 'MyCompany, mycompany.com', delay: 7000, inputTyping: 'MyCompany, mycompany.com' },
+  { from: 'bot',  text: "All set. Our team will review your site and reach out within 24 hours with a tailored plan.", delay: 8400 },
+  { from: 'bot',  text: "Have a great rest of your day. Is there anything else I can help you with?", delay: 11000 },
+  { from: 'user', text: 'No, thank you!', delay: 13500, inputTyping: 'No, thank you!' },
+  { from: 'bot',  text: "You're welcome. Take care!", delay: 15000 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -553,14 +558,13 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   const [typingIdx, setTypingIdx] = useState(-1); // which bot msg is currently "typing"
   const [showCTA, setShowCTA] = useState(false);
   const [inputTypingText, setInputTypingText] = useState('');
-  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'thanks' | 'done'>(null);
+  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'thanks' | 'done' | 'auto'>(null);
   const [extraMessages, setExtraMessages] = useState<{from:string,text:string}[]>([]);
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const rafRef = useRef(null);
   const userEngagedRef = useRef(false);
   const isLight = theme.name === 'Pearl White';
-  const isLastMessage = (i) => i === CONVERSATION.length - 1;
 
   const ctaRef = useRef(null);
 
@@ -586,8 +590,11 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   };
   const clearAll = () => { timersRef.current.forEach(clearTimeout); timersRef.current = []; };
 
+  const inputIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const runLoop = useCallback(() => {
     clearAll();
+    if (inputIntervalRef.current) { clearInterval(inputIntervalRef.current); inputIntervalRef.current = null; }
     setPhase('bubble');
     setVisibleMessages(0);
     setTypingIdx(-1);
@@ -607,34 +614,84 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
-        // Animate typing in input bar ~1.2s before message appears
         if (msg.inputTyping) {
           const typingStart = t - 1200;
           const typingText = msg.inputTyping;
-          let charIdx = 0;
           addTimer(() => {
             setInputTypingText('');
-            const typeInterval = setInterval(() => {
+            let charIdx = 0;
+            if (inputIntervalRef.current) clearInterval(inputIntervalRef.current);
+            inputIntervalRef.current = setInterval(() => {
               charIdx++;
               setInputTypingText(typingText.slice(0, charIdx));
-              if (charIdx >= typingText.length) clearInterval(typeInterval);
+              if (charIdx >= typingText.length) {
+                clearInterval(inputIntervalRef.current!);
+                inputIntervalRef.current = null;
+              }
             }, 38);
-            timersRef.current.push(typeInterval as unknown as number);
           }, typingStart > 1400 ? typingStart : 1400 + 200);
         }
         addTimer(() => {
+          if (inputIntervalRef.current) { clearInterval(inputIntervalRef.current); inputIntervalRef.current = null; }
           setInputTypingText('');
           setVisibleMessages(v => v + 1);
         }, t);
-        // Also clear any still-running typing interval slightly before the message appears
-        addTimer(() => setInputTypingText(''), t - 50);
       }
     });
 
-    const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
-    // First fade out the panel (keep content intact during exit anim)
-    addTimer(() => { if (!userEngagedRef.current) setPhase('bubble'); }, lastDelay + 9000);
-    // After exit animation (~650ms), reset content and restart
+    const lastMsgDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
+
+    // Show CTA after last bot message finishes typing
+    addTimer(() => { if (!userEngagedRef.current) setShowCTA(true); }, lastMsgDelay + 1800);
+
+    // Auto-run the "Send my details" demo flow
+    const autoStart = lastMsgDelay + 1800;
+    let autoVisibleCount = 0;
+    AUTO_DETAILS_FLOW.forEach((msg, i) => {
+      const t = autoStart + msg.delay + 600; // +600 so CTA buttons are visible briefly first
+      if (msg.from === 'bot') {
+        addTimer(() => {
+          if (userEngagedRef.current) return;
+          setTypingIdx(1000 + i);
+        }, t - 900);
+        addTimer(() => {
+          if (userEngagedRef.current) return;
+          setTypingIdx(-1);
+          setExtraMessages(m => [...m, { from: 'bot', text: msg.text }]);
+        }, t);
+      } else {
+        if (msg.inputTyping) {
+          const typingStart = t - 1200;
+          addTimer(() => {
+            if (userEngagedRef.current) return;
+            setInputTypingText('');
+            let charIdx = 0;
+            if (inputIntervalRef.current) clearInterval(inputIntervalRef.current);
+            inputIntervalRef.current = setInterval(() => {
+              charIdx++;
+              setInputTypingText(msg.inputTyping!.slice(0, charIdx));
+              if (charIdx >= msg.inputTyping!.length) {
+                clearInterval(inputIntervalRef.current!);
+                inputIntervalRef.current = null;
+              }
+            }, 38);
+          }, typingStart > autoStart ? typingStart : autoStart + 200);
+        }
+        addTimer(() => {
+          if (userEngagedRef.current) return;
+          if (inputIntervalRef.current) { clearInterval(inputIntervalRef.current); inputIntervalRef.current = null; }
+          setInputTypingText('');
+          // First auto user msg ("Send my details") hides the CTA buttons
+          if (i === 0) setDetailsMode('auto');
+          setExtraMessages(m => [...m, { from: 'user', text: msg.text }]);
+        }, t);
+      }
+    });
+
+    const autoLastDelay = autoStart + AUTO_DETAILS_FLOW[AUTO_DETAILS_FLOW.length - 1].delay + 600;
+    const loopEnd = autoLastDelay + 4000;
+
+    addTimer(() => { if (!userEngagedRef.current) setPhase('bubble'); }, loopEnd);
     addTimer(() => {
       if (userEngagedRef.current) return;
       setVisibleMessages(0);
@@ -644,7 +701,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
       setDetailsMode(null);
       setExtraMessages([]);
       runLoop();
-    }, lastDelay + 9000 + 650);
+    }, loopEnd + 650);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
@@ -765,7 +822,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                           maxWidth: '82%',
                         }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
                           {msg.from === 'bot' && i === visibleMessages - 1 ? (
-                            <TypedText text={msg.text} color={theme.textColor} onDone={isLastMessage(i) ? () => setTimeout(() => setShowCTA(true), 300) : undefined} onChar={scrollToBottom} />
+                            <TypedText text={msg.text} color={theme.textColor} onChar={scrollToBottom} />
                           ) : (
                             <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
                           )}
@@ -774,7 +831,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                     ))}
 
                     {/* Typing indicator — uses same key as the upcoming message so React REUSES the DOM node instead of unmount+mount */}
-                    {typingIdx >= 0 && visibleMessages <= typingIdx && (
+                    {typingIdx >= 0 && (
                       <motion.div key={typingIdx}
                         initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.22 }}
@@ -826,9 +883,9 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                   }} />
                 </div>
 
-                {/* CTA — OUTSIDE scroll area, always visible at bottom, never hidden */}
+                {/* CTA */}
                 <AnimatePresence>
-                  {showCTA && (
+                  {showCTA && detailsMode !== 'auto' && (
                     <motion.div
                       ref={ctaRef}
                       key="cta"
@@ -850,9 +907,11 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                               <div onClick={() => {
                                 userEngagedRef.current = true;
                                 clearAll();
+                                if (inputIntervalRef.current) { clearInterval(inputIntervalRef.current); inputIntervalRef.current = null; }
+                                setInputTypingText('');
                                 setDetailsMode('email');
                                 setExtraMessages(m => [...m, { from: 'user', text: 'Send my details' }]);
-                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Perfect! 😊 I'll pass your details to our team. First — what's your email address?" }]), 900);
+                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "I'll pass your details to our team. What is your email address?" }]), 900);
                               }} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
                                 Send my details
                               </div>
@@ -866,19 +925,18 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                               type="email"
                               placeholder="your@email.com"
                               style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
-                              className="flex-1 rounded-lg px-2 py-1.5 outline-none placeholder-opacity-40"
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none"
                               onKeyDown={e => {
                                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
                                   const val = (e.target as HTMLInputElement).value;
-                                  const input = e.target as HTMLInputElement;
-                                  input.value = '';
+                                  (e.target as HTMLInputElement).value = '';
                                   setExtraMessages(m => [...m, { from: 'user', text: val }]);
                                   setDetailsMode('company');
-                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Got it! 📧 And what's the name of your company and website URL?" }]), 800);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Got it. And your company name and website URL?" }]), 800);
                                 }
                               }}
                             />
-                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">Send</div>
                           </div>
                         )}
                         {detailsMode === 'company' && (
@@ -886,22 +944,21 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                             <input
                               autoFocus
                               type="text"
-                              placeholder="Company name & website"
+                              placeholder="Company name and website"
                               style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
                               className="flex-1 rounded-lg px-2 py-1.5 outline-none"
                               onKeyDown={e => {
                                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
                                   const val = (e.target as HTMLInputElement).value;
-                                  const input = e.target as HTMLInputElement;
-                                  input.value = '';
+                                  (e.target as HTMLInputElement).value = '';
                                   setExtraMessages(m => [...m, { from: 'user', text: val }]);
                                   setDetailsMode('thanks');
-                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Wonderful! 🎉 Our team will review your site and reach out within 24 hours with a tailored plan." }]), 800);
-                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Have a great rest of your day! 😊 Is there anything else I can help you with?" }]), 2200);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Our team will review your site and reach out within 24 hours with a tailored plan." }]), 800);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Have a great rest of your day. Is there anything else I can help you with?" }]), 2200);
                                 }
                               }}
                             />
-                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">Send</div>
                           </div>
                         )}
                         {detailsMode === 'thanks' && (
@@ -909,52 +966,51 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                             <input
                               autoFocus
                               type="text"
-                              placeholder="Anything else? (or press Enter)"
+                              placeholder="Anything else?"
                               style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
                               className="flex-1 rounded-lg px-2 py-1.5 outline-none"
                               onKeyDown={e => {
                                 const val = (e.target as HTMLInputElement).value.trim();
                                 if (e.key === 'Enter') {
-                                  const input = e.target as HTMLInputElement;
-                                  input.value = '';
+                                  (e.target as HTMLInputElement).value = '';
                                   if (val) {
                                     setExtraMessages(m => [...m, { from: 'user', text: val }]);
-                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Thank you for that! 🙌 Our team will take note. Wishing you a wonderful day ahead!" }]), 700);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Our team will take note. Wishing you a great day ahead!" }]), 700);
                                   } else {
                                     setExtraMessages(m => [...m, { from: 'user', text: 'No, thank you!' }]);
-                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "You're welcome! Take care and have a great day! 👋" }]), 700);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "You're welcome. Take care!" }]), 700);
                                   }
                                   setDetailsMode('done');
                                 }
                               }}
                             />
-                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">Send</div>
                           </div>
                         )}
                         {detailsMode === 'done' && (
-                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">✓ All set — we'll be in touch within 24h!</p>
+                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">All set. We'll be in touch within 24h!</p>
                         )}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Chips */}
-                {!detailsMode && <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
+                {/* Chips — always visible */}
+                <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
                   {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
                     <span key={chip}
                       style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
                       className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
                   ))}
-                </div>}
+                </div>
 
-                {/* Input — matches MiniChat hero exactly */}
-                {!detailsMode && <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
+                {/* Input — always visible */}
+                <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
                   <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
                     className="flex items-center gap-2 rounded-xl px-3 py-2">
                     <span style={{ color: inputTypingText ? theme.textColor : theme.subtleText }} className="text-[11px] flex-1 truncate">
-                      {inputTypingText || 'Send a message…'}
-                      {inputTypingText && <span style={{ opacity: 0.5 }}>▍</span>}
+                      {inputTypingText || 'Send a message...'}
+                      {inputTypingText && <span style={{ opacity: 0.5, color: theme.textColor }}>|</span>}
                     </span>
                     <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
                       className="w-6 h-6 rounded-lg flex items-center justify-center">
@@ -963,7 +1019,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </svg>
                     </div>
                   </div>
-                </div>}
+                </div>
 
                 {/* Footer */}
                 <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-2 justify-center flex-shrink-0">
