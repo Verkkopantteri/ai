@@ -441,30 +441,8 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
-      {/* AI head image — right side, bottom-anchored */}
-      <img
-        src="/bg-ai.avif"
-        alt=""
-        className="absolute pointer-events-none select-none"
-        style={{
-          right: '-8%',
-          bottom: '-6%',
-          height: '88%',
-          width: 'auto',
-          objectFit: 'contain',
-          objectPosition: 'bottom right',
-          opacity: 1,
-          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
-          maskComposite: 'intersect',
-          WebkitMaskComposite: 'destination-in',
-          zIndex: 1,
-        }}
-      />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #09090b 35%, transparent 65%)' }} />
-      <div className="absolute inset-0 bg-zinc-950/20 pointer-events-none" />
-      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
+    <section className="px-6 bg-zinc-950" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
@@ -502,8 +480,8 @@ function HeroAISlide({ onGetStarted }) {
             >
               Try it free for 14 days <ArrowRight className="size-6 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-base italic text-white mb-1">"Best hire we never made."</p>
-            <p className="text-sm text-white mb-3">— Verkkopantteri.fi</p>
+            <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
+            <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
@@ -517,7 +495,7 @@ function HeroAISlide({ onGetStarted }) {
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
                 <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-                <div className="text-sm text-white">{s.label}</div>
+                <div className="text-sm text-zinc-500">{s.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -1404,28 +1382,22 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* AI head image — right side, bottom-anchored */}
-      <img
-        src="/bg-ai.avif"
-        alt=""
-        className="absolute pointer-events-none select-none"
-        style={{
-          right: '-2%',
-          bottom: 0,
-          height: '88%',
-          width: 'auto',
-          objectFit: 'contain',
-          objectPosition: 'bottom right',
-          opacity: isDark ? 0.82 : 0.55,
-          maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 80%, transparent 100%), linear-gradient(to top, black 60%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 80%, transparent 100%), linear-gradient(to top, black 60%, transparent 100%)',
-          maskComposite: 'intersect',
-          WebkitMaskComposite: 'destination-in',
-          zIndex: 1,
-        }}
-      />
+      {/* Background image — dark mode */}
+      {isDark && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/images/bg-bl.jpg)' }}
+        />
+      )}
+      {/* Background image — light mode */}
+      {!isDark && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wa.avif)' }}
+        />
+      )}
       {/* Overlay */}
-      {isDark && <div className="absolute inset-0 bg-zinc-950/30" />}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/55" />}
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
@@ -1934,9 +1906,6 @@ function FeaturesSlide({ activeTheme }) {
     });
   }, [scrollFull]);
 
-  const [chatTheme, setChatTheme] = useState('dark');
-  const theme = CHAT_THEMES[chatTheme];
-
   const features = [
     { icon: MessageSquare, title: 'Any website', desc: 'WordPress, Shopify, custom — one snippet.' },
     { icon: Brain, title: 'Trained on you', desc: 'Knows your products, FAQs, pricing.' },
@@ -1965,40 +1934,35 @@ function FeaturesSlide({ activeTheme }) {
         </motion.div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
 
-          {/* LEFT — Paper slideshow with title */}
+          {/* LEFT — Paper slideshow */}
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-            className="flex-shrink-0 flex flex-col gap-3"
+            className="flex-shrink-0"
           >
-            <h3 className="text-lg font-semibold text-white tracking-tight">Analytics dashboard</h3>
             <PaperStack isDark={isDark} ref={paperStackRef} />
           </motion.div>
 
-          {/* RIGHT — TIA Widget with theme buttons */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-            className="flex flex-col gap-3 items-start"
-          >
-            <h3 className="text-lg font-semibold text-white tracking-tight">TIA Widget</h3>
-            <AnimatedChatLoop theme={theme} onGetStarted={() => {}} />
-            {/* Theme switcher */}
-            <div className="flex items-center gap-2 mt-1">
-              <motion.button onClick={() => setChatTheme('dark')}
-                animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
-                transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
-                style={{ borderWidth: 2, borderStyle: 'solid' }}
-                className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
-              <motion.button onClick={() => setChatTheme('light')}
-                animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
-                transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
-                style={{ borderWidth: 2, borderStyle: 'solid' }}
-                className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
-            </div>
-          </motion.div>
+          {/* RIGHT — Feature cards */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {features.map((f, i) => (
+              <motion.div key={f.title}
+                initial={{ opacity: 0, y: 50, scale: 0.9, rotateZ: i % 2 === 0 ? -1.5 : 1.5 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1, rotateZ: 0 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
+                whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
+                className="group p-6 rounded-2xl border transition-colors duration-300 bg-zinc-900/60 border-zinc-800 hover:border-zinc-600">
+                <div className="size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform bg-zinc-700">
+                  <f.icon className="size-5 text-white" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-base font-semibold mb-1.5 text-white">{f.title}</h3>
+                <p className="text-sm font-light leading-relaxed text-zinc-500">{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
       </motion.section>
@@ -2408,6 +2372,8 @@ export function LandingPage() {
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
       <HowItWorksSlide />
+      <SocialProofBar />
+      <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
