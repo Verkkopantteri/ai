@@ -423,10 +423,13 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: '-5%',
+          right: '0%',
           bottom: '12%',
-          height: '78%',
-          width: 'auto',
+          width: '48%',
+          maxWidth: '680px',
+          minWidth: '320px',
+          height: 'auto',
+          maxHeight: '78vh',
           objectFit: 'contain',
           objectPosition: 'bottom right',
           opacity: 0.9,
@@ -439,7 +442,7 @@ function HeroAISlide({ onGetStarted }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
         className="absolute hidden md:flex gap-0"
-        style={{ right: '13%', bottom: '16%', zIndex: 2 }}
+        style={{ right: '4%', bottom: '9%', zIndex: 2 }}
       >
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
