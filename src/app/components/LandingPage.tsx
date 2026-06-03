@@ -311,13 +311,13 @@ function Header({ isDark, onGetStarted }) {
                 <motion.a key={item.label} href={item.href}
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
-                  className={`px-3.5 py-2 text-base transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}
+                  className="px-3.5 py-2 text-base transition-colors text-zinc-400 hover:text-white"
                 >{item.label}</motion.a>
               ))}
               <motion.div ref={termsRef} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.38 }}
                 className="relative" onMouseEnter={openTerms} onMouseLeave={closeTerms}>
-                <button className={`flex items-center gap-1 px-3.5 py-2 text-base transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>
+                <button className="flex items-center gap-1 px-3.5 py-2 text-base transition-colors text-zinc-400 hover:text-white">
                   Terms
                   <motion.span animate={{ rotate: termsOpen ? 90 : 0 }} transition={{ duration: 0.2 }} className="inline-flex">
                     <ChevronRight className="size-3.5 opacity-70" />
@@ -340,7 +340,7 @@ function Header({ isDark, onGetStarted }) {
             </nav>
           </div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="hidden md:flex items-center gap-3">
-            <a href="#contact" className={`text-base transition-colors px-3 py-2 ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>Sign in</a>
+            <a href="#contact" className="text-base transition-colors px-3 py-2 text-zinc-400 hover:text-white">Sign in</a>
             <button onClick={() => onGetStarted()} className={`px-4 py-2 text-base rounded-lg font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>Get Started</button>
           </motion.div>
           <button onClick={() => setOpen(!open)} className={`md:hidden p-2 ${isDark ? 'text-white' : 'text-zinc-950'}`}>
@@ -532,12 +532,20 @@ const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
 // inputTyping: text shown animating in the input bar before the message appears
 const CONVERSATION = [
-  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 700 },
-  { from: 'user', text: "How much does installation cost?", delay: 2600, inputTyping: "How much does installation cost?" },
-  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume — how many customer chats do you estimate per day?", delay: 5200 },
-  { from: 'user', text: "Maybe around 10 max", delay: 7200, inputTyping: "Maybe around 10 max" },
-  { from: 'bot',  text: "Got it! That fits our Pro plan perfectly — up to ~10 chats/day with full lead capture and analytics.", delay: 9800 },
-  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here? 👇", delay: 13000 },
+  // delays are relative to when chat panel opens (after 1400ms bubble phase)
+  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 800 },
+  // bot finishes ~800+900ms typing ≈ 1700ms. User starts typing at delay-1400=2600ms. Safe.
+  { from: 'user', text: "How much does installation cost?", delay: 4000, inputTyping: "How much does installation cost?" },
+  // user msg at 4000. Bot typing starts at 4000+900=4900ms. Bot msg at 5800ms.
+  // "Typically..." = ~96 chars × 18ms ≈ 1728ms → bot done ≈ 5800+1728=7528ms
+  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume — how many customer chats do you estimate per day?", delay: 5800 },
+  // user starts typing at 8400-1400=7000ms. Bot done ~7528ms. Tight but ok (400ms gap).
+  // Push user out a bit more to be safe.
+  { from: 'user', text: "Maybe around 10 max", delay: 9000, inputTyping: "Maybe around 10 max" },
+  // "Got it!..." = ~92 chars × 18ms ≈ 1656ms → bot done ≈ 11300+1656=12956ms
+  { from: 'bot',  text: "Got it! That fits our Pro plan perfectly — up to ~10 chats/day with full lead capture and analytics.", delay: 11300 },
+  // "Would you like..." = ~94 chars × 18ms ≈ 1692ms → bot done ≈ 15200+1692=16892ms
+  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here? 👇", delay: 15200 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -1208,7 +1216,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
 
               <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
                 style={{ color: '#ffffff' }}>
-                Next-gen live chat support —<br /><span style={{ color: '#63AFC7' }}>powered by the world's<br />smartest AI Agent.</span>
+                Next-gen live chat support —<br /><span style={{ color: '#ffffff' }}>powered by the world's<br />smartest AI Agent.</span>
               </motion.h2>
 
               <p className="text-base font-light mb-6 leading-relaxed max-w-xl text-white/80">
@@ -1612,9 +1620,9 @@ function FeaturesSlide({ activeTheme }) {
         style={{ rotateX, scale, opacity, y }}
         className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
-      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60" />
-      <div className="absolute inset-0 bg-zinc-950/50" />
-      <div className="max-w-6xl mx-auto w-full">
+      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+      <div className="absolute inset-0 bg-zinc-950/20" />
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
@@ -1801,7 +1809,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">Hire Your <span style={{ color: '#63AFC7' }}>AI Agent</span></h2>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">Hire Your <span style={{ color: '#ffffff' }}>AI Agent</span></h2>
           <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support.</p>
         </motion.div>
 
@@ -1979,12 +1987,9 @@ function CTASlide({ activeTheme, onGetStarted }) {
       style={{ y, scale, rotateX, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Background video — theme dependent */}
-      <video
-        src="/dots.mp4"
-        autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-90"
-      />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-br.avif)' }} />
+      <div className="absolute inset-0 bg-zinc-950/40" />
       <div className="relative z-10 text-center px-6">
         <motion.h2
           initial={{ opacity: 0, y: 24 }}
