@@ -332,31 +332,7 @@ function Header({ isDark, onGetStarted }) {
   );
 }
 
-/* ─── SOCIAL PROOF BAR ────────────────────────────────────────── */
-function SocialProofBar() {
-  const stats = [
-    { value: '3 min', label: 'Average setup time' },
-    { value: '24/7', label: 'Always online' },
-    { value: '100+', label: 'Languages supported' },
-    { value: '40%', label: 'More leads captured' },
-  ];
-  return (
-    <section className="py-14 px-6 bg-zinc-900/50 border-y border-white/5">
-      <div className="max-w-5xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.5 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
-              className="text-center">
-              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-              <div className="text-sm text-zinc-500">{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
+
 
 /* ─── HOW IT WORKS ────────────────────────────────────────────── */
 function HowItWorksSlide() {
@@ -2404,7 +2380,7 @@ export function LandingPage() {
 
   return (
     <>
-      <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; } body::after { content: ''; position: fixed; inset: 0; background: #09090b; z-index: -1; }`}</style>
+      <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; }`}</style>
     <div className="overflow-x-hidden bg-zinc-950" style={{ zoom: '1.0909', minHeight: '100vh', backgroundColor: '#09090b' }}>
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
