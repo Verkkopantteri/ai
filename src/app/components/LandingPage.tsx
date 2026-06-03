@@ -648,7 +648,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
     const autoStart = lastMsgDelay + 1800;
     let autoVisibleCount = 0;
     AUTO_DETAILS_FLOW.forEach((msg, i) => {
-      const t = autoStart + msg.delay + 600; // +600 so CTA buttons are visible briefly first
+      const t = autoStart + msg.delay + 3500; // +3500 pause so CTA buttons are visible long enough to read
       if (msg.from === 'bot') {
         addTimer(() => {
           if (userEngagedRef.current) return;
@@ -688,7 +688,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
       }
     });
 
-    const autoLastDelay = autoStart + AUTO_DETAILS_FLOW[AUTO_DETAILS_FLOW.length - 1].delay + 600;
+    const autoLastDelay = autoStart + AUTO_DETAILS_FLOW[AUTO_DETAILS_FLOW.length - 1].delay + 3500;
     const loopEnd = autoLastDelay + 4000;
 
     addTimer(() => { if (!userEngagedRef.current) setPhase('bubble'); }, loopEnd);
@@ -830,8 +830,8 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </motion.div>
                     ))}
 
-                    {/* Typing indicator — uses same key as the upcoming message so React REUSES the DOM node instead of unmount+mount */}
-                    {typingIdx >= 0 && (
+                    {/* Typing indicator for main conversation */}
+                    {typingIdx >= 0 && typingIdx < 1000 && (
                       <motion.div key={typingIdx}
                         initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.22 }}
@@ -851,7 +851,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  {/* Extra messages from details flow */}
+                  {/* Extra messages from auto/details flow */}
                   {extraMessages.map((msg, i) => (
                     <motion.div key={'extra-'+i}
                       initial={{ opacity: 0, y: 6 }}
@@ -875,6 +875,26 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </div>
                     </motion.div>
                   ))}
+                  {/* Typing indicator for auto-flow bot messages */}
+                  {typingIdx >= 1000 && (
+                    <motion.div key={'auto-typing'}
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22 }}
+                      className="flex gap-1.5">
+                      <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
+                        className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                        <img src={theme.avatarSrc} alt="" className="w-full h-full object-contain p-0.5" />
+                      </div>
+                      <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, borderRadius: '2px 10px 10px 10px' }}
+                        className="flex items-center gap-1 px-2.5 py-2">
+                        {[0, 1, 2].map(d => (
+                          <motion.div key={d} style={{ background: theme.subtleText }} className="w-1 h-1 rounded-full"
+                            animate={{ y: [0, -3, 0], opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 1, delay: d * 0.18, repeat: Infinity }} />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
                   {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
                   <div style={{
                     height: showCTA ? 0 : 32,
@@ -1258,7 +1278,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
       <div className="absolute inset-0 bg-zinc-950" />
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }} />
-      <div className="absolute inset-0 bg-zinc-950/35" />
+      <div className="absolute inset-0 bg-zinc-950/75" />
       <ParticleField count={18} />
 
       {/* Content layer — exact 100vh, everything visible at once */}
