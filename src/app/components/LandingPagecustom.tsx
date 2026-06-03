@@ -9,12 +9,12 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'M', label: 'S', desc: '99€/mo · 1,000 messages / month' },
-  { id: 'L', label: 'M', desc: '199€/mo · 2,500 messages / month' },
-  { id: 'XL', label: 'L', desc: '499€/mo · 10,000 messages / month' },
+  { id: 'M', label: 'S', desc: '149€/mo · 1,000 messages / month' },
+  { id: 'L', label: 'M', desc: '299€/mo · 2,500 messages / month' },
+  { id: 'XL', label: 'L', desc: '699€/mo · 10,000 messages / month' },
 ];
 
-const SERVICE_PRICES = { M: 99, L: 199, XL: 499 };
+const SERVICE_PRICES = { M: 149, L: 299, XL: 699 };
 
 function LeadFormModal({ isDark, onClose, initialService = '' }) {
   const [submitted, setSubmitted] = useState(false);
@@ -24,36 +24,19 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
     website: '',
     email: '',
     analytics: 'basic',
+    botSetup: '', // 'tia' | 'custom' | ''
   });
 
   const basePrice = SERVICE_PRICES[form.service] || 0;
   const analyticsPrice = form.analytics === 'advanced' ? 50 : 0;
-  const total = basePrice + analyticsPrice;
+  const discountMultiplier = form.botSetup === 'tia' ? 0.80 : 1.0;
+  const discountedBase = Math.round(basePrice * discountMultiplier);
+  const total = discountedBase + analyticsPrice;
 
   const handleSubmit = () => {
-    if (!form.service || !form.company || !form.website || !form.email) return;
+    if (!form.service || !form.botSetup || !form.company || !form.website || !form.email) return;
     setSubmitted(true);
   };
-
-  const ToggleAddon = ({ active, onClick, children }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-        active
-          ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
-          : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
-      }`}
-    >
-      <div className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all ${
-        active
-          ? 'bg-white border-white'
-          : isDark ? 'border-zinc-600' : 'border-zinc-300'
-      }`}>
-        {active && <Check className="size-3 text-zinc-950" />}
-      </div>
-      {children}
-    </button>
-  );
 
   return (
     <AnimatePresence>
@@ -85,7 +68,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
 
                 {/* Service selector */}
                 <div>
-                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which plan interests you?</label>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Which Plan Interests You? <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-3 gap-2">
                     {SERVICES.map(s => (
                       <button key={s.id} onClick={() => setForm(f => ({ ...f, service: s.id }))}
@@ -101,9 +84,65 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   </div>
                 </div>
 
+                {/* Bot Setup — single choice */}
+                <div>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Bot Setup <span className="text-red-400">*</span></label>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      {
+                        id: 'tia',
+                        title: 'TIA Theme',
+                        subtitle: 'White or Black',
+                        badge: '−20% forever',
+                        badgeColor: 'text-emerald-400',
+                      },
+                      {
+                        id: 'custom',
+                        title: 'Custom Theme',
+                        subtitle: 'Fully personalized',
+                        badge: null,
+                        badgeColor: '',
+                      },
+                    ].map(opt => {
+                      const active = form.botSetup === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setForm(f => ({ ...f, botSetup: opt.id }))}
+                          className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                            active
+                              ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                              : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                          }`}
+                        >
+                          {/* Radio indicator */}
+                          <div className={`mt-0.5 w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border transition-all ${
+                            active
+                              ? 'bg-white border-white'
+                              : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                          }`}>
+                            {active && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className={`text-xs font-semibold ${active ? isDark ? 'text-white' : 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                              {opt.title}
+                              {opt.subtitle && <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>}
+                            </p>
+                            {opt.badge && (
+                              <span className={`text-xs font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                {opt.badge}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Analytics Dashboard */}
                 <div>
-                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Analytics Dashboard</label>
+                  <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Analytics Dashboard <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { id: 'basic', label: 'Basic', price: '0€/mo' },
@@ -127,7 +166,16 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   {form.service && (
                     <div className={`flex justify-between text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                       <span>{SERVICES.find(s => s.id === form.service)?.label}</span>
-                      <span>{basePrice}€/mo</span>
+                      <span className="flex items-center gap-1.5">
+                        {form.botSetup === 'tia' && <span className="line-through opacity-50">{basePrice}€/mo</span>}
+                        {discountedBase}€/mo
+                      </span>
+                    </div>
+                  )}
+                  {form.botSetup === 'tia' && form.service && (
+                    <div className={`flex justify-between text-xs mb-2 text-emerald-500`}>
+                      <span>TIA Theme discount (-20%)</span>
+                      <span>-{basePrice - discountedBase}€/mo</span>
                     </div>
                   )}
                   {form.analytics === 'advanced' && (
@@ -149,7 +197,7 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                   { key: 'email', label: 'Email Address', placeholder: 'you@yourcompany.com' },
                 ].map(({ key, label, placeholder }) => (
                   <div key={key}>
-                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{label}</label>
+                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{label} <span className="text-red-400">*</span></label>
                     <input
                       type={key === 'email' ? 'email' : 'text'}
                       placeholder={placeholder}
@@ -159,12 +207,13 @@ function LeadFormModal({ isDark, onClose, initialService = '' }) {
                     />
                   </div>
                 ))}
-                <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>We'll get back to you shortly.</p>
+                <p className={`text-xs text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>We'll get back to you shortly</p>
                 <button
                   onClick={handleSubmit}
-                  className={`w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
+                  disabled={!form.service || !form.botSetup || !form.company || !form.website || !form.email}
+                  className={`w-full py-3 rounded-xl text-sm font-semibold transition-all hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}
                 >
-                  Send Message
+                  Send Request
                 </button>
               </div>
             </>
@@ -230,16 +279,6 @@ function Header({ isDark, onGetStarted }) {
     { label: 'Pricing', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
-  const [termsOpen, setTermsOpen] = useState(false);
-  const termsRef = useRef(null);
-  const termsTimeout = useRef(null);
-  const openTerms = () => { clearTimeout(termsTimeout.current); setTermsOpen(true); };
-  const closeTerms = () => { termsTimeout.current = setTimeout(() => setTermsOpen(false), 120); };
-  useEffect(() => {
-    const h = (e) => { if (termsRef.current && !termsRef.current.contains(e.target)) setTermsOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => { document.removeEventListener('mousedown', h); clearTimeout(termsTimeout.current); };
-  }, []);
 
   return (
     <motion.header
@@ -262,36 +301,13 @@ function Header({ isDark, onGetStarted }) {
                 <motion.a key={item.label} href={item.href}
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
-                  className={`px-3.5 py-2 text-base transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}
+                  className="px-3.5 py-2 text-base transition-colors text-zinc-400 hover:text-white"
                 >{item.label}</motion.a>
               ))}
-              <motion.div ref={termsRef} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.38 }}
-                className="relative" onMouseEnter={openTerms} onMouseLeave={closeTerms}>
-                <button className={`flex items-center gap-1 px-3.5 py-2 text-base transition-colors ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>
-                  Terms
-                  <motion.span animate={{ rotate: termsOpen ? 90 : 0 }} transition={{ duration: 0.2 }} className="inline-flex">
-                    <ChevronRight className="size-3.5 opacity-70" />
-                  </motion.span>
-                </button>
-                <AnimatePresence>
-                  {termsOpen && (
-                    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-[calc(100%+4px)] left-0 w-44 rounded-xl bg-white shadow-xl shadow-black/20 border border-zinc-100 overflow-hidden z-50 py-1">
-                      {[{ label: 'Terms of Service', href: '#' }, { label: 'Privacy Policy', href: '#' }, { label: 'Refund Policy', href: '#' }].map(item => (
-                        <a key={item.label} href={item.href}
-                          className="block px-4 py-2.5 text-sm text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 transition-colors"
-                          onClick={() => setTermsOpen(false)}>{item.label}</a>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
             </nav>
           </div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="hidden md:flex items-center gap-3">
-            <a href="#contact" className={`text-base transition-colors px-3 py-2 ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>Sign in</a>
+            <a href="#contact" className="text-base transition-colors px-3 py-2 text-zinc-400 hover:text-white">Sign in</a>
             <button onClick={() => onGetStarted()} className={`px-4 py-2 text-base rounded-lg font-semibold transition-all hover:shadow-lg ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>Get Started</button>
           </motion.div>
           <button onClick={() => setOpen(!open)} className={`md:hidden p-2 ${isDark ? 'text-white' : 'text-zinc-950'}`}>
@@ -431,7 +447,7 @@ function MiniChat({ theme }) {
       </div>
       {/* Chips */}
       <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-4 pb-2">
-        {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+        {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
           <span key={chip}
             style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
             className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
@@ -481,14 +497,22 @@ function ChatStack({ activeTheme }) {
 const CHAT_MSG_HEIGHT_DEFAULT = 200;
 const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
+// inputTyping: text shown animating in the input bar before the message appears
 const CONVERSATION = [
-  { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                           delay: 600  },
-  { from: 'user', text: "Hey, we just launched a new product. Can you help visitors find the right option?", delay: 1800 },
-  { from: 'bot',  text: "Absolutely. I can guide visitors through your product range, ask qualifying questions, and recommend the right fit based on their needs.", delay: 3200 },
-  { from: 'user', text: "What if someone wants to book a call instead?",                     delay: 5400 },
-  { from: 'bot',  text: "No problem. I capture their details and schedule the call directly. Your team gets a notification right away.", delay: 7000 },
-  { from: 'user', text: "How long does setup take?",                                         delay: 8800 },
-  { from: 'bot',  text: "Usually 48 hours. We train TIA on your content and you're live. Check below 👇", delay: 10000 },
+  // delays are relative to when chat panel opens (after 1400ms bubble phase)
+  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 800 },
+  // bot finishes ~800+900ms typing ≈ 1700ms. User starts typing at delay-1400=2600ms. Safe.
+  { from: 'user', text: "How much does installation cost?", delay: 4000, inputTyping: "How much does installation cost?" },
+  // user msg at 4000. Bot typing starts at 4000+900=4900ms. Bot msg at 5800ms.
+  // "Typically..." = ~96 chars × 18ms ≈ 1728ms → bot done ≈ 5800+1728=7528ms
+  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume — how many customer chats do you estimate per day?", delay: 5800 },
+  // user starts typing at 8400-1400=7000ms. Bot done ~7528ms. Tight but ok (400ms gap).
+  // Push user out a bit more to be safe.
+  { from: 'user', text: "Maybe around 10 max", delay: 9000, inputTyping: "Maybe around 10 max" },
+  // "Got it!..." = ~92 chars × 18ms ≈ 1656ms → bot done ≈ 11300+1656=12956ms
+  { from: 'bot',  text: "Got it! That fits our Pro plan perfectly — up to ~10 chats/day with full lead capture and analytics.", delay: 11300 },
+  // "Would you like..." = ~94 chars × 18ms ≈ 1692ms → bot done ≈ 15200+1692=16892ms
+  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here? 👇", delay: 15200 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -522,15 +546,19 @@ function TypedText({ text, color, onDone, onChar }) {
   );
 }
 
-function AnimatedChatLoop({ theme }) {
+function AnimatedChatLoop({ theme, onGetStarted }) {
   // phase: 'bubble' | 'chat'
   const [phase, setPhase] = useState('bubble');
   const [visibleMessages, setVisibleMessages] = useState(0);
   const [typingIdx, setTypingIdx] = useState(-1); // which bot msg is currently "typing"
   const [showCTA, setShowCTA] = useState(false);
+  const [inputTypingText, setInputTypingText] = useState('');
+  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'thanks' | 'done'>(null);
+  const [extraMessages, setExtraMessages] = useState<{from:string,text:string}[]>([]);
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const rafRef = useRef(null);
+  const userEngagedRef = useRef(false);
   const isLight = theme.name === 'Pearl White';
   const isLastMessage = (i) => i === CONVERSATION.length - 1;
 
@@ -564,6 +592,9 @@ function AnimatedChatLoop({ theme }) {
     setVisibleMessages(0);
     setTypingIdx(-1);
     setShowCTA(false);
+    setInputTypingText('');
+    setDetailsMode(null);
+    setExtraMessages([]);
 
     addTimer(() => setPhase('chat'), 1400);
 
@@ -576,23 +607,50 @@ function AnimatedChatLoop({ theme }) {
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
-        addTimer(() => setVisibleMessages(v => v + 1), t);
+        // Animate typing in input bar ~1.2s before message appears
+        if (msg.inputTyping) {
+          const typingStart = t - 1200;
+          const typingText = msg.inputTyping;
+          let charIdx = 0;
+          addTimer(() => {
+            setInputTypingText('');
+            const typeInterval = setInterval(() => {
+              charIdx++;
+              setInputTypingText(typingText.slice(0, charIdx));
+              if (charIdx >= typingText.length) clearInterval(typeInterval);
+            }, 38);
+            timersRef.current.push(typeInterval as unknown as number);
+          }, typingStart > 1400 ? typingStart : 1400 + 200);
+        }
+        addTimer(() => {
+          setInputTypingText('');
+          setVisibleMessages(v => v + 1);
+        }, t);
+        // Also clear any still-running typing interval slightly before the message appears
+        addTimer(() => setInputTypingText(''), t - 50);
       }
     });
 
     const lastDelay = 1400 + CONVERSATION[CONVERSATION.length - 1].delay;
     // First fade out the panel (keep content intact during exit anim)
-    addTimer(() => setPhase('bubble'), lastDelay + 5500);
+    addTimer(() => { if (!userEngagedRef.current) setPhase('bubble'); }, lastDelay + 9000);
     // After exit animation (~650ms), reset content and restart
     addTimer(() => {
+      if (userEngagedRef.current) return;
       setVisibleMessages(0);
       setTypingIdx(-1);
       setShowCTA(false);
+      setInputTypingText('');
+      setDetailsMode(null);
+      setExtraMessages([]);
       runLoop();
-    }, lastDelay + 5500 + 650);
+    }, lastDelay + 9000 + 650);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
+  useEffect(() => {
+    if (extraMessages.length > 0) scrollToBottom();
+  }, [extraMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -736,6 +794,30 @@ function AnimatedChatLoop({ theme }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  {/* Extra messages from details flow */}
+                  {extraMessages.map((msg, i) => (
+                    <motion.div key={'extra-'+i}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.28 }}
+                      className={`flex gap-1.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      {msg.from === 'bot' && (
+                        <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
+                          className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                          <img src={theme.avatarSrc} alt="" className="w-full h-full object-contain p-0.5" />
+                        </div>
+                      )}
+                      <div style={{
+                        background: theme.msgBg,
+                        border: `1px solid ${theme.border}`,
+                        borderRadius: msg.from === 'bot' ? '2px 10px 10px 10px' : '10px 10px 2px 10px',
+                        maxWidth: '82%',
+                      }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
+                        <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
+                      </div>
+                    </motion.div>
+                  ))}
                   {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
                   <div style={{
                     height: showCTA ? 0 : 32,
@@ -757,27 +839,123 @@ function AnimatedChatLoop({ theme }) {
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
                       className="px-3 pt-2.5 pb-2.5 flex-shrink-0"
                     >
-                      <div className="w-full py-1.5 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                        Get Started
+                      <div className="flex flex-col gap-1.5">
+                        {detailsMode === null && (
+                          <>
+                            <p style={{ color: theme.subtleText }} className="text-[9px] text-center">How would you like to proceed?</p>
+                            <div className="flex gap-2">
+                              <div onClick={onGetStarted} className="flex-1 py-1.5 bg-emerald-500 text-white text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                                Get Started
+                              </div>
+                              <div onClick={() => {
+                                userEngagedRef.current = true;
+                                clearAll();
+                                setDetailsMode('email');
+                                setExtraMessages(m => [...m, { from: 'user', text: 'Send my details' }]);
+                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Perfect! 😊 I'll pass your details to our team. First — what's your email address?" }]), 900);
+                              }} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
+                                Send my details
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {detailsMode === 'email' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="email"
+                              placeholder="your@email.com"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none placeholder-opacity-40"
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+                                  const val = (e.target as HTMLInputElement).value;
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
+                                  setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                  setDetailsMode('company');
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Got it! 📧 And what's the name of your company and website URL?" }]), 800);
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                          </div>
+                        )}
+                        {detailsMode === 'company' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Company name & website"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none"
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+                                  const val = (e.target as HTMLInputElement).value;
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
+                                  setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                  setDetailsMode('thanks');
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Wonderful! 🎉 Our team will review your site and reach out within 24 hours with a tailored plan." }]), 800);
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Have a great rest of your day! 😊 Is there anything else I can help you with?" }]), 2200);
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                          </div>
+                        )}
+                        {detailsMode === 'thanks' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Anything else? (or press Enter)"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none"
+                              onKeyDown={e => {
+                                const val = (e.target as HTMLInputElement).value.trim();
+                                if (e.key === 'Enter') {
+                                  const input = e.target as HTMLInputElement;
+                                  input.value = '';
+                                  if (val) {
+                                    setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Thank you for that! 🙌 Our team will take note. Wishing you a wonderful day ahead!" }]), 700);
+                                  } else {
+                                    setExtraMessages(m => [...m, { from: 'user', text: 'No, thank you!' }]);
+                                    setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "You're welcome! Take care and have a great day! 👋" }]), 700);
+                                  }
+                                  setDetailsMode('done');
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
+                          </div>
+                        )}
+                        {detailsMode === 'done' && (
+                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">✓ All set — we'll be in touch within 24h!</p>
+                        )}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 {/* Chips */}
-                <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
-                  {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+                {!detailsMode && <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
+                  {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
                     <span key={chip}
                       style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
                       className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
                   ))}
-                </div>
+                </div>}
 
                 {/* Input — matches MiniChat hero exactly */}
-                <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
+                {!detailsMode && <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
                   <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
                     className="flex items-center gap-2 rounded-xl px-3 py-2">
-                    <span style={{ color: theme.subtleText }} className="text-[11px] flex-1">Send a message…</span>
+                    <span style={{ color: inputTypingText ? theme.textColor : theme.subtleText }} className="text-[11px] flex-1 truncate">
+                      {inputTypingText || 'Send a message…'}
+                      {inputTypingText && <span style={{ opacity: 0.5 }}>▍</span>}
+                    </span>
                     <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
                       className="w-6 h-6 rounded-lg flex items-center justify-center">
                       <svg width="8" height="8" viewBox="0 0 10 16" fill="none">
@@ -785,7 +963,7 @@ function AnimatedChatLoop({ theme }) {
                       </svg>
                     </div>
                   </div>
-                </div>
+                </div>}
 
                 {/* Footer */}
                 <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-2 justify-center flex-shrink-0">
@@ -810,7 +988,7 @@ const REF_LOGOS = [
   { name: 'Ref 2', src: '/r2.avif', invert: true },
   { name: 'Ref 3', src: '/r3.avif', invert: false },
   { name: 'Ref 4', src: '/r4.avif', invert: true },
-  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.30, height: 64 },
+  { name: 'Ref 1', src: '/r1.avif', invert: false, opacity: 0.30, height: 28 },
 ];
 
 function RefLogosCycler({ isDark }) {
@@ -835,14 +1013,14 @@ function RefLogosCycler({ isDark }) {
   const targetOpacity = logo.opacity ?? 1;
 
   return (
-    <div className="mt-3 h-24 flex items-center justify-center">
+    <div className="flex items-center justify-center" style={{ height: 48, minWidth: 120 }}>
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
           src={logo.src}
           alt={logo.name}
           className="w-auto object-contain"
-          style={{ height: logo.height ?? 80, maxWidth: 240 }}
+          style={{ height: logo.height ?? 36, maxWidth: 160 }}
           initial={{ opacity: 0, filter: logo.invert ? 'blur(14px) invert(1)' : 'blur(14px)' }}
           animate={phase === 'visible'
             ? { opacity: targetOpacity, filter: logo.invert ? 'blur(0px) invert(1)' : 'blur(0px)' }
@@ -850,6 +1028,46 @@ function RefLogosCycler({ isDark }) {
           transition={{ duration: 0.65, ease: 'easeInOut' }}
         />
       </AnimatePresence>
+    </div>
+  );
+}
+
+/* ─── ANIMATED STAR REVIEW ────────────────────────────────────── */
+function AnimatedStarReview({ isDark }) {
+  const [starsVisible, setStarsVisible] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: '0px' });
+
+  useEffect(() => {
+    if (!inView) { setStarsVisible(0); return; }
+    setStarsVisible(0);
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setStarsVisible(i);
+      if (i >= 5) clearInterval(interval);
+    }, 1500 / 5);
+    return () => clearInterval(interval);
+  }, [inView]);
+
+  return (
+    <div ref={ref} className="flex flex-col items-center text-center gap-2 mt-2 w-full" style={{ maxWidth: 320 }}>
+      <div className="flex gap-0.5 mb-1">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.4 }}
+            animate={starsVisible > i ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+          >
+            <Star className='size-4' style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+          </motion.div>
+        ))}
+      </div>
+      <p className={`text-base font-semibold italic leading-snug ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+        "Best hire we never made."
+      </p>
+      <span className={`text-sm font-light ${isDark ? 'text-white/50' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
     </div>
   );
 }
@@ -881,7 +1099,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
         />
       )}
       {/* Overlay */}
-      {isDark && <div className="absolute inset-0 bg-zinc-950/35" />}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/55" />}
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
@@ -891,21 +1109,34 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           transition={{ duration: 1, delay: 0.3 }}
           className="text-center flex-shrink-0 max-w-xl">
 
-          <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+          <h1 className="text-7xl md:text-8xl font-light mb-6 leading-tight text-white">
             Never Miss<br />a Lead
           </h1>
-          <p className={`text-xl font-light mb-6 max-w-lg mx-auto ${isDark ? 'text-white/80' : 'text-zinc-600'}`}>
-            Answers visitors instantly with AI.
+          <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
+            AI Chatbot trained on your business knowledge.
           </p>
+
+          {/* Testimonial under tagline */}
+          <div className="flex flex-col items-center gap-1 mb-6">
+            <div className="flex gap-0.5 mb-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="size-3.5" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+              ))}
+            </div>
+            <p className={`text-sm italic ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+              "Best hire we never made."
+            </p>
+            <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+          </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
             <button onClick={onGetStarted}
               className={`group px-8 py-4 rounded-full text-base font-semibold inline-flex items-center gap-2 transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
-            <a href="#features"
-              className={`px-8 py-4 border rounded-full text-base font-light transition-colors ${isDark ? 'border-white/30 text-white hover:border-white/60' : 'border-zinc-400 text-zinc-700 hover:border-zinc-700'}`}>
-              See TIA in Action
+            <a href="#tia-in-action"
+              className="px-8 py-4 rounded-full text-base font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
+              See Example
             </a>
           </div>
 
@@ -914,39 +1145,30 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
             transition={{ delay: 1.0, duration: 0.6 }}
             className="flex items-center gap-0 flex-wrap justify-center mb-8">
             {['Setup in 48h', 'No code', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-              <span key={item} className={`flex items-center text-xs font-light ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>
-                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/20' : 'text-zinc-300'}`}>·</span>}
+              <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
+                {i > 0 && <span className={`mx-2.5 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
                 {item}
               </span>
             ))}
           </motion.div>
 
-          {/* GDPR badge */}
+          {/* GDPR badge + Shopify + WordPress */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="flex justify-center mb-6">
-            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="h-20 w-auto object-contain" />
+            className="flex items-center justify-center gap-3 mb-6">
+            <img src="/gdpr_certification.avif" alt="GDPR Certified" className="object-contain" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
+            <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded-lg" style={{ height: 48, width: 'auto' }} />
           </motion.div>
 
-          {/* Quote / review + logo centered under text */}
-          <div className="mb-2 flex flex-col items-center text-center">
-            <p className={`text-sm font-light italic leading-relaxed mb-1.5 ${isDark ? 'text-white/70' : 'text-zinc-600'}`}>
-              "Best hire we never made." <span className={`not-italic ${isDark ? 'text-white/35' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
-            </p>
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${isDark ? 'text-white fill-white' : 'text-zinc-800 fill-zinc-800'}`} />
-              ))}
-            </div>
-            <RefLogosCycler isDark={isDark} />
-          </div>
+          <RefLogosCycler isDark={isDark} />
 
         </motion.div>
 
         {/* RIGHT — chat stack */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="flex-shrink-0 hidden lg:block">
+          className="flex-shrink-0 hidden lg:flex flex-col items-center gap-4" style={{ width: 380 }}>
           <ChatStack activeTheme={activeTheme} />
         </motion.div>
       </div>
@@ -960,200 +1182,123 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
 function ShowcaseSlide({ activeTheme }) { return null; }
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
-function TiaInActionSlide({ activeTheme }) {
-  const [chatTheme, setChatTheme] = useState('light');
+function TiaInActionSlide({ activeTheme, onGetStarted }) {
+  const [chatTheme, setChatTheme] = useState('dark');
   const isDark = chatTheme === 'dark';
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start 0.85', 'end end'] });
 
-  // Brightness: overexposed → normal
   const brightness = useTransform(scrollYProgress, [0, 0.7], [1.5, 1]);
   const filter = useTransform(brightness, (b) => `brightness(${b})`);
-
-  // Clip-path horizontal scan wipe: reveal from left edge across
   const clipProgress = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
   const clipPath = useTransform(clipProgress, (p) => `inset(0 ${Math.max(0, 100 - p)}% 0 0)`);
-
-  // Subtle x drift into place
   const x = useTransform(scrollYProgress, [0, 0.6], [30, 0]);
 
   return (
-    // Outer wrapper: not clipped — background lives here so scroll wipe never cuts it off
-    <div ref={wrapRef} className="relative h-screen overflow-hidden">
-      {/* Background — never clipped, transitions smoothly on theme change */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ backgroundColor: isDark ? '#09090b' : '#ffffff' }}
-        transition={{ duration: 0.7, ease: 'easeInOut' }}
-      />
-      <AnimatePresence>
-        {isDark && (
-          <motion.div
-            key="dark-bg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isDark && (
-          <motion.div
-            key="dark-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="absolute inset-0 bg-zinc-950/35"
-          />
-        )}
-      </AnimatePresence>
+    <div id="tia-in-action" ref={wrapRef} className="relative overflow-hidden" style={{ minHeight: '100vh' }}>
+      {/* Background — matches header: white bg with hero image overlay */}
+      <div className="absolute inset-0 bg-zinc-950" />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }} />
+      <div className="absolute inset-0 bg-zinc-950/35" />
+      <ParticleField count={18} />
 
-      {/* Content layer — scroll-driven clip/filter/x effects apply only to content */}
-      <motion.section
-        ref={ref}
-        style={{ filter, clipPath, x }}
-        className="h-full flex items-center justify-center relative"
-      >
-      <ParticleField count={isDark ? 18 : 0} />
+      {/* Content layer — exact 100vh, everything visible at once */}
+      <motion.section ref={ref} style={{ filter, clipPath, x, minHeight: '100vh' }}
+        className="relative flex flex-col px-6 pt-20 pb-4">
 
-      <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          {/* Title */}
-          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.5 }} transition={{ duration: 0.7 }}
-            className="flex-shrink-0 lg:w-72 text-center lg:text-left">
-            <motion.h2
-              className="text-6xl md:text-7xl font-light leading-tight mb-4"
-              animate={{ color: isDark ? '#ffffff' : '#09090b' }}
-              transition={{ duration: 0.7 }}
-            >
-              TIA in<br /><span style={{ color: '#63AFC7' }}>action</span>
-            </motion.h2>
-            <motion.p
-              className="text-lg font-light mb-6"
-              animate={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#71717a' }}
-              transition={{ duration: 0.7 }}
-            >
-              Watch how TIA handles a real customer conversation on your website.
-            </motion.p>
+        <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col flex-1">
 
-            {/* Theme switcher — dots only */}
-            <div className="flex items-center gap-2 justify-center lg:justify-start">
-              <motion.button
-                onClick={() => setChatTheme('light')}
-                animate={chatTheme !== 'light'
-                  ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] }
-                  : { borderColor: '#a1a1aa' }}
-                transition={chatTheme !== 'light'
-                  ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }
-                  : { duration: 0.4 }}
-                style={{ borderWidth: 2, borderStyle: 'solid' }}
-                className={`w-7 h-7 rounded-full transition-transform bg-white ${
-                  chatTheme === 'light' ? 'scale-110 shadow-md' : ''
-                }`} />
-              <motion.button
-                onClick={() => setChatTheme('dark')}
-                animate={chatTheme !== 'dark'
-                  ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] }
-                  : { borderColor: '#71717a' }}
-                transition={chatTheme !== 'dark'
-                  ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }
-                  : { duration: 0.4 }}
-                style={{ borderWidth: 2, borderStyle: 'solid' }}
-                className={`w-7 h-7 rounded-full transition-transform bg-zinc-900 ${
-                  chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''
-                }`} />
-            </div>
+          {/* Main row: text left, chat right — takes all available space */}
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 flex-1 py-4">
 
-          </motion.div>
+            {/* LEFT — wider, more text space */}
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.4 }} transition={{ duration: 0.7 }}
+              className="flex-1 text-center lg:text-left">
 
-          {/* Browser */}
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-            className="flex-1 rounded-2xl overflow-hidden border shadow-2xl"
-            style={{
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              boxShadow: isDark ? '0 32px 80px rgba(0,0,0,0.7)' : '0 32px 80px rgba(0,0,0,0.12)',
-              transition: 'border-color 0.7s ease, box-shadow 0.7s ease',
-            }}>
+              <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
+                style={{ color: '#ffffff' }}>
+                Next-gen live chat support —<br /><span style={{ color: '#ffffff' }}>powered by the world's<br />smartest AI Agent.</span>
+              </motion.h2>
 
-            {/* Browser chrome */}
-            <div
-              className="flex items-center gap-3 px-5 py-3 border-b transition-colors duration-700"
-              style={{
-                background: isDark ? '#18181b' : '#f4f4f5',
-                borderColor: isDark ? '#27272a' : '#e4e4e7',
-              }}
-            >
-              <div className="flex gap-1.5">
-                {['#FF5F57', '#FEBC2E', '#28C840'].map(c => <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />)}
+              <p className="text-base font-light mb-6 leading-relaxed max-w-xl text-white/80">
+                TIA delivers instant, human-like support through live chat. The AI Agent resolves complex customer inquiries, learns from every conversation, and continuously adapts to your business. Working around the clock, TIA helps increase conversions, reduce support workload, and deliver exceptional customer experiences.
+              </p>
+
+              {/* CTA buttons */}
+              <div className="flex items-center gap-3 justify-center lg:justify-start mb-5">
+                <button onClick={onGetStarted}
+                  className="px-7 py-3 rounded-full text-sm font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
+                  Get Started
+                </button>
+                <a href="#features"
+                  className="px-7 py-3 rounded-full text-sm font-semibold border transition-colors border-zinc-700 text-white hover:bg-zinc-800">
+                  See features
+                </a>
               </div>
-              <div
-                className="flex-1 mx-4 rounded-md px-4 py-1.5 text-xs border transition-colors duration-700"
-                style={{
-                  background: isDark ? '#27272a' : '#ffffff',
-                  color: isDark ? '#52525b' : '#a1a1aa',
-                  borderColor: isDark ? '#3f3f46' : '#e4e4e7',
-                }}
-              >
-                yourcompany.com/products
-              </div>
-            </div>
 
-            {/* Fake website — fixed height so chat never resizes the panel */}
-            <motion.div
-              className="relative overflow-hidden"
-              animate={{ backgroundColor: isDark ? '#111113' : '#ffffff' }}
-              transition={{ duration: 0.7 }}
-              style={{ height: 460 }}
-            >
-              <div className="p-8 pb-0">
-                <div className="flex items-center justify-between mb-8">
-                  <div className={`w-24 h-5 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                  <div className="flex gap-4">{[60, 50, 70].map((w, i) => <div key={i} className={`h-3 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} style={{ width: w }} />)}</div>
-                  <div className={`w-20 h-7 rounded-lg transition-colors duration-700 ${isDark ? 'bg-zinc-700' : 'bg-zinc-900'}`} />
-                </div>
-                <div className="mb-6">
-                  <div className={`w-2/3 h-7 rounded mb-3 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                  <div className={`w-1/2 h-7 rounded mb-5 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                  <div className={`w-full h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                  <div className={`w-5/6 h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                  <div className={`w-4/6 h-3 rounded mb-6 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                  <div className="flex gap-3">
-                    <div className={`w-28 h-9 rounded-lg transition-colors duration-700 ${isDark ? 'bg-zinc-100' : 'bg-zinc-900'}`} />
-                    <div className={`w-28 h-9 rounded-lg border transition-colors duration-700 ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-100 border-zinc-200'}`} />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mt-8 opacity-60">
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className={`p-4 border rounded-xl transition-colors duration-700 ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
-                      <div className={`w-8 h-8 rounded-lg mb-3 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                      <div className={`w-3/4 h-3 rounded mb-2 transition-colors duration-700 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                      <div className={`w-full h-2 rounded mb-1 transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                      <div className={`w-5/6 h-2 rounded transition-colors duration-700 ${isDark ? 'bg-zinc-800/60' : 'bg-zinc-100'}`} />
-                    </div>
+              {/* Bullet points */}
+              <div className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-5">
+                {['Setup in minutes', '100+ Languages', 'Cancel anytime'].map((item, i) => (
+                  <span key={item} className="flex items-center text-xs font-medium text-white">
+                    {i > 0 && <span className="mx-2 text-white/30">·</span>}
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              {/* Theme switcher */}
+              <div className="flex items-center gap-2 justify-center lg:justify-start mb-5">
+                <motion.button onClick={() => setChatTheme('dark')}
+                  animate={chatTheme !== 'dark' ? { borderColor: ['#d4d4d8', '#09090b', '#d4d4d8'] } : { borderColor: '#71717a' }}
+                  transition={chatTheme !== 'dark' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                  style={{ borderWidth: 2, borderStyle: 'solid' }}
+                  className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
+                <motion.button onClick={() => setChatTheme('light')}
+                  animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
+                  transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
+                  style={{ borderWidth: 2, borderStyle: 'solid' }}
+                  className={`w-6 h-6 rounded-full transition-transform bg-white ${chatTheme === 'light' ? 'scale-110 shadow-md' : ''}`} />
+              </div>
+
+              {/* Review — moved here from bottom strip */}
+              <div className="flex flex-col items-center lg:items-start gap-0.5">
+                <div className="flex gap-0.5 mb-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
                   ))}
                 </div>
-              </div>
-
-              {/* Animated chat overlay */}
-              <div className="absolute bottom-5 right-5">
-                <AnimatedChatLoop theme={theme} />
+                <p className="text-sm font-semibold italic text-white">"Best hire we never made."</p>
+                <span className="text-xs text-white/40">— Verkkopantteri.fi</span>
               </div>
             </motion.div>
-          </motion.div>
+
+            {/* RIGHT — chat + icons below */}
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
+              className="flex-shrink-0 flex flex-col items-center justify-center gap-3"
+              style={{ marginLeft: '-50px' }}>
+              <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
+              {/* GDPR icon + Compatible + platform icons */}
+              <div className="flex items-center gap-3 flex-wrap justify-center" style={{ width: 320 }}>
+                <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
+                <span className="text-xs font-medium text-zinc-400">Compatible</span>
+                <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
+                <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto', filter: 'invert(1)' }} />
+                <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 40, width: 'auto', filter: 'invert(1)' }} />
+              </div>
+            </motion.div>
+          </div>
+
         </div>
-      </div>
       </motion.section>
     </div>
   );
 }
+
 
 /* ─── PAPER SLIDESHOW ─────────────────────────────────────────── */
 const SLIDES = [
@@ -1478,16 +1623,16 @@ function FeaturesSlide({ activeTheme }) {
         ref={ref}
         id="features"
         style={{ rotateX, scale, opacity, y }}
-        className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-zinc-50'} py-20 px-6 relative overflow-hidden`}
+        className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
-      <video src="/dots.mp4" autoPlay loop muted playsInline
-        className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${isDark ? 'opacity-40' : 'opacity-10'}`} />
-      <div className="max-w-6xl mx-auto w-full">
+      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+      <div className="absolute inset-0 bg-zinc-950/20" />
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Turn data into smarter decisions.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">The AI team</h2>
+          <p className="text-lg font-light text-zinc-400">Turn data into smarter decisions.</p>
         </motion.div>
 
         {/* Two-column layout */}
@@ -1511,12 +1656,12 @@ function FeaturesSlide({ activeTheme }) {
                 viewport={{ once: false, amount: 0.2 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
                 whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-                className={`group p-6 rounded-2xl border transition-colors duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-xl'}`}>
-                <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
+                className="group p-6 rounded-2xl border transition-colors duration-300 bg-zinc-900/60 border-zinc-800 hover:border-zinc-600">
+                <div className="size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform bg-zinc-700">
                   <f.icon className="size-5 text-white" strokeWidth={1.5} />
                 </div>
-                <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{f.title}</h3>
-                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{f.desc}</p>
+                <h3 className="text-base font-semibold mb-1.5 text-white">{f.title}</h3>
+                <p className="text-sm font-light leading-relaxed text-zinc-500">{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1533,16 +1678,17 @@ const PLANS = [
     id: 'M',
     name: 'S',
     label: 'Core',
-    tagline: 'For small size business',
-    price: '99€',
-    priceNum: 99,
+    tagline: '',
+    price: '149€',
+    priceNum: 149,
     period: '/month',
     volume: '',
-    messages: 'Limit 1,000 messages / month',
+    chatsPerDay: '3–5 chats a day',
+    messagesLimit: '1,000 messages / month',
     additionalUsage: '€0.02 / message',
     features: [
       'Trained on your content',
-      'AI evolves monthly with new data',
+      'AI evolves weekly with new data',
       'Analytics dashboard',
       'Email support',
       '48h setup',
@@ -1554,12 +1700,13 @@ const PLANS = [
     id: 'L',
     name: 'M',
     label: 'Pro',
-    tagline: 'For medium size business',
-    price: '199€',
-    priceNum: 199,
+    tagline: '',
+    price: '299€',
+    priceNum: 299,
     period: '/month',
     volume: '',
-    messages: 'Limit 2,500 messages / month',
+    chatsPerDay: '6–10 chats a day',
+    messagesLimit: '2,500 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1576,12 +1723,13 @@ const PLANS = [
     id: 'XL',
     name: 'L',
     label: 'Enterprise',
-    tagline: 'For large size business',
-    price: '499€',
-    priceNum: 499,
+    tagline: '',
+    price: '699€',
+    priceNum: 699,
     period: '/month',
     volume: '',
-    messages: 'Limit 10,000 messages / month',
+    chatsPerDay: '20–40 chats a day',
+    messagesLimit: '10,000 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1596,10 +1744,17 @@ const PLANS = [
   },
 ];
 
+const ADDONS = [
+  { id: 'template_bot', label: "Use TIA's Template Bot (Black or White)", desc: 'Permanently -20% off your plan', discount: 0.20 },
+  { id: 'custom_brand', label: 'Custom Branded & Styled Bot', desc: 'Fully tailored to your brand identity', discount: 0 },
+];
+
 function PricingSlide({ activeTheme, onGetStarted }) {
   const isDark = activeTheme === 'dark';
   const [planIdx, setPlanIdx] = useState(0);
+  const [addonBotSetup, setAddonBotSetup] = useState(''); // 'tia' | 'custom' | ''
   const plan = PLANS[planIdx];
+  const discountedPrice = addonBotSetup === 'tia' ? Math.round(plan.priceNum * 0.80) : plan.priceNum;
   const trackRef = useRef(null);
   const isDragging = useRef(false);
   const sectionRef = useRef(null);
@@ -1659,8 +1814,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Simple pricing</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">Hire Your <span style={{ color: '#ffffff' }}>AI Agent</span></h2>
+          <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support.</p>
         </motion.div>
 
         {/* Main plan card */}
@@ -1671,11 +1826,90 @@ function PricingSlide({ activeTheme, onGetStarted }) {
           transition={{ type: 'spring', stiffness: 220, damping: 26, delay: 0.1 }}
           className={`rounded-2xl p-8 relative border transition-colors duration-300 ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}
         >
+            {/* Plan selector — inside card */}
+            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <div className="flex justify-between mb-3">
+                {PLANS.map((p, i) => (
+                  <button key={p.id} onClick={() => setPlanIdx(i)}
+                    className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                    <span className="text-xs font-semibold">{p.name}</span>
+                  </button>
+                ))}
+              </div>
+              <div
+                ref={trackRef}
+                className="relative h-4 rounded-full cursor-pointer select-none"
+                style={{ background: trackBg }}
+                onClick={e => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = (e.clientX - rect.left) / rect.width;
+                  setPlanIdx(Math.round(pct * (PLANS.length - 1)));
+                }}
+              >
+                <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
+                  style={{ width: `${fillPct}%`, background: fillColor }} />
+                <motion.div
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
+                  style={{
+                    left: `${fillPct}%`,
+                    background: fillColor,
+                    borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+                    border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
+                    boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
+                    transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                  whileHover={{ scale: 1.25 }}
+                  whileTap={{ scale: 1.15 }}
+                  onMouseDown={handleMouseDown}
+                  onTouchStart={handleTouchStart}
+                />
+              </div>
+            </div>
+
+            {/* Bot Setup — single choice */}
+            <div className={`mb-6 pb-6 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Bot Setup</p>
+              <div className="flex flex-col gap-2">
+                {[
+                  { id: 'tia', title: 'TIA Theme', subtitle: 'White or Black', badge: '−20% forever', badgeColor: 'text-emerald-400' },
+                  { id: 'custom', title: 'Custom Theme', subtitle: 'Fully personalized', badge: null, badgeColor: '' },
+                ].map(opt => {
+                  const active = addonBotSetup === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => setAddonBotSetup(v => v === opt.id ? '' : opt.id)}
+                      className={`flex items-start gap-3 w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                        active
+                          ? isDark ? 'border-white bg-white/10' : 'border-zinc-950 bg-zinc-950'
+                          : isDark ? 'border-zinc-700 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-400'
+                      }`}
+                    >
+                      <div className={`mt-0.5 w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border transition-all ${
+                        active ? 'bg-white border-white' : isDark ? 'border-zinc-600' : 'border-zinc-300'
+                      }`}>
+                        {active && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className={`text-xs font-semibold ${active ? 'text-white' : isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                          {opt.title}
+                          <span className={`ml-1.5 font-normal ${active ? 'opacity-70' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.subtitle}</span>
+                        </p>
+                        {opt.badge && (
+                          <span className={`text-xs font-medium ${active ? opt.badgeColor : isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{opt.badge}</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Size badge */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className={`text-2xl font-semibold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
-                <span className={`text-base font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
+                <span className={`text-6xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.name}</span>
+                <span className={`text-2xl font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.label}</span>
                 {plan.highlight && (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-zinc-200 text-zinc-700'}`}>
                     Most popular
@@ -1683,20 +1917,32 @@ function PricingSlide({ activeTheme, onGetStarted }) {
                 )}
               </div>
               <div className="text-right">
-                <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+                {addonBotSetup === 'tia' ? (
+                  <div className="flex flex-col items-end">
+                    <div className={`text-sm line-through ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{plan.price}</div>
+                    <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{discountedPrice}€</div>
+                  </div>
+                ) : (
+                  <div className={`text-4xl font-light ${isDark ? 'text-white' : 'text-zinc-950'}`}>{plan.price}</div>
+                )}
                 <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{plan.period}</div>
               </div>
             </div>
 
-            {/* Fixed-height text rows so all plans align */}
-            <p className={`text-sm h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{plan.tagline}</p>
-            <p className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            {/* Messages count + additional usage */}
+            <div className="mb-1 flex flex-col gap-0">
+              <div className="flex items-baseline gap-0">
+                <span style={{ color: '#00BC7D' }} className="text-xs font-bold">≈ </span>
+                <span className="text-xs font-bold" style={{ color: '#00BC7D' }}>{plan.chatsPerDay}</span>
+              </div>
+              <p className={`text-xs font-medium mb-1 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.messagesLimit}</p>
+            </div>
             <p className={`text-xs mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Additional usage: {plan.additionalUsage}</p>
 
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
               {plan.features.map(f => (
                 <li key={f} className={`flex items-center gap-3 text-sm mb-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                  <Check className="size-4 shrink-0" style={{ color: '#63AFC7' }} />
+                  <Check className="size-4 shrink-0" style={{ color: '#00BC7D' }} />
                   {f}
                 </li>
               ))}
@@ -1706,71 +1952,22 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
+            <p className={`text-xs text-center mt-2 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Cancel anytime</p>
 
         </motion.div>
 
-        {/* Slider — outside card */}
-        <div className="mt-6">
-          <div className="flex justify-between mb-3">
-            {PLANS.map((p, i) => (
-              <button key={p.id} onClick={() => setPlanIdx(i)}
-                className={`flex flex-col items-center gap-0.5 transition-colors ${i === planIdx ? (isDark ? 'text-white' : 'text-zinc-950') : (isDark ? 'text-zinc-600 hover:text-zinc-400' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                <span className="text-xs font-semibold">{p.name}</span>
-              </button>
-            ))}
-          </div>
-          <div
-            ref={trackRef}
-            className="relative h-4 rounded-full cursor-pointer select-none"
-            style={{ background: trackBg }}
-            onClick={e => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const pct = (e.clientX - rect.left) / rect.width;
-              setPlanIdx(Math.round(pct * (PLANS.length - 1)));
-            }}
-          >
-            <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-200"
-              style={{ width: `${fillPct}%`, background: fillColor }} />
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full border-3 shadow-xl cursor-grab active:cursor-grabbing"
-              style={{
-                left: `${fillPct}%`,
-                background: fillColor,
-                borderColor: isDark ? '#3f3f46' : '#e4e4e7',
-                border: `3px solid ${isDark ? '#3f3f46' : '#e4e4e7'}`,
-                boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.5)' : '0 0 0 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.2)',
-                transition: 'left 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-              whileHover={{ scale: 1.25 }}
-              whileTap={{ scale: 1.15 }}
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouchStart}
-            />
-          </div>
-        </div>
-
-        {/* Powered by Anthropic — right after card */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }} transition={{ delay: 0.2 }}
-          className={`text-center rounded-2xl py-5 px-6 border mt-5 ${isDark ? 'border-zinc-800 bg-zinc-900/40' : 'border-zinc-100 bg-zinc-50'}`}>
-          <p className={`text-sm font-light ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-            Powered by{' '}
-            <span className={`font-semibold ${isDark ? 'text-white' : 'text-zinc-950'}`}>Anthropic's Claude</span>
-            {' '}— world's smartest AI.
-          </p>
-        </motion.div>
-
-        {/* GDPR */}
+        {/* GDPR text items + icon on same row */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }} transition={{ delay: 0.15 }}
-          className="flex items-center justify-center gap-5 mt-4 flex-nowrap overflow-x-auto">
+          className="flex items-center justify-center gap-5 mt-5 flex-wrap">
           {['GDPR-ready', 'Encrypted cloud storage', 'Data encrypted in transit and at rest', 'Data deletion on request'].map(item => (
             <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-              <Check className="size-3 shrink-0" style={{ color: '#63AFC7' }} />
+              <Check className="size-3 shrink-0" style={{ color: '#00BC7D' }} />
               {item}
             </span>
           ))}
         </motion.div>
+
       </div>
     </motion.section>
   );
@@ -1794,19 +1991,29 @@ function CTASlide({ activeTheme, onGetStarted }) {
       style={{ y, scale, rotateX, opacity }}
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Background video — theme dependent */}
-      <video
-        key={activeTheme}
-        src={isDark
-          ? 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-bl.mp4'
-          : 'https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-rv.mp4'}
-        autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-85"
-      />
+      <div className="absolute inset-0 bg-zinc-950" />
       <div className="relative z-10 text-center px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.7 }}
+          className="text-7xl md:text-8xl font-light mb-4 text-white leading-tight"
+        >
+          Try It Free<br />for 14 Days
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="text-xl font-light mb-10 text-white/70"
+        >
+          Try next-gen AI support in minutes and decide later.
+        </motion.p>
         <button onClick={onGetStarted}
-          className={`group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-white/10' : 'bg-white text-zinc-950 hover:bg-zinc-100 hover:shadow-black/20'}`}>
-          Start Today
+          className='group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:bg-zinc-800 bg-zinc-950 text-white'>
+          Start Trial
         </button>
       </div>
     </motion.section>
@@ -1854,7 +2061,7 @@ function Footer({ activeTheme }) {
 
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
-  const activeTheme = 'light';
+  const activeTheme = 'dark';
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
 
@@ -1864,12 +2071,11 @@ export function LandingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-white">
-      {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
-      <Header isDark={false} onGetStarted={() => openLead()} />
-      <HeroSlide activeTheme={activeTheme} setActiveTheme={() => {}} onGetStarted={() => openLead()} />
+    <div className="overflow-x-hidden bg-zinc-950">
+      {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      <Header isDark={true} onGetStarted={() => openLead()} />
+      <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
-      <TiaInActionSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
       <PricingSlide activeTheme={activeTheme} onGetStarted={(id) => openLead(id)} />
       <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
