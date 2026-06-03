@@ -2404,7 +2404,7 @@ export function LandingPage() {
 
   return (
     <>
-      <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; }`}</style>
+      <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; } body::after { content: ''; position: fixed; inset: 0; background: #09090b; z-index: -1; }`}</style>
     <div className="overflow-x-hidden bg-zinc-950" style={{ zoom: '1.0909', minHeight: '100vh', backgroundColor: '#09090b' }}>
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
