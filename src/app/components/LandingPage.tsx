@@ -439,7 +439,7 @@ function HeroAISlide({ onGetStarted }) {
       />
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #09090b 35%, transparent 65%)' }} />
       <div className="absolute inset-0 bg-zinc-950/20 pointer-events-none" />
-      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
+      <div className="max-w-6xl mx-auto w-full flex flex-col py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
