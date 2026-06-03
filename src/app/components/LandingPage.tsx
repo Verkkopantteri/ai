@@ -464,39 +464,41 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Stats bar */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 py-10 border-y border-white/5">
-          {stats.map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
-              className="text-center">
-              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-              <div className="text-sm text-zinc-500">{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Bottom row: quote left, stats right — pushed to bottom */}
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5">
 
-        {/* Bottom-right: secondary header (same size as main) + quote + stars */}
-        <div className="flex justify-end">
+          {/* Bottom-left: Try it free + quote + stars */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-right"
           >
             <button
               onClick={onGetStarted}
-              className="text-5xl md:text-6xl font-light text-white leading-tight mb-4 inline-flex items-center gap-4 group"
-              style={{ textDecoration: 'underline', textUnderlineOffset: '6px', textDecorationColor: 'rgba(255,255,255,0.4)' }}
+              className="text-2xl md:text-3xl font-light text-white leading-tight mb-4 inline-flex items-center gap-3 group"
+              style={{ textDecoration: 'underline', textUnderlineOffset: '5px', textDecorationColor: 'rgba(255,255,255,0.4)' }}
             >
-              Try it free for 14 days <ArrowRight className="size-10 group-hover:translate-x-1 transition-transform" />
+              Try it free for 14 days <ArrowRight className="size-6 group-hover:translate-x-1 transition-transform" />
             </button>
             <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
             <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
-            <div className="flex gap-0.5 justify-end">
+            <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
               ))}
             </div>
           </motion.div>
+
+          {/* Bottom-right: stats */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((s, i) => (
+              <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+                className="text-center">
+                <div className="text-4xl font-light text-white mb-1">{s.value}</div>
+                <div className="text-sm text-zinc-500">{s.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+
         </div>
 
       </div>
