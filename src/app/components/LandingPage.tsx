@@ -448,8 +448,8 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: '-2%',
-          bottom: 0,
+          right: '-8%',
+          bottom: '-6%',
           height: '88%',
           width: 'auto',
           objectFit: 'contain',
@@ -490,7 +490,7 @@ function HeroAISlide({ onGetStarted }) {
         <div className="flex-1" />
 
         {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5" style={{ background: '#09090b', marginLeft: '-24px', marginRight: '-24px', paddingLeft: '24px', paddingRight: '24px' }}>
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -502,8 +502,8 @@ function HeroAISlide({ onGetStarted }) {
             >
               Try it free for 14 days <ArrowRight className="size-6 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
-            <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
+            <p className="text-base italic text-white mb-1">"Best hire we never made."</p>
+            <p className="text-sm text-white mb-3">— Verkkopantteri.fi</p>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
@@ -517,7 +517,7 @@ function HeroAISlide({ onGetStarted }) {
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
                 <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-                <div className="text-sm text-zinc-500">{s.label}</div>
+                <div className="text-sm text-white">{s.label}</div>
               </motion.div>
             ))}
           </motion.div>
