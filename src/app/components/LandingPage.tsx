@@ -441,8 +441,11 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 bg-zinc-950" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24">
+    <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
+      {/* Background image */}
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none" style={{ backgroundImage: 'url(/bg-ai.avif)' }} />
+      <div className="absolute inset-0 bg-zinc-950/55 pointer-events-none" />
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
