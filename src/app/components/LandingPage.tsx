@@ -448,9 +448,9 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: '-2%',
-          bottom: 0,
-          height: '92%',
+          right: '-8%',
+          bottom: '5%',
+          height: '78%',
           width: 'auto',
           objectFit: 'contain',
           objectPosition: 'bottom right',
@@ -2403,7 +2403,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-zinc-950">
+    <div className="overflow-x-hidden bg-zinc-950" style={{ fontSize: '90.9%' }}>
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
