@@ -1385,22 +1385,28 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
   return (
     <motion.section ref={ref} style={{ opacity, scale }}
       className={`h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
-      {/* Background image — dark mode */}
-      {isDark && (
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/bg-ai.avif)' }}
-        />
-      )}
-      {/* Background image — light mode */}
-      {!isDark && (
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/bg-ai.avif)' }}
-        />
-      )}
+      {/* AI head image — right side, bottom-anchored */}
+      <img
+        src="/bg-ai.avif"
+        alt=""
+        className="absolute pointer-events-none select-none"
+        style={{
+          right: '-2%',
+          bottom: 0,
+          height: '88%',
+          width: 'auto',
+          objectFit: 'contain',
+          objectPosition: 'bottom right',
+          opacity: isDark ? 0.82 : 0.55,
+          maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 80%, transparent 100%), linear-gradient(to top, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 80%, transparent 100%), linear-gradient(to top, black 60%, transparent 100%)',
+          maskComposite: 'intersect',
+          WebkitMaskComposite: 'destination-in',
+          zIndex: 1,
+        }}
+      />
       {/* Overlay */}
-      {isDark && <div className="absolute inset-0 bg-zinc-950/55" />}
+      {isDark && <div className="absolute inset-0 bg-zinc-950/30" />}
       {!isDark && <div className="absolute inset-0 bg-white/15" />}
       <ParticleField count={isDark ? 24 : 0} />
 
