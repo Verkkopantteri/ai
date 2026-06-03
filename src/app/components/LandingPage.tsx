@@ -450,7 +450,7 @@ function HeroAISlide({ onGetStarted }) {
         style={{
           right: '-8%',
           bottom: '-6%',
-          height: '92%',
+          height: '88%',
           width: 'auto',
           objectFit: 'contain',
           objectPosition: 'bottom right',
@@ -502,8 +502,8 @@ function HeroAISlide({ onGetStarted }) {
             >
               Try it free for 14 days <ArrowRight className="size-6 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
-            <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
+            <p className="text-base italic text-white mb-1">"Best hire we never made."</p>
+            <p className="text-sm text-white mb-3">— Verkkopantteri.fi</p>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
@@ -517,7 +517,7 @@ function HeroAISlide({ onGetStarted }) {
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
                 <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-                <div className="text-sm text-zinc-500">{s.label}</div>
+                <div className="text-sm text-white">{s.label}</div>
               </motion.div>
             ))}
           </motion.div>
