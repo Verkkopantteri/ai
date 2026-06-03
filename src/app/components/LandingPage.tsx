@@ -480,7 +480,7 @@ function MiniChat({ theme }) {
       </div>
       {/* Chips */}
       <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-4 pb-2">
-        {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+        {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
           <span key={chip}
             style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
             className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
@@ -532,12 +532,12 @@ const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
 // inputTyping: text shown animating in the input bar before the message appears
 const CONVERSATION = [
-  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 600 },
-  { from: 'user', text: "How much does installation cost?", delay: 2400, inputTyping: "How much does installation cost?" },
-  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume. How many customer chats do you estimate per day?", delay: 4800 },
-  { from: 'user', text: "Maybe around 10 max", delay: 6600, inputTyping: "Maybe around 10 max" },
-  { from: 'bot',  text: "Got it — that fits our Pro plan perfectly. It handles up to ~10 chats/day with full lead capture and analytics.", delay: 9200 },
-  { from: 'bot',  text: "Want a quote sent to your email? Or you can fill in the contact form yourself — I can open it for you right now 👇", delay: 12000 },
+  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 700 },
+  { from: 'user', text: "How much does installation cost?", delay: 2600, inputTyping: "How much does installation cost?" },
+  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume — how many customer chats do you estimate per day?", delay: 5200 },
+  { from: 'user', text: "Maybe around 10 max", delay: 7200, inputTyping: "Maybe around 10 max" },
+  { from: 'bot',  text: "Got it! That fits our Pro plan perfectly — up to ~10 chats/day with full lead capture and analytics.", delay: 9800 },
+  { from: 'bot',  text: "Would you like to send a contact request yourself, or should I collect your details right here? 👇", delay: 13000 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -844,7 +844,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
 
                 {/* Chips */}
                 <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
-                  {['AI deployment', 'Pricing', 'Book a demo'].map(chip => (
+                  {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
                     <span key={chip}
                       style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
                       className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
@@ -1541,14 +1541,14 @@ function FeaturesSlide({ activeTheme }) {
         ref={ref}
         id="features"
         style={{ rotateX, scale, opacity, y }}
-        className={`min-h-screen flex items-center justify-center transition-colors duration-700 ${isDark ? 'bg-zinc-950' : 'bg-white'} py-20 px-6 relative overflow-hidden`}
+        className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
       <div className="max-w-6xl mx-auto w-full">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
-          <h2 className="text-5xl md:text-6xl font-light mb-3 text-zinc-950">The AI team</h2>
-          <p className="text-lg font-light text-zinc-600">Turn data into smarter decisions.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">The AI team</h2>
+          <p className="text-lg font-light text-zinc-400">Turn data into smarter decisions.</p>
         </motion.div>
 
         {/* Two-column layout */}
@@ -1572,12 +1572,12 @@ function FeaturesSlide({ activeTheme }) {
                 viewport={{ once: false, amount: 0.2 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.06 }}
                 whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-                className={`group p-6 rounded-2xl border transition-colors duration-300 ${isDark ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-600' : 'bg-white border-zinc-200 hover:border-zinc-300 hover:shadow-xl shadow-sm'}`}>
-                <div className={`size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${isDark ? 'bg-zinc-700' : 'bg-zinc-950'}`}>
+                className="group p-6 rounded-2xl border transition-colors duration-300 bg-zinc-900/60 border-zinc-800 hover:border-zinc-600">
+                <div className="size-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform bg-zinc-700">
                   <f.icon className="size-5 text-white" strokeWidth={1.5} />
                 </div>
-                <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-zinc-950'}`}>{f.title}</h3>
-                <p className={`text-sm font-light leading-relaxed ${isDark ? 'text-zinc-500' : 'text-zinc-600'}`}>{f.desc}</p>
+                <h3 className="text-base font-semibold mb-1.5 text-white">{f.title}</h3>
+                <p className="text-sm font-light leading-relaxed text-zinc-500">{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1599,7 +1599,8 @@ const PLANS = [
     priceNum: 149,
     period: '/month',
     volume: '',
-    messages: '≈ 3–5 chats a day · 1,000 messages / month',
+    chatsPerDay: '3–5 chats a day',
+    messagesLimit: '1,000 messages / month',
     additionalUsage: '€0.02 / message',
     features: [
       'Trained on your content',
@@ -1620,7 +1621,8 @@ const PLANS = [
     priceNum: 299,
     period: '/month',
     volume: '',
-    messages: '≈ 6–10 chats a day · 2,500 messages / month',
+    chatsPerDay: '6–10 chats a day',
+    messagesLimit: '2,500 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1642,7 +1644,8 @@ const PLANS = [
     priceNum: 699,
     period: '/month',
     volume: '',
-    messages: '≈ 20–40 chats a day · 10,000 messages / month',
+    chatsPerDay: '20–40 chats a day',
+    messagesLimit: '10,000 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1728,7 +1731,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-zinc-950">Deploy an <span style={{ color: '#63AFC7' }}>AI Agent</span></h2>
-          <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support. Cancel anytime.</p>
+          <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support.</p>
         </motion.div>
 
         {/* Main plan card */}
@@ -1843,7 +1846,13 @@ function PricingSlide({ activeTheme, onGetStarted }) {
             </div>
 
             {/* Messages count + additional usage */}
-            <p className={`text-xs font-bold mb-1 ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{plan.messages}</p>
+            <div className="mb-1 flex flex-col gap-0">
+              <div className="flex items-baseline gap-0">
+                <span className={`text-xs font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>≈ </span>
+                <span className="text-xs font-bold" style={{ color: '#00BC7D' }}>{plan.chatsPerDay}</span>
+              </div>
+              <p className={`text-xs font-medium mb-1 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{plan.messagesLimit}</p>
+            </div>
             <p className={`text-xs mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Additional usage: {plan.additionalUsage}</p>
 
             <ul className="mb-8" style={{ height: 180, overflow: "hidden" }}>
@@ -1859,6 +1868,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
               Get Started
             </button>
+            <p className={`text-xs text-center mt-2 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Cancel anytime</p>
 
         </motion.div>
 
@@ -1924,7 +1934,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
           Try next-gen AI support in minutes and decide later.
         </motion.p>
         <button onClick={onGetStarted}
-          className='group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl' style={{ background: '#63AFC7', color: '#fff' }}>
+          className='group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:bg-zinc-800 bg-zinc-950 text-white'>
           Start Trial
         </button>
       </div>
@@ -1973,7 +1983,7 @@ function Footer({ activeTheme }) {
 
 /* ─── MAIN ────────────────────────────────────────────────────── */
 export function LandingPage() {
-  const activeTheme = 'light';
+  const activeTheme = 'dark';
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadService, setLeadService] = useState('');
 
@@ -1983,9 +1993,9 @@ export function LandingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-white">
-      {leadOpen && <LeadFormModal isDark={false} onClose={() => setLeadOpen(false)} initialService={leadService} />}
-      <Header isDark={false} onGetStarted={() => openLead()} />
+    <div className="overflow-x-hidden bg-zinc-950">
+      {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
+      <Header isDark={true} onGetStarted={() => openLead()} />
       <TiaInActionSlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
