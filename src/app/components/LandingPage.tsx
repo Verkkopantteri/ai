@@ -399,7 +399,7 @@ function HowItWorksSlide() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-5">
             <span className="text-xs text-white/60 tracking-wide">Simple process</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">From zero to live<br />in 48 hours.</h2>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">From zero to live<br />in 48 hours</h2>
           <p className="text-lg font-light text-zinc-500 max-w-xl">No technical expertise needed. We do everything — you just get more leads.</p>
         </motion.div>
 
@@ -409,7 +409,7 @@ function HowItWorksSlide() {
               initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="group relative p-7 rounded-2xl border border-zinc-800 bg-zinc-900/40 hover:border-zinc-600 transition-colors overflow-hidden">
-              <div className="absolute top-4 right-6 text-7xl font-light text-white/4 select-none pointer-events-none">{step.number}</div>
+              <div className="absolute top-4 right-6 text-7xl font-light text-white/4 select-none pointer-events-none"></div>
               <div className="flex items-start gap-4 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-zinc-700 transition-colors">
                   <step.icon className="size-5 text-white" strokeWidth={1.5} />
@@ -433,17 +433,24 @@ function HowItWorksSlide() {
 
 /* ─── HERO SECTION ────────────────────────────────────────────── */
 function HeroAISlide({ onGetStarted }) {
+  const stats = [
+    { value: '3 min', label: 'Average setup time' },
+    { value: '24/7', label: 'Always online' },
+    { value: '100+', label: 'Languages supported' },
+    { value: '40%', label: 'More leads captured' },
+  ];
+
   return (
     <section className="py-24 px-6 bg-zinc-950">
       <div className="max-w-6xl mx-auto">
 
-        {/* Top-left: main title + subtitle + CTAs */}
+        {/* Main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} className="mb-10">
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-white leading-tight">
             Live chat support by the<br />world's smartest AI Agent
           </h2>
           <p className="text-lg font-light text-zinc-400 max-w-2xl mb-8">
-            Instant answers, endless learning, zero downtime. More conversions, less workload. Every day, around the clock.
+            The AI Agent resolves complex inquiries, learns your business, and helps increase conversions while reducing support workload.
           </p>
           <div className="flex flex-col sm:flex-row items-start gap-3">
             <button onClick={onGetStarted}
@@ -457,15 +464,31 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Bottom-right: secondary title + quote + stars */}
+        {/* Stats bar */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 py-10 border-y border-white/5">
+          {stats.map((s, i) => (
+            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+              className="text-center">
+              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
+              <div className="text-sm text-zinc-500">{s.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Bottom-right: secondary header (same size as main) + quote + stars */}
         <div className="flex justify-end">
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-right max-w-sm"
+            className="text-right"
           >
-            <h3 className="text-3xl md:text-4xl font-light text-white mb-3 leading-tight">
-              Try it free<br />for 14 days
-            </h3>
+            <button
+              onClick={onGetStarted}
+              className="text-5xl md:text-6xl font-light text-white leading-tight mb-4 inline-flex items-center gap-4 group"
+              style={{ textDecoration: 'underline', textUnderlineOffset: '6px', textDecorationColor: 'rgba(255,255,255,0.4)' }}
+            >
+              Try it free for 14 days <ArrowRight className="size-10 group-hover:translate-x-1 transition-transform" />
+            </button>
             <p className="text-base italic text-white/70 mb-1">"Best hire we never made."</p>
             <p className="text-sm text-white/40 mb-3">— Verkkopantteri.fi</p>
             <div className="flex gap-0.5 justify-end">
