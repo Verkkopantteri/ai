@@ -457,9 +457,8 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
-
+        {/* Bottom: Try it free */}
+        <div className="pt-10 border-t border-white/5 pb-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
           >
@@ -478,20 +477,19 @@ function HeroAISlide({ onGetStarted }) {
               ))}
             </div>
           </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-1"
-            style={{ position: 'relative', zIndex: 20, marginRight: '-12%', marginTop: '80px' }}>
-            {stats.map((s, i) => (
-              <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
-                className="text-center">
-                <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-                <div className="text-sm text-zinc-500">{s.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-
         </div>
+
+        {/* Stats row — fully separate, below Try it free */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 pb-10 border-t border-white/5">
+          {stats.map((s, i) => (
+            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+              className="text-center">
+              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
+              <div className="text-sm text-zinc-500">{s.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
 
       </div>
     </section>
