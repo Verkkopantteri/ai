@@ -458,7 +458,7 @@ function HeroAISlide({ onGetStarted }) {
         </motion.div>
 
         {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10 pt-10 border-t border-white/5 pb-10">
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -480,7 +480,8 @@ function HeroAISlide({ onGetStarted }) {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-1">
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-1"
+            style={{ position: 'relative', zIndex: 20, marginRight: '-2%' }}>
             {stats.map((s, i) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
