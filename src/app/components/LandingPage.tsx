@@ -457,8 +457,8 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Bottom row: Try it free */}
-        <div className="flex flex-col items-start gap-10 pt-10 border-t border-white/5 pb-10">
+        {/* Bottom row: Try it free left, stats right */}
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -496,7 +496,7 @@ function StatsStrip() {
   ];
   return (
     <section className="py-16 px-6 bg-zinc-950 border-t border-white/5">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto flex justify-end">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8"
