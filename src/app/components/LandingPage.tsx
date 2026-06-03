@@ -441,11 +441,11 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="py-24 px-6 bg-zinc-950">
-      <div className="max-w-6xl mx-auto">
+    <section className="px-6 bg-zinc-950" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24">
 
-        {/* Main title + subtitle + CTAs */}
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }} className="mb-10">
+        {/* Top: main title + subtitle + CTAs */}
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-white leading-tight">
             Live chat support by the<br />world's smartest AI Agent
           </h2>
@@ -464,10 +464,12 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Bottom row: quote left, stats right — pushed to bottom */}
+        {/* Spacer pushes bottom content down */}
+        <div className="flex-1" />
+
+        {/* Bottom row: Try it free left, stats right */}
         <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5">
 
-          {/* Bottom-left: Try it free + quote + stars */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
           >
@@ -487,9 +489,8 @@ function HeroAISlide({ onGetStarted }) {
             </div>
           </motion.div>
 
-          {/* Bottom-right: stats */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-1">
             {stats.map((s, i) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
