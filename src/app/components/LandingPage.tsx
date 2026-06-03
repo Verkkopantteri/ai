@@ -423,7 +423,7 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: '12%',
+          right: '5%',
           bottom: '8%',
           width: '68%',
           maxWidth: '980px',
