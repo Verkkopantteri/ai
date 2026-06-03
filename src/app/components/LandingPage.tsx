@@ -2403,7 +2403,9 @@ export function LandingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-zinc-950" style={{ zoom: '1.0909' }}>
+    <>
+      <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; }`}</style>
+    <div className="overflow-x-hidden bg-zinc-950" style={{ zoom: '1.0909', minHeight: '100vh', backgroundColor: '#09090b' }}>
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
@@ -2415,5 +2417,6 @@ export function LandingPage() {
       <CTASlide activeTheme={activeTheme} onGetStarted={() => openLead()} />
       <Footer activeTheme={activeTheme} />
     </div>
+    </>
   );
 }
