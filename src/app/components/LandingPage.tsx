@@ -9,12 +9,12 @@ import {
 
 /* ─── LEAD FORM MODAL ─────────────────────────────────────────── */
 const SERVICES = [
-  { id: 'M', label: 'S', desc: '99€/mo · 1,000 messages / month' },
-  { id: 'L', label: 'M', desc: '199€/mo · 2,500 messages / month' },
-  { id: 'XL', label: 'L', desc: '499€/mo · 10,000 messages / month' },
+  { id: 'M', label: 'S', desc: '149€/mo · 1,000 messages / month' },
+  { id: 'L', label: 'M', desc: '299€/mo · 2,500 messages / month' },
+  { id: 'XL', label: 'L', desc: '699€/mo · 10,000 messages / month' },
 ];
 
-const SERVICE_PRICES = { M: 99, L: 199, XL: 499 };
+const SERVICE_PRICES = { M: 149, L: 299, XL: 699 };
 
 function LeadFormModal({ isDark, onClose, initialService = '' }) {
   const [submitted, setSubmitted] = useState(false);
@@ -530,14 +530,14 @@ function ChatStack({ activeTheme }) {
 const CHAT_MSG_HEIGHT_DEFAULT = 200;
 const CHAT_MSG_HEIGHT_WITH_CTA = 148;
 
+// inputTyping: text shown animating in the input bar before the message appears
 const CONVERSATION = [
-  { from: 'bot',  text: "Hi! I'm TIA. How can I help you today?",                           delay: 600  },
-  { from: 'user', text: "Hey, we just launched a new product. Can you help visitors find the right option?", delay: 1800 },
-  { from: 'bot',  text: "Absolutely. I can guide visitors through your product range, ask qualifying questions, and recommend the right fit based on their needs.", delay: 3200 },
-  { from: 'user', text: "What if someone wants to book a call instead?",                     delay: 5400 },
-  { from: 'bot',  text: "No problem. I capture their details and schedule the call directly. Your team gets a notification right away.", delay: 7000 },
-  { from: 'user', text: "How long does setup take?",                                         delay: 8800 },
-  { from: 'bot',  text: "Usually 48 hours. We train TIA on your content and you're live. Check below 👇", delay: 10000 },
+  { from: 'bot',  text: "Hey! 👋 I'm TIA. What can I help you with today?", delay: 600 },
+  { from: 'user', text: "How much does installation cost?", delay: 2400, inputTyping: "How much does installation cost?" },
+  { from: 'bot',  text: "Typically €149–€699/mo depending on chat volume. How many customer chats do you estimate per day?", delay: 4800 },
+  { from: 'user', text: "Maybe around 10 max", delay: 6600, inputTyping: "Maybe around 10 max" },
+  { from: 'bot',  text: "Got it — that fits our Pro plan perfectly. It handles up to ~10 chats/day with full lead capture and analytics.", delay: 9200 },
+  { from: 'bot',  text: "Want a quote sent to your email? Or you can fill in the contact form yourself — I can open it for you right now 👇", delay: 12000 },
 ];
 
 /* Smooth character-by-character reveal for a single message */
@@ -577,6 +577,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   const [visibleMessages, setVisibleMessages] = useState(0);
   const [typingIdx, setTypingIdx] = useState(-1); // which bot msg is currently "typing"
   const [showCTA, setShowCTA] = useState(false);
+  const [inputTypingText, setInputTypingText] = useState('');
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const rafRef = useRef(null);
@@ -613,6 +614,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
     setVisibleMessages(0);
     setTypingIdx(-1);
     setShowCTA(false);
+    setInputTypingText('');
 
     addTimer(() => setPhase('chat'), 1400);
 
@@ -625,7 +627,25 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
           setVisibleMessages(v => v + 1);
         }, t);
       } else {
-        addTimer(() => setVisibleMessages(v => v + 1), t);
+        // Animate typing in input bar ~1.2s before message appears
+        if (msg.inputTyping) {
+          const typingStart = t - 1200;
+          const typingText = msg.inputTyping;
+          let charIdx = 0;
+          addTimer(() => {
+            setInputTypingText('');
+            const typeInterval = setInterval(() => {
+              charIdx++;
+              setInputTypingText(typingText.slice(0, charIdx));
+              if (charIdx >= typingText.length) clearInterval(typeInterval);
+            }, 38);
+            timersRef.current.push(typeInterval as unknown as number);
+          }, typingStart > 1400 ? typingStart : 1400 + 200);
+        }
+        addTimer(() => {
+          setInputTypingText('');
+          setVisibleMessages(v => v + 1);
+        }, t);
       }
     });
 
@@ -637,6 +657,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
       setVisibleMessages(0);
       setTypingIdx(-1);
       setShowCTA(false);
+      setInputTypingText('');
       runLoop();
     }, lastDelay + 5500 + 650);
   }, []);
@@ -806,8 +827,16 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       style={{ background: isLight ? '#ececee' : 'transparent' }}
                       className="px-3 pt-2.5 pb-2.5 flex-shrink-0"
                     >
-                      <div onClick={onGetStarted} className="w-full py-1.5 bg-emerald-500 text-white text-[10px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                        Get Started
+                      <div className="flex flex-col gap-1.5">
+                        <p style={{ color: theme.subtleText }} className="text-[9px] text-center">How would you like to proceed?</p>
+                        <div className="flex gap-2">
+                          <div onClick={onGetStarted} className="flex-1 py-1.5 bg-emerald-500 text-white text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                            Get Started
+                          </div>
+                          <div onClick={onGetStarted} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
+                            Send my details
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -826,7 +855,10 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                 <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
                   <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
                     className="flex items-center gap-2 rounded-xl px-3 py-2">
-                    <span style={{ color: theme.subtleText }} className="text-[11px] flex-1">Send a message…</span>
+                    <span style={{ color: inputTypingText ? theme.textColor : theme.subtleText }} className="text-[11px] flex-1 truncate">
+                      {inputTypingText || 'Send a message…'}
+                      {inputTypingText && <span style={{ opacity: 0.5 }}>▍</span>}
+                    </span>
                     <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
                       className="w-6 h-6 rounded-lg flex items-center justify-center">
                       <svg width="8" height="8" viewBox="0 0 10 16" fill="none">
@@ -1105,13 +1137,13 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               className="flex-1 text-center lg:text-left">
 
               <motion.h2 className="text-5xl md:text-6xl font-light leading-[1.05] mb-4"
-                animate={{ color: isDark ? '#ffffff' : '#09090b' }} transition={{ duration: 0.7 }}>
+                style={{ color: '#ffffff' }}>
                 Next-gen live chat support —<br /><span style={{ color: '#63AFC7' }}>powered by the world's<br />smartest AI Agent.</span>
               </motion.h2>
 
               <motion.p className="text-base font-light mb-6 leading-relaxed max-w-xl"
                 animate={{ color: isDark ? 'rgba(255,255,255,0.8)' : '#3f3f46' }} transition={{ duration: 0.7 }}>
-                With TIA, customers get real-time support through live chat. The AI Agent resolves complex issues instantly while continuously improving from real conversation data. TIA learns your business and guides visitors toward the highest value outcomes.
+                TIA delivers instant, human-like support through live chat. The AI Agent resolves complex customer inquiries, learns from every conversation, and continuously adapts to your business. Working around the clock, TIA helps increase conversions, reduce support workload, and deliver exceptional customer experiences.
               </motion.p>
 
               {/* CTA buttons */}
@@ -1515,8 +1547,8 @@ function FeaturesSlide({ activeTheme }) {
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>The AI team</h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-600'}`}>Turn data into smarter decisions.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-zinc-950">The AI team</h2>
+          <p className="text-lg font-light text-zinc-600">Turn data into smarter decisions.</p>
         </motion.div>
 
         {/* Two-column layout */}
@@ -1563,15 +1595,15 @@ const PLANS = [
     name: 'S',
     label: 'Core',
     tagline: '',
-    price: '99€',
-    priceNum: 99,
+    price: '149€',
+    priceNum: 149,
     period: '/month',
     volume: '',
-    messages: 'Limit 1,000 messages / month',
+    messages: '≈ 3–5 chats a day · 1,000 messages / month',
     additionalUsage: '€0.02 / message',
     features: [
       'Trained on your content',
-      'AI evolves monthly with new data',
+      'AI evolves weekly with new data',
       'Analytics dashboard',
       'Email support',
       '48h setup',
@@ -1584,11 +1616,11 @@ const PLANS = [
     name: 'M',
     label: 'Pro',
     tagline: '',
-    price: '199€',
-    priceNum: 199,
+    price: '299€',
+    priceNum: 299,
     period: '/month',
     volume: '',
-    messages: 'Limit 2,500 messages / month',
+    messages: '≈ 6–10 chats a day · 2,500 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1606,11 +1638,11 @@ const PLANS = [
     name: 'L',
     label: 'Enterprise',
     tagline: '',
-    price: '499€',
-    priceNum: 499,
+    price: '699€',
+    priceNum: 699,
     period: '/month',
     volume: '',
-    messages: 'Limit 10,000 messages / month',
+    messages: '≈ 20–40 chats a day · 10,000 messages / month',
     additionalUsage: '€0.01 / message',
     features: [
       'Trained on your content',
@@ -1695,8 +1727,8 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className={`text-5xl md:text-6xl font-light mb-3 ${isDark ? 'text-white' : 'text-zinc-950'}`}>Hire <span style={{ color: '#63AFC7' }}>Your AI Agent</span></h2>
-          <p className={`text-lg font-light ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Cancel anytime.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-zinc-950">Deploy an <span style={{ color: '#63AFC7' }}>AI Agent</span></h2>
+          <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support. Cancel anytime.</p>
         </motion.div>
 
         {/* Main plan card */}
@@ -1873,9 +1905,27 @@ function CTASlide({ activeTheme, onGetStarted }) {
         className="absolute inset-0 w-full h-full object-cover opacity-90"
       />
       <div className="relative z-10 text-center px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.7 }}
+          className="text-7xl md:text-8xl font-light mb-4 text-white leading-tight"
+        >
+          Try It Free<br />for 14 Days
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="text-xl font-light mb-10 text-white/70"
+        >
+          Try next-gen AI support in minutes and decide later.
+        </motion.p>
         <button onClick={onGetStarted}
           className='group inline-flex items-center gap-3 px-12 py-5 rounded-full text-lg font-semibold transition-all hover:shadow-2xl' style={{ background: '#63AFC7', color: '#fff' }}>
-          Start Today
+          Start Trial
         </button>
       </div>
     </motion.section>
