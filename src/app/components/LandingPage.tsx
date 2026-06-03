@@ -423,7 +423,7 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: 'calc(5% - 190px)',
+          right: '-5%',
           bottom: '12%',
           height: '78%',
           width: 'auto',
@@ -439,7 +439,7 @@ function HeroAISlide({ onGetStarted }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
         className="absolute hidden md:flex gap-0"
-        style={{ right: 'calc(13% + 14px)', bottom: '16%', zIndex: 2 }}
+        style={{ right: '13%', bottom: '16%', zIndex: 2 }}
       >
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
@@ -2413,7 +2413,7 @@ export function LandingPage() {
   return (
     <>
       <style>{`html, body { background: #09090b !important; margin: 0; padding: 0; }`}</style>
-    <div className="overflow-x-hidden bg-zinc-950" style={{ zoom: '1.0909', minHeight: '100vh', backgroundColor: '#09090b' }}>
+    <div className="overflow-x-hidden bg-zinc-950" style={{ minHeight: '100vh', backgroundColor: '#09090b' }}>
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
