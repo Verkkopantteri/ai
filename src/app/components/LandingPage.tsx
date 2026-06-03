@@ -1137,7 +1137,7 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               </div>
 
               {/* Theme switcher */}
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <div className="flex items-center gap-2 justify-center lg:justify-start mb-5">
                 <motion.button onClick={() => setChatTheme('light')}
                   animate={chatTheme !== 'light' ? { borderColor: ['#e4e4e7', '#52525b', '#e4e4e7'] } : { borderColor: '#a1a1aa' }}
                   transition={chatTheme !== 'light' ? { duration: 3, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' } : { duration: 0.4 }}
@@ -1149,65 +1149,35 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
                   style={{ borderWidth: 2, borderStyle: 'solid' }}
                   className={`w-6 h-6 rounded-full transition-transform bg-zinc-900 ${chatTheme === 'dark' ? 'scale-110 shadow-lg shadow-white/10' : ''}`} />
               </div>
+
+              {/* Review — moved here from bottom strip */}
+              <div className="flex flex-col items-center lg:items-start gap-0.5">
+                <div className="flex gap-0.5 mb-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
+                  ))}
+                </div>
+                <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
+                <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+              </div>
             </motion.div>
 
-            {/* RIGHT — chat vertically centered */}
+            {/* RIGHT — chat + icons below */}
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
-              className="flex-shrink-0 flex items-center justify-center"
+              className="flex-shrink-0 flex flex-col items-center justify-center gap-3"
               style={{ marginLeft: '-50px' }}>
               <AnimatedChatLoop theme={theme} onGetStarted={onGetStarted} />
+              {/* GDPR icon + Compatible + platform icons */}
+              <div className="flex items-center gap-3 flex-wrap justify-center" style={{ width: 320 }}>
+                <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
+                <span className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Compatible</span>
+                <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
+                <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+                <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+              </div>
             </motion.div>
           </div>
-
-          {/* BOTTOM STRIP — compact, always visible */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }} transition={{ duration: 0.7, delay: 0.2 }}
-            className={`rounded-xl border px-6 py-3.5 flex flex-col md:flex-row items-center gap-4 md:gap-6 flex-wrap ${isDark ? 'border-zinc-800 bg-zinc-900/50' : 'border-zinc-200 bg-white/70'}`}
-            style={{ backdropFilter: 'blur(8px)' }}>
-
-            {/* Quote + stars */}
-            <div className="flex flex-col items-center md:items-start gap-0.5">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
-                ))}
-              </div>
-              <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
-              <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
-            </div>
-
-            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
-
-            {/* GDPR texts + GDPR icon */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {['GDPR-ready', 'Encrypted storage', 'Data deletion on request'].map(item => (
-                <span key={item} className={`flex items-center gap-1.5 text-xs font-light whitespace-nowrap ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                  <Check className="size-3 shrink-0" style={{ color: '#00BC7D' }} />
-                  {item}
-                </span>
-              ))}
-              <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-            </div>
-
-            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
-
-            {/* Compatible label + icons */}
-            <div className="flex items-center gap-3">
-              <span className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Compatible</span>
-              <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto' }} />
-              <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
-              <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
-            </div>
-
-            <div className={`hidden md:block w-px self-stretch ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
-
-            {/* Logo cycler */}
-            <div className="flex items-center justify-center">
-              <RefLogosCycler isDark={isDark} />
-            </div>
-
-          </motion.div>
 
         </div>
       </motion.section>
