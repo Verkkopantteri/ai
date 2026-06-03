@@ -368,7 +368,7 @@ function HowItWorksSlide() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-6 bg-zinc-950 relative overflow-hidden">
+    <section id="how-it-works" className="py-24 px-6 relative overflow-hidden" style={{ background: '#09090b' }}>
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} className="mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-5">
@@ -416,7 +416,7 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
+    <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b', minHeight: '100vh' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
         src="/br-bb.avif"
@@ -429,17 +429,13 @@ function HeroAISlide({ onGetStarted }) {
           width: 'auto',
           objectFit: 'contain',
           objectPosition: 'bottom right',
-          opacity: 0.8,
-          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
-          maskComposite: 'intersect',
-          WebkitMaskComposite: 'destination-in',
+          opacity: 0.9,
+          maskImage: 'linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%)',
           zIndex: 1,
         }}
       />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #09090b 35%, transparent 65%)' }} />
-      <div className="absolute inset-0 bg-zinc-950/20 pointer-events-none" />
-      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
+      <div className="max-w-6xl mx-auto w-full flex flex-col py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
@@ -461,11 +457,8 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Spacer pushes bottom content down */}
-        <div className="flex-1" />
-
-        {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 mb-10">
+        {/* Bottom row: Try it free */}
+        <div className="flex flex-col items-start gap-10 pt-10 border-t border-white/5 pb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -486,17 +479,6 @@ function HeroAISlide({ onGetStarted }) {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-1">
-            {stats.map((s, i) => (
-              <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
-                className="text-center">
-                <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-                <div className="text-sm text-zinc-500">{s.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-
         </div>
 
       </div>
@@ -504,7 +486,33 @@ function HeroAISlide({ onGetStarted }) {
   );
 }
 
-/* ─── FAQ ─────────────────────────────────────────────────────── */
+/* ─── STATS STRIP ──────────────────────────────────────────────── */
+function StatsStrip() {
+  const stats = [
+    { value: '3 min', label: 'Average setup time' },
+    { value: '24/7', label: 'Always online' },
+    { value: '100+', label: 'Languages supported' },
+    { value: '40%', label: 'More leads captured' },
+  ];
+  return (
+    <section className="py-16 px-6 bg-zinc-950 border-t border-white/5">
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+        >
+          {stats.map((s, i) => (
+            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+              className="text-center">
+              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
+              <div className="text-sm text-zinc-500">{s.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 function FAQSlide() {
   const faqs = [
     { q: 'How long does setup take?', a: 'Most customers are live within 48 hours. We handle everything — from training TIA on your content to installing the widget on your site.' },
@@ -2386,6 +2394,7 @@ export function LandingPage() {
       {leadOpen && <LeadFormModal isDark={true} onClose={() => setLeadOpen(false)} initialService={leadService} />}
       <Header isDark={true} onGetStarted={() => openLead()} />
       <HeroAISlide onGetStarted={() => openLead()} />
+      <StatsStrip />
       <HowItWorksSlide />
       <ShowcaseSlide activeTheme={activeTheme} />
       <FeaturesSlide activeTheme={activeTheme} />
