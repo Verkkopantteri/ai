@@ -448,7 +448,7 @@ function HeroAISlide({ onGetStarted }) {
         alt=""
         className="absolute pointer-events-none select-none"
         style={{
-          right: 'calc(5% - 40px)',
+          right: 'calc(5% - 190px)',
           bottom: '12%',
           height: '78%',
           width: 'auto',
