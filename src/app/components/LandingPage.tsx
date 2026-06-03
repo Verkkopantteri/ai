@@ -435,6 +435,20 @@ function HeroAISlide({ onGetStarted }) {
           zIndex: 1,
         }}
       />
+      {/* Stats — absolutely positioned under the brain image */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
+        className="absolute hidden md:grid grid-cols-4 gap-6"
+        style={{ right: 'calc(5% - 190px)', bottom: '6%', zIndex: 2, width: '52%' }}
+      >
+        {stats.map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
+            className="text-center">
+            <div className="text-2xl font-light text-white mb-0.5">{s.value}</div>
+            <div className="text-xs text-zinc-500">{s.label}</div>
+          </motion.div>
+        ))}
+      </motion.div>
       <div className="max-w-6xl mx-auto w-full flex flex-col py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
@@ -479,17 +493,7 @@ function HeroAISlide({ onGetStarted }) {
           </motion.div>
         </div>
 
-        {/* Stats row — fully separate, below Try it free */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 pb-10 border-t border-white/5">
-          {stats.map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
-              className="text-center">
-              <div className="text-4xl font-light text-white mb-1">{s.value}</div>
-              <div className="text-sm text-zinc-500">{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+
 
       </div>
     </section>
