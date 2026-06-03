@@ -578,6 +578,8 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
   const [typingIdx, setTypingIdx] = useState(-1); // which bot msg is currently "typing"
   const [showCTA, setShowCTA] = useState(false);
   const [inputTypingText, setInputTypingText] = useState('');
+  const [detailsMode, setDetailsMode] = useState<null | 'email' | 'company' | 'done'>(null);
+  const [extraMessages, setExtraMessages] = useState<{from:string,text:string}[]>([]);
   const timersRef = useRef([]);
   const scrollRef = useRef(null);
   const rafRef = useRef(null);
@@ -615,6 +617,8 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
     setTypingIdx(-1);
     setShowCTA(false);
     setInputTypingText('');
+    setDetailsMode(null);
+    setExtraMessages([]);
 
     addTimer(() => setPhase('chat'), 1400);
 
@@ -658,11 +662,16 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
       setTypingIdx(-1);
       setShowCTA(false);
       setInputTypingText('');
+      setDetailsMode(null);
+      setExtraMessages([]);
       runLoop();
     }, lastDelay + 5500 + 650);
   }, []);
 
   useEffect(() => { runLoop(); return clearAll; }, []);
+  useEffect(() => {
+    if (extraMessages.length > 0) scrollToBottom();
+  }, [extraMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -806,6 +815,30 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  {/* Extra messages from details flow */}
+                  {extraMessages.map((msg, i) => (
+                    <motion.div key={'extra-'+i}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.28 }}
+                      className={`flex gap-1.5 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      {msg.from === 'bot' && (
+                        <div style={{ background: theme.msgBg, border: `1px solid ${theme.border}` }}
+                          className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 mt-0.5">
+                          <img src={theme.avatarSrc} alt="" className="w-full h-full object-contain p-0.5" />
+                        </div>
+                      )}
+                      <div style={{
+                        background: theme.msgBg,
+                        border: `1px solid ${theme.border}`,
+                        borderRadius: msg.from === 'bot' ? '2px 10px 10px 10px' : '10px 10px 2px 10px',
+                        maxWidth: '82%',
+                      }} className="px-2.5 py-1.5 text-[10px] leading-relaxed">
+                        <span style={{ color: msg.from === 'user' ? theme.userTextColor : theme.textColor }}>{msg.text}</span>
+                      </div>
+                    </motion.div>
+                  ))}
                   {/* Bottom spacer — keeps last message off the very bottom, collapses when CTA appears */}
                   <div style={{
                     height: showCTA ? 0 : 32,
@@ -828,31 +861,82 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       className="px-3 pt-2.5 pb-2.5 flex-shrink-0"
                     >
                       <div className="flex flex-col gap-1.5">
-                        <p style={{ color: theme.subtleText }} className="text-[9px] text-center">How would you like to proceed?</p>
-                        <div className="flex gap-2">
-                          <div onClick={onGetStarted} className="flex-1 py-1.5 bg-emerald-500 text-white text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
-                            Get Started
+                        {detailsMode === null && (
+                          <>
+                            <p style={{ color: theme.subtleText }} className="text-[9px] text-center">How would you like to proceed?</p>
+                            <div className="flex gap-2">
+                              <div onClick={onGetStarted} className="flex-1 py-1.5 bg-emerald-500 text-white text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:bg-emerald-400 transition-colors">
+                                Get Started
+                              </div>
+                              <div onClick={() => {
+                                setDetailsMode('email');
+                                setExtraMessages(m => [...m, { from: 'user', text: 'Send my details' }]);
+                                setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Great! What's your email address?" }]), 900);
+                              }} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
+                                Send my details
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {detailsMode === 'email' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="email"
+                              placeholder="your@email.com"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none placeholder-opacity-40"
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+                                  const val = (e.target as HTMLInputElement).value;
+                                  setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                  setDetailsMode('company');
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: 'Thanks! And your company name + website?' }]), 800);
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
                           </div>
-                          <div onClick={onGetStarted} style={{ background: theme.msgBg, border: `1px solid ${theme.border}`, color: theme.textColor }} className="flex-1 py-1.5 text-[9px] font-semibold rounded-lg text-center cursor-pointer hover:opacity-80 transition-opacity">
-                            Send my details
+                        )}
+                        {detailsMode === 'company' && (
+                          <div className="flex gap-1.5">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Company & website"
+                              style={{ background: theme.inputBg, border: `1px solid ${theme.border}`, color: theme.textColor, fontSize: 10 }}
+                              className="flex-1 rounded-lg px-2 py-1.5 outline-none"
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+                                  const val = (e.target as HTMLInputElement).value;
+                                  setExtraMessages(m => [...m, { from: 'user', text: val }]);
+                                  setDetailsMode('done');
+                                  setTimeout(() => setExtraMessages(m => [...m, { from: 'bot', text: "Perfect! 🎉 You'll receive the offer within 12 hours. After confirming, your AI bot goes live in a few steps." }]), 900);
+                                }
+                              }}
+                            />
+                            <div style={{ background: '#00BC7D' }} className="px-2.5 py-1.5 rounded-lg text-[9px] text-white font-semibold cursor-pointer flex items-center">→</div>
                           </div>
-                        </div>
+                        )}
+                        {detailsMode === 'done' && (
+                          <p style={{ color: theme.accentDot }} className="text-[9px] text-center font-medium py-1">✓ We'll be in touch within 12h!</p>
+                        )}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 {/* Chips */}
-                <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
+                {!detailsMode && <div style={{ background: isLight ? '#ececee' : 'transparent' }} className="flex gap-1.5 flex-wrap px-3 pb-2 flex-shrink-0">
                   {['AI deployment', 'Pricing', 'Free trial'].map(chip => (
                     <span key={chip}
                       style={{ color: theme.chipColor, border: `1px solid ${theme.border}`, background: theme.chipBg }}
                       className="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap">{chip}</span>
                   ))}
-                </div>
+                </div>}
 
                 {/* Input — matches MiniChat hero exactly */}
-                <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
+                {!detailsMode && <div style={{ background: theme.headerBg, borderTop: `1px solid ${theme.border}` }} className="px-3 py-2.5 flex-shrink-0">
                   <div style={{ background: theme.inputBg, border: `1px solid ${theme.border}` }}
                     className="flex items-center gap-2 rounded-xl px-3 py-2">
                     <span style={{ color: inputTypingText ? theme.textColor : theme.subtleText }} className="text-[11px] flex-1 truncate">
@@ -866,7 +950,7 @@ function AnimatedChatLoop({ theme, onGetStarted }) {
                       </svg>
                     </div>
                   </div>
-                </div>
+                </div>}
 
                 {/* Footer */}
                 <div style={{ background: theme.headerBg }} className="flex items-center gap-1 py-2 justify-center flex-shrink-0">
@@ -1012,7 +1096,7 @@ function HeroSlide({ activeTheme, setActiveTheme, onGetStarted }) {
           transition={{ duration: 1, delay: 0.3 }}
           className="text-center flex-shrink-0 max-w-xl">
 
-          <h1 className={`text-7xl md:text-8xl font-light mb-6 leading-tight ${isDark ? 'text-white' : 'text-zinc-950'}`}>
+          <h1 className="text-7xl md:text-8xl font-light mb-6 leading-tight text-white">
             Never Miss<br />a Lead
           </h1>
           <p className={`text-xl font-light mb-4 max-w-lg mx-auto ${isDark ? 'text-white/90' : 'text-zinc-600'}`}>
@@ -1086,7 +1170,7 @@ function ShowcaseSlide({ activeTheme }) { return null; }
 
 /* ─── TIA IN ACTION ───────────────────────────────────────────── */
 function TiaInActionSlide({ activeTheme, onGetStarted }) {
-  const [chatTheme, setChatTheme] = useState('light');
+  const [chatTheme, setChatTheme] = useState('dark');
   const isDark = chatTheme === 'dark';
   const theme = CHAT_THEMES[chatTheme];
   const wrapRef = useRef(null);
@@ -1102,25 +1186,11 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
   return (
     <div id="tia-in-action" ref={wrapRef} className="relative overflow-hidden" style={{ minHeight: '100vh' }}>
       {/* Background — matches header: white bg with hero image overlay */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ backgroundColor: isDark ? '#09090b' : '#ffffff' }}
-        transition={{ duration: 0.7, ease: 'easeInOut' }}
-      />
-      <AnimatePresence>
-        {isDark ? (
-          <motion.div key="dark-bg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }} className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }} />
-        ) : (
-          <motion.div key="light-bg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }} className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/bg-wa.avif)' }} />
-        )}
-      </AnimatePresence>
-      {isDark && <div className="absolute inset-0 bg-zinc-950/35" />}
-      {!isDark && <div className="absolute inset-0 bg-white/15" />}
-      <ParticleField count={isDark ? 18 : 0} />
+      <div className="absolute inset-0 bg-zinc-950" />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(https://6a1d4cd40bc623d413b1bf9a.imgix.net/theme-bl.avif)' }} />
+      <div className="absolute inset-0 bg-zinc-950/35" />
+      <ParticleField count={18} />
 
       {/* Content layer — exact 100vh, everything visible at once */}
       <motion.section ref={ref} style={{ filter, clipPath, x, minHeight: '100vh' }}
@@ -1141,19 +1211,18 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
                 Next-gen live chat support —<br /><span style={{ color: '#63AFC7' }}>powered by the world's<br />smartest AI Agent.</span>
               </motion.h2>
 
-              <motion.p className="text-base font-light mb-6 leading-relaxed max-w-xl"
-                animate={{ color: isDark ? 'rgba(255,255,255,0.8)' : '#3f3f46' }} transition={{ duration: 0.7 }}>
+              <p className="text-base font-light mb-6 leading-relaxed max-w-xl text-white/80">
                 TIA delivers instant, human-like support through live chat. The AI Agent resolves complex customer inquiries, learns from every conversation, and continuously adapts to your business. Working around the clock, TIA helps increase conversions, reduce support workload, and deliver exceptional customer experiences.
-              </motion.p>
+              </p>
 
               {/* CTA buttons */}
               <div className="flex items-center gap-3 justify-center lg:justify-start mb-5">
                 <button onClick={onGetStarted}
-                  className={`px-7 py-3 rounded-full text-sm font-semibold transition-colors ${isDark ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-zinc-950 text-white hover:bg-zinc-800'}`}>
+                  className="px-7 py-3 rounded-full text-sm font-semibold transition-colors bg-white text-zinc-950 hover:bg-zinc-100">
                   Get Started
                 </button>
                 <a href="#features"
-                  className={`px-7 py-3 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-zinc-700 text-white hover:bg-zinc-800' : 'border-zinc-300 text-zinc-700 hover:bg-zinc-50'}`}>
+                  className="px-7 py-3 rounded-full text-sm font-semibold border transition-colors border-zinc-700 text-white hover:bg-zinc-800">
                   See features
                 </a>
               </div>
@@ -1161,8 +1230,8 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               {/* Bullet points */}
               <div className="flex items-center gap-0 flex-wrap justify-center lg:justify-start mb-5">
                 {['Setup in minutes', '100+ Languages', 'Cancel anytime'].map((item, i) => (
-                  <span key={item} className={`flex items-center text-xs font-medium ${isDark ? 'text-white' : 'text-zinc-950'}`}>
-                    {i > 0 && <span className={`mx-2 ${isDark ? 'text-white/30' : 'text-zinc-400'}`}>·</span>}
+                  <span key={item} className="flex items-center text-xs font-medium text-white">
+                    {i > 0 && <span className="mx-2 text-white/30">·</span>}
                     {item}
                   </span>
                 ))}
@@ -1189,8 +1258,8 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
                     <Star key={i} className="size-4" style={{ color: '#00BC7D', fill: '#00BC7D' }} />
                   ))}
                 </div>
-                <p className={`text-sm font-semibold italic ${isDark ? 'text-white' : 'text-zinc-900'}`}>"Best hire we never made."</p>
-                <span className={`text-xs ${isDark ? 'text-white/40' : 'text-zinc-400'}`}>— Verkkopantteri.fi</span>
+                <p className="text-sm font-semibold italic text-white">"Best hire we never made."</p>
+                <span className="text-xs text-white/40">— Verkkopantteri.fi</span>
               </div>
             </motion.div>
 
@@ -1203,10 +1272,10 @@ function TiaInActionSlide({ activeTheme, onGetStarted }) {
               {/* GDPR icon + Compatible + platform icons */}
               <div className="flex items-center gap-3 flex-wrap justify-center" style={{ width: 320 }}>
                 <img src="/gdpr_certification.avif" alt="GDPR" className="object-contain flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
-                <span className={`text-xs font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Compatible</span>
+                <span className="text-xs font-medium text-zinc-400">Compatible</span>
                 <img src="/icon_shopify.avif" alt="Shopify" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto' }} />
-                <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
-                <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 40, width: 'auto', filter: isDark ? 'invert(1)' : 'none' }} />
+                <img src="/icon_wordpress.avif" alt="WordPress" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 36, width: 'auto', filter: 'invert(1)' }} />
+                <img src="/icon_wix.avif" alt="Wix" className="object-contain rounded flex-shrink-0 transition-all duration-200 hover:scale-110 hover:brightness-110" style={{ height: 40, width: 'auto', filter: 'invert(1)' }} />
               </div>
             </motion.div>
           </div>
@@ -1543,6 +1612,8 @@ function FeaturesSlide({ activeTheme }) {
         style={{ rotateX, scale, opacity, y }}
         className="min-h-screen flex items-center justify-center bg-zinc-950 py-20 px-6 relative overflow-hidden"
       >
+      <video src="/dots.mp4" autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60" />
+      <div className="absolute inset-0 bg-zinc-950/50" />
       <div className="max-w-6xl mx-auto w-full">
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
@@ -1730,7 +1801,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
       <div className="max-w-2xl mx-auto w-full relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
-          <h2 className="text-5xl md:text-6xl font-light mb-3 text-zinc-950">Deploy an <span style={{ color: '#63AFC7' }}>AI Agent</span></h2>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">Hire Your <span style={{ color: '#63AFC7' }}>AI Agent</span></h2>
           <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support.</p>
         </motion.div>
 
