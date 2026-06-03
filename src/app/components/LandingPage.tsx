@@ -371,9 +371,6 @@ function HowItWorksSlide() {
     <section id="how-it-works" className="py-24 px-6 relative overflow-hidden" style={{ background: '#09090b' }}>
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} className="mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-5">
-            <span className="text-xs text-white/60 tracking-wide">Simple process</span>
-          </div>
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">From zero to live<br />in 48 hours</h2>
           <p className="text-lg font-light text-zinc-500 max-w-xl">No technical expertise needed. We do everything — you just get more leads.</p>
         </motion.div>
@@ -460,7 +457,7 @@ function HeroAISlide({ onGetStarted }) {
             Live chat support by the<br />world's smartest AI Agent
           </h2>
           <p className="text-lg font-light text-zinc-400 max-w-2xl mb-8">
-            The AI Agent resolves complex inquiries, learns your business, and helps increase conversions while reducing support workload.
+            The AI Agent resolves complex inquiries, evolves every week, and helps increase conversions while reducing support workload.
           </p>
           <div className="flex flex-col sm:flex-row items-start gap-3">
             <button onClick={onGetStarted}
@@ -555,7 +552,7 @@ function FAQSlide() {
     <section className="py-24 px-6 bg-zinc-950">
       <div className="max-w-3xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} className="text-center mb-14">
-          <h2 className="text-4xl md:text-5xl font-light text-white">Everything you<br />need to know</h2>
+          <h2 className="text-5xl md:text-6xl font-light text-white">Everything you<br />need to know</h2>
         </motion.div>
 
         <div className="flex flex-col gap-3">
@@ -1969,8 +1966,8 @@ function FeaturesSlide({ activeTheme }) {
         {/* Section header */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="mb-14">
-          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">The AI team</h2>
-          <p className="text-lg font-light text-zinc-400">Turn data into smarter decisions.</p>
+          <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">The brain behind AI Agent</h2>
+          <p className="text-lg font-light text-zinc-400">See how our AI Agent answers questions, captures leads, and powers one of the most advanced analytics dashboards available.</p>
         </motion.div>
 
         {/* Two-column layout */}
@@ -1992,7 +1989,7 @@ function FeaturesSlide({ activeTheme }) {
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.7 }}
             className="flex flex-col gap-3 items-start"
           >
-            <h3 className="text-lg font-semibold text-white tracking-tight">TIA Widget</h3>
+            <h3 className="text-lg font-semibold text-white tracking-tight">AI Agent Widget</h3>
             <AnimatedChatLoop theme={theme} onGetStarted={() => {}} />
             {/* Theme switcher */}
             <div className="flex items-center gap-2 mt-1">
@@ -2159,7 +2156,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.4 }} className="text-center mb-10">
           <h2 className="text-5xl md:text-6xl font-light mb-3 text-white">Hire Your <span style={{ color: '#ffffff' }}>AI Agent</span></h2>
-          <p className="text-lg font-light text-zinc-500">Save thousands every month by automating customer support.</p>
+          <p className="text-lg font-light text-zinc-500">Save thousands every month with AI automation.</p>
         </motion.div>
 
         {/* Main plan card */}
@@ -2340,7 +2337,7 @@ function CTASlide({ activeTheme, onGetStarted }) {
           </motion.h2>
           <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.7, delay: 0.15 }}
             className="text-xl font-light mb-10 text-white/70 max-w-lg mx-auto">
-            Try next-gen AI support in minutes and decide later.
+            Experience next-generation AI support and decide later.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4">
