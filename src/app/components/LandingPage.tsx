@@ -368,7 +368,7 @@ function HowItWorksSlide() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-6 relative overflow-hidden" style={{ background: '#09090b' }}>
+    <section id="how-it-works" className="py-24 px-6 bg-zinc-950 relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} className="mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-5">
@@ -416,7 +416,7 @@ function HeroAISlide({ onGetStarted }) {
   ];
 
   return (
-    <section className="px-6 relative" style={{ display: 'flex', flexDirection: 'column', background: '#09090b', minHeight: '100vh' }}>
+    <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
       {/* AI head image — right side, bottom-anchored */}
       <img
         src="/br-bb.avif"
@@ -430,8 +430,8 @@ function HeroAISlide({ onGetStarted }) {
           objectFit: 'contain',
           objectPosition: 'bottom right',
           opacity: 0.8,
-          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, transparent 0%, black 15%, black 75%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, transparent 0%, black 15%, black 75%, transparent 100%)',
+          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
           maskComposite: 'intersect',
           WebkitMaskComposite: 'destination-in',
           zIndex: 1,
@@ -439,7 +439,7 @@ function HeroAISlide({ onGetStarted }) {
       />
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #09090b 35%, transparent 65%)' }} />
       <div className="absolute inset-0 bg-zinc-950/20 pointer-events-none" />
-      <div className="max-w-6xl mx-auto w-full flex flex-col py-24 relative z-10">
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
@@ -461,8 +461,11 @@ function HeroAISlide({ onGetStarted }) {
           </div>
         </motion.div>
 
+        {/* Spacer pushes bottom content down */}
+        <div className="flex-1" />
+
         {/* Bottom row: Try it free left, stats right */}
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 pb-10">
+        <div className="flex flex-col md:flex-row items-end justify-between gap-10 pt-10 border-t border-white/5 mb-10">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
