@@ -439,7 +439,7 @@ function HeroAISlide({ onGetStarted }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
         className="absolute hidden md:flex gap-0"
-        style={{ right: '10%', bottom: '16%', zIndex: 2 }}
+        style={{ right: '22%', bottom: '16%', zIndex: 2 }}
       >
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
