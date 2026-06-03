@@ -2113,6 +2113,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
   };
 
   return (
+    <div style={{ overflow: 'hidden' }}>
     <motion.section
       ref={sectionRef}
       id="pricing"
@@ -2279,6 +2280,7 @@ function PricingSlide({ activeTheme, onGetStarted }) {
 
       </div>
     </motion.section>
+    </div>
   );
 }
 
