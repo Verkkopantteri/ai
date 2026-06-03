@@ -442,9 +442,28 @@ function HeroAISlide({ onGetStarted }) {
 
   return (
     <section className="px-6 relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#09090b' }}>
-      {/* Background image */}
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none" style={{ backgroundImage: 'url(/bg-ai.avif)' }} />
-      <div className="absolute inset-0 bg-zinc-950/55 pointer-events-none" />
+      {/* AI head image — right side, bottom-anchored */}
+      <img
+        src="/bg-ai.avif"
+        alt=""
+        className="absolute pointer-events-none select-none"
+        style={{
+          right: '-2%',
+          bottom: 0,
+          height: '92%',
+          width: 'auto',
+          objectFit: 'contain',
+          objectPosition: 'bottom right',
+          opacity: 0.8,
+          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to top, black 55%, transparent 100%)',
+          maskComposite: 'intersect',
+          WebkitMaskComposite: 'destination-in',
+          zIndex: 1,
+        }}
+      />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #09090b 35%, transparent 65%)' }} />
+      <div className="absolute inset-0 bg-zinc-950/20 pointer-events-none" />
       <div className="max-w-6xl mx-auto w-full flex flex-col flex-1 py-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
