@@ -481,7 +481,7 @@ function HeroAISlide({ onGetStarted }) {
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.15 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-1"
-            style={{ position: 'relative', zIndex: 20, marginRight: '-2%' }}>
+            style={{ position: 'relative', zIndex: 20, marginRight: '-12%', marginTop: '80px' }}>
             {stats.map((s, i) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ delay: i * 0.08 }}
                 className="text-center">
