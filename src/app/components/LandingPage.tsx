@@ -449,7 +449,7 @@ function HeroAISlide({ onGetStarted }) {
           </motion.div>
         ))}
       </motion.div>
-      <div className="max-w-6xl mx-auto w-full flex flex-col py-24 relative z-10">
+      <div className="max-w-6xl mx-auto w-full flex flex-col pt-10 pb-24 relative z-10">
 
         {/* Top: main title + subtitle + CTAs */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.3 }}>
